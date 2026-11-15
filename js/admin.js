@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     orders: [],
     conversations: [],
     users: [],
-    productPageSize: 16,
+    productPageSize: 40,
     hasMoreProducts: false,
     isLoadingMoreProducts: false,
     activeChatUserId: null,
@@ -72,6 +72,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.classList.remove('admin-chat-tab-active');
   }
 
+  function getProductTimestamp(p) {
+    if (!p) return 0;
+    if (p.created_at) {
+      const t = new Date(p.created_at).getTime();
+      if (!isNaN(t) && t > 0) return t;
+    }
+    if (p.updated_at) {
+      const t = new Date(p.updated_at).getTime();
+      if (!isNaN(t) && t > 0) return t;
+    }
+    if (typeof p.id === 'string' && p.id.startsWith('prod-')) {
+      const num = parseInt(p.id.replace('prod-', ''), 10);
+      if (!isNaN(num) && num > 1000000000) return num;
+    }
+    return 0;
+  }
+
   /* ==========================================================================
      1. INITIAL DATA LOADING
      ========================================================================== */
@@ -79,7 +96,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const [categories, products, orders, users] = await Promise.all([
         window.SupabaseService.getCategories(),
-        window.SupabaseService.getProducts({ limit: adminState.productPageSize, offset: 0, includeHidden: true }),
+        window.SupabaseService.getProducts({ limit: adminState.productPageSize, offset: 0, sort: 'newest', includeHidden: true }),
         window.SupabaseService.getOrders(),
         window.SupabaseService.getUsers()
       ]);
@@ -493,12 +510,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         ],
         value: adminState.productSortBy || 'newest',
         searchable: false,
-        onChange: (val) => {
+        onChange: async (val) => {
           adminState.productSortBy = val;
-          renderProductsManager();
+          await reloadAdminProductsForSort();
         }
       });
     }
+  }
+
+  async function reloadAdminProductsForSort() {
+    if (productListContainer) {
+      productListContainer.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px; color: var(--accent-gold); animation: spin 0.8s linear infinite; margin-bottom: 8px;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+          <div style="font-weight: 600; color: var(--text-main);">Sorting products across catalog...</div>
+        </div>
+      `;
+    }
+    try {
+      const sortedProds = await window.SupabaseService.getProducts({
+        limit: adminState.productPageSize,
+        offset: 0,
+        sort: adminState.productSortBy,
+        includeHidden: true
+      });
+      if (Array.isArray(sortedProds)) {
+        adminState.products = sortedProds;
+        adminState.hasMoreProducts = sortedProds.length === adminState.productPageSize;
+      }
+    } catch (err) {
+      console.warn('Admin sort reload error:', err);
+    }
+    renderProductsManager();
   }
 
   function updateAdminSeeMoreButton() {
@@ -525,6 +568,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const nextBatch = await window.SupabaseService.getProducts({
           limit: adminState.productPageSize,
           offset: offset,
+          sort: adminState.productSortBy,
           includeHidden: true
         });
 
@@ -628,15 +672,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         return aHidden ? 1 : -1;
       }
       if (sortBy === 'oldest') {
-        const tA = new Date(a.created_at || 0).getTime();
-        const tB = new Date(b.created_at || 0).getTime();
-        return tA - tB;
+        return getProductTimestamp(a) - getProductTimestamp(b);
       }
-      // 'newest' default: sequential sort_order ASC matching catalog pagination, maintaining continuation
-      const sA = (a.sort_order !== undefined && a.sort_order !== null) ? Number(a.sort_order) : 999999;
-      const sB = (b.sort_order !== undefined && b.sort_order !== null) ? Number(b.sort_order) : 999999;
-      if (sA !== sB) return sA - sB;
-      return 0;
+      // 'newest' (default) -> Strictly newest arrivals first!
+      return getProductTimestamp(b) - getProductTimestamp(a);
     });
 
     // 3. Update count badge
@@ -1324,9 +1363,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Sort List
     const sort = adminState.orderSortBy || 'newest';
     if (sort === 'newest') {
-      list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+      list.sort((a, b) => (new Date(b.created_at || 0).getTime() || 0) - (new Date(a.created_at || 0).getTime() || 0));
     } else if (sort === 'oldest') {
-      list.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
+      list.sort((a, b) => (new Date(a.created_at || 0).getTime() || 0) - (new Date(b.created_at || 0).getTime() || 0));
     } else if (sort === 'price-desc') {
       list.sort((a, b) => (Number(b.product_price) || 0) - (Number(a.product_price) || 0));
     } else if (sort === 'price-asc') {

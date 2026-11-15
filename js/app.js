@@ -803,8 +803,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (sortPickerMount && window.CustomPicker && !sortPickerInstance) {
         const sortOpts = [
           { value: 'newest', label: 'Newest Arrivals' },
+          { value: 'oldest', label: 'Oldest First' },
           { value: 'price_asc', label: 'Price: Low to High' },
-          { value: 'price_desc', label: 'Price: High to Low' }
+          { value: 'price_desc', label: 'Price: High to Low' },
+          { value: 'name_asc', label: 'Name: A to Z' }
         ];
 
         sortPickerInstance = window.CustomPicker.create({
@@ -814,9 +816,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           value: state.selectedSort,
           placeholder: 'Sort By',
           searchable: false,
-          onChange: (val) => {
+          onChange: async (val) => {
             state.selectedSort = val;
-            applyFiltersAndSort();
+            await reloadProductsForSort();
           }
         });
       }
@@ -893,6 +895,60 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
     applyProductView(state.currentView);
+  }
+
+  function getProductTimestamp(p) {
+    if (!p) return 0;
+    if (p.created_at) {
+      const t = new Date(p.created_at).getTime();
+      if (!isNaN(t) && t > 0) return t;
+    }
+    if (p.updated_at) {
+      const t = new Date(p.updated_at).getTime();
+      if (!isNaN(t) && t > 0) return t;
+    }
+    if (typeof p.id === 'string' && p.id.startsWith('prod-')) {
+      const num = parseInt(p.id.replace('prod-', ''), 10);
+      if (!isNaN(num) && num > 1000000000) return num;
+    }
+    return 0;
+  }
+
+  async function reloadProductsForSort() {
+    if (productGrid) {
+      productGrid.innerHTML = `
+        <div class="sorting-loading-state" style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; background: #ffffff; border-radius: 14px; border: 1px solid #d1ead9;">
+          <span class="spinner" style="display:inline-block; width:28px; height:28px; border:3px solid #087f3b; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-bottom:12px;"></span>
+          <h4 style="color: #073b1f; font-size: 1.05rem; font-weight: 700; margin-bottom: 4px;">Sorting products...</h4>
+          <p style="color: #5a6e62; font-size: 0.85rem; margin: 0;">Applying sort across catalog...</p>
+        </div>
+      `;
+    }
+    try {
+      const targetCat = (state.selectedCategory && state.selectedCategory !== 'all') ? resolveCategory(state.selectedCategory) : null;
+      const sortedProducts = await window.SupabaseService.getProducts({
+        limit: state.pageSize,
+        offset: 0,
+        categoryId: targetCat ? targetCat.id : 'all',
+        sort: state.selectedSort,
+        includeHidden: false
+      });
+
+      if (Array.isArray(sortedProducts)) {
+        const suitFallbackDesc = 'These particular suits are authentic Italian bespoke cuts, crafted with premium high-twist wool blend fabric for exceptional drape, comfort, and structure. Designed with classic notch lapels, flap pockets, soft interior lining, and dual side vents. Meticulously finished for modern executives and high-profile occasions.';
+        state.products = sortedProducts.filter(p => !window.SupabaseService?.isProductHidden?.(p)).map(p => {
+          const raw = p.description || p.desc || p.details || p.product_description || '';
+          if (!raw || typeof raw !== 'string' || !raw.trim()) {
+            return { ...p, description: suitFallbackDesc };
+          }
+          return p;
+        });
+        state.hasMoreProducts = sortedProducts.length === state.pageSize;
+      }
+    } catch (err) {
+      console.warn('Sort reload notice:', err);
+    }
+    applyFiltersAndSort();
   }
 
   function resolveCategory(catInput) {
@@ -1009,18 +1065,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Sort
-    if (state.selectedSort === 'price_asc') {
-      prods.sort((a, b) => Number(a.price) - Number(b.price));
-    } else if (state.selectedSort === 'price_desc') {
-      prods.sort((a, b) => Number(b.price) - Number(a.price));
+    const sortChoice = String(state.selectedSort || 'newest').toLowerCase().trim();
+    if (sortChoice === 'price_asc' || sortChoice === 'price-asc') {
+      prods.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+    } else if (sortChoice === 'price_desc' || sortChoice === 'price-desc') {
+      prods.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+    } else if (sortChoice === 'oldest') {
+      prods.sort((a, b) => getProductTimestamp(a) - getProductTimestamp(b));
+    } else if (sortChoice === 'name_asc' || sortChoice === 'title_asc' || sortChoice === 'title-asc') {
+      prods.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
     } else {
-      // Sequential continuation order matching catalog pagination (sort_order ASC 1, 2, 3... then newest created_at)
-      prods.sort((a, b) => {
-        const sA = (a.sort_order !== undefined && a.sort_order !== null) ? Number(a.sort_order) : 999999;
-        const sB = (b.sort_order !== undefined && b.sort_order !== null) ? Number(b.sort_order) : 999999;
-        if (sA !== sB) return sA - sB;
-        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
-      });
+      // Default: 'newest' -> Strictly newest arrivals first!
+      prods.sort((a, b) => getProductTimestamp(b) - getProductTimestamp(a));
     }
 
     state.filteredProducts = prods;
@@ -1986,10 +2042,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       // 3. Sorting
       filtered.sort((a, b) => {
         if (requestsSortBy === 'newest') {
-          return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+          return (new Date(b.created_at || 0).getTime() || 0) - (new Date(a.created_at || 0).getTime() || 0);
         }
         if (requestsSortBy === 'oldest') {
-          return new Date(a.created_at || 0) - new Date(b.created_at || 0);
+          return (new Date(a.created_at || 0).getTime() || 0) - (new Date(b.created_at || 0).getTime() || 0);
         }
         if (requestsSortBy === 'price_desc') {
           return (Number(b.product_price) || 0) - (Number(a.product_price) || 0);

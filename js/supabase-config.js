@@ -2,7 +2,7 @@
 window.SupabaseService = {
   URL: 'https://ykwhhgajybhbmkqkmzhm.supabase.co',
   ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlrd2hoZ2FqeWJoYm1rcWttemhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MTI5NzksImV4cCI6MjEwNzk4ODk3OX0.d-qkmKCGE1bbMBNZb7ROnMXC1t1RcPweeXD4Hg0atBM',
-  CATALOG_VERSION: 'v2026_kairoslab_update_2',
+  CATALOG_VERSION: 'v2026_kairoslab_update_3',
   CACHE_TTL_MS: 12 * 60 * 60 * 1000, // 12-hour Cache TTL
 
   initCacheCheck() {
@@ -345,16 +345,20 @@ window.SupabaseService = {
       queryParts.push(`category_id=eq.${encodeURIComponent(resolvedCatId)}`);
     }
 
-    if (sort === 'oldest') {
+    const normalizedSort = String(sort || 'newest').toLowerCase().trim();
+    if (normalizedSort === 'oldest') {
       queryParts.push('order=created_at.asc');
-    } else if (sort === 'price_low' || sort === 'price_asc') {
+    } else if (normalizedSort === 'price_low' || normalizedSort === 'price_asc' || normalizedSort === 'price-asc') {
       queryParts.push('order=price.asc');
-    } else if (sort === 'price_high' || sort === 'price_desc') {
+    } else if (normalizedSort === 'price_high' || normalizedSort === 'price_desc' || normalizedSort === 'price-desc') {
       queryParts.push('order=price.desc');
-    } else if (sort === 'name_asc') {
+    } else if (normalizedSort === 'name_asc' || normalizedSort === 'title_asc' || normalizedSort === 'title-asc') {
       queryParts.push('order=title.asc');
+    } else if (normalizedSort === 'title_desc' || normalizedSort === 'title-desc') {
+      queryParts.push('order=title.desc');
     } else {
-      queryParts.push('order=sort_order.asc,created_at.desc');
+      // 'newest' (default) -> Strictly newest products first!
+      queryParts.push('order=created_at.desc');
     }
 
     if (limit !== null) {
@@ -433,21 +437,37 @@ window.SupabaseService = {
       if (categoryId && categoryId !== 'all') {
         result = result.filter(p => p.category_id === categoryId);
       }
-      if (sort === 'oldest') {
-        result.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
-      } else if (sort === 'price_low' || sort === 'price_asc') {
-        result.sort((a, b) => Number(a.price) - Number(b.price));
-      } else if (sort === 'price_high' || sort === 'price_desc') {
-        result.sort((a, b) => Number(b.price) - Number(a.price));
-      } else if (sort === 'name_asc') {
+      const getTimestamp = (p) => {
+        if (!p) return 0;
+        if (p.created_at) {
+          const t = new Date(p.created_at).getTime();
+          if (!isNaN(t) && t > 0) return t;
+        }
+        if (p.updated_at) {
+          const t = new Date(p.updated_at).getTime();
+          if (!isNaN(t) && t > 0) return t;
+        }
+        if (typeof p.id === 'string' && p.id.startsWith('prod-')) {
+          const num = parseInt(p.id.replace('prod-', ''), 10);
+          if (!isNaN(num) && num > 1000000000) return num;
+        }
+        return 0;
+      };
+
+      const normSort = String(sort || 'newest').toLowerCase().trim();
+      if (normSort === 'oldest') {
+        result.sort((a, b) => getTimestamp(a) - getTimestamp(b));
+      } else if (normSort === 'price_low' || normSort === 'price_asc' || normSort === 'price-asc') {
+        result.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+      } else if (normSort === 'price_high' || normSort === 'price_desc' || normSort === 'price-desc') {
+        result.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+      } else if (normSort === 'name_asc' || normSort === 'title_asc' || normSort === 'title-asc') {
         result.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+      } else if (normSort === 'title_desc' || normSort === 'title-desc') {
+        result.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
       } else {
-        result.sort((a, b) => {
-          const sA = (a.sort_order !== undefined && a.sort_order !== null) ? Number(a.sort_order) : 999999;
-          const sB = (b.sort_order !== undefined && b.sort_order !== null) ? Number(b.sort_order) : 999999;
-          if (sA !== sB) return sA - sB;
-          return 0;
-        });
+        // 'newest' (default) -> Strictly newest products first!
+        result.sort((a, b) => getTimestamp(b) - getTimestamp(a));
       }
 
       if (limit !== null) {

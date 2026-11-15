@@ -280,8 +280,12 @@ document.addEventListener('DOMContentLoaded', async () => {
      2. SPA TAB NAVIGATION (Home, Shop, Requests, Cart, Account)
      ========================================================================== */
   window.switchAppTab = function(tabName, categoryToFilter = null) {
-    if (!tabName) tabName = 'home';
+    if (!tabName) tabName = 'shop';
     state.currentTab = tabName;
+
+    // Clean up fast tab preload style if present
+    const fastStyle = document.getElementById('fastTabStyle');
+    if (fastStyle) fastStyle.remove();
 
     // Update bottom navigation bar
     document.querySelectorAll('.bottom-nav-item').forEach(btn => {
@@ -349,6 +353,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
       history.replaceState(null, '', '#' + tabName);
+      sessionStorage.setItem('nkem_current_tab', tabName);
     } catch (e) {}
   };
 
@@ -2581,14 +2586,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Instantly activate target tab (from hash or saved session) before data fetching
+  const validTabs = ['shop', 'home', 'requests', 'cart', 'account'];
+  const hash = (window.location.hash || '').replace('#', '').toLowerCase();
+  const savedTab = sessionStorage.getItem('nkem_current_tab');
+  const initialTab = validTabs.includes(hash) ? hash : (validTabs.includes(savedTab) ? savedTab : 'shop');
+  window.switchAppTab(initialTab);
+
   // Load Initial Data
   await loadInitialData();
 
-  // Handle URL hash on load (e.g. #shop, #cart, #requests, #account, #home)
-  const hash = (window.location.hash || '').replace('#', '').toLowerCase();
-  if (['home', 'shop', 'requests', 'cart', 'account'].includes(hash)) {
-    window.switchAppTab(hash);
-  } else {
-    window.switchAppTab('shop');
+  // Re-render views if current tab requires fresh cloud data
+  if (initialTab === 'cart') {
+    renderCartView();
+  } else if (initialTab === 'requests') {
+    renderRequestsView();
+  } else if (initialTab === 'account') {
+    renderAccountView();
   }
 });

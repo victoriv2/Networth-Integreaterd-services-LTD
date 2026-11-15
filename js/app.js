@@ -2589,6 +2589,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (['home', 'shop', 'requests', 'cart', 'account'].includes(hash)) {
     window.switchAppTab(hash);
   } else {
-    window.switchAppTab('home');
+    window.switchAppTab('shop');
   }
 });

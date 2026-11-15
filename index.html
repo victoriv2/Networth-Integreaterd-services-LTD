@@ -13,7 +13,7 @@
        ========================================================================== -->
   <header class="header-bar header-bar-mockup">
     <div class="container header-container">
-      <div class="brand-wrap" onclick="window.switchAppTab && window.switchAppTab('home')">
+      <div class="brand-wrap" onclick="window.switchAppTab && window.switchAppTab('shop')">
         <img class="brand-logo-img" src="assets/images/logo.png" alt="Nkem Global Logo" />
         <div class="brand-text-wrap">
           <h1 class="brand-title">NKEM GLOBAL</h1>
@@ -26,8 +26,8 @@
 
       <!-- Desktop Navigation Tabs -->
       <nav class="desktop-app-nav">
-        <button type="button" class="desktop-nav-btn active" data-tab="home">Home</button>
-        <button type="button" class="desktop-nav-btn" data-tab="shop">Shop</button>
+        <button type="button" class="desktop-nav-btn active" data-tab="shop">Product</button>
+        <button type="button" class="desktop-nav-btn" data-tab="home">Category</button>
         <button type="button" class="desktop-nav-btn" data-tab="requests">Requests</button>
         <button type="button" class="desktop-nav-btn" data-tab="cart">
           Cart
@@ -300,14 +300,14 @@
        BOTTOM APP NAVIGATION BAR (5 Tabs: Home, Shop, Requests, Cart, Account)
        ========================================================================== -->
   <nav class="bottom-nav-bar" id="bottomNavBar">
-    <button type="button" class="bottom-nav-item active" data-tab="home">
-      <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span class="bottom-nav-label">Home</span>
+    <button type="button" class="bottom-nav-item active" data-tab="shop">
+      <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      <span class="bottom-nav-label">Product</span>
     </button>
 
-    <button type="button" class="bottom-nav-item" data-tab="shop">
-      <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v4H3zM3 7l2 12h14l2-12M10 19v-6h4v6"/></svg>
-      <span class="bottom-nav-label">Shop</span>
+    <button type="button" class="bottom-nav-item" data-tab="home">
+      <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="bottom-nav-label">Category</span>
     </button>
 
     <button type="button" class="bottom-nav-item" data-tab="requests">

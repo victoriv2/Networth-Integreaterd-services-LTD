@@ -736,7 +736,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               </strong>
               ${(window.SupabaseService?.isProductHidden?.(p) ?? (p.is_hidden || p.hidden)) 
                 ? ' &bull; <strong style="color: #dc2626; background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.25); padding: 1px 6px; border-radius: 4px; font-size: 11px;">Hidden from Store</strong>' 
-                : ' &bull; <span style="color: #087f3b; font-size: 11px; font-weight: 600;">Visible</span>'}
+                : ' &bull; <span style="color: #0284c7; font-size: 11px; font-weight: 600;">Visible</span>'}
             </span>
           </div>
           <div class="admin-item-actions">
@@ -746,7 +746,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <button class="btn-icon-square" type="button" data-action="toggle-visibility" data-id="${p.id}" 
               title="${(window.SupabaseService?.isProductHidden?.(p) ?? (p.is_hidden || p.hidden)) ? 'Hidden from Store (Click to Show)' : 'Visible in Store (Click to Hide)'}" 
               aria-label="${(window.SupabaseService?.isProductHidden?.(p) ?? (p.is_hidden || p.hidden)) ? 'Show product in store' : 'Hide product from store'}" 
-              style="${(window.SupabaseService?.isProductHidden?.(p) ?? (p.is_hidden || p.hidden)) ? 'border-color: rgba(220,38,38,0.4); color: #dc2626; background: rgba(220,38,38,0.08);' : 'color: #087f3b; background: rgba(8,127,59,0.06); border-color: rgba(8,127,59,0.25);'}">
+              style="${(window.SupabaseService?.isProductHidden?.(p) ?? (p.is_hidden || p.hidden)) ? 'border-color: rgba(220,38,38,0.4); color: #dc2626; background: rgba(220,38,38,0.08);' : 'color: #0284c7; background: rgba(2, 132, 199,0.06); border-color: rgba(2, 132, 199,0.25);'}">
               ${window.renderIcon((window.SupabaseService?.isProductHidden?.(p) ?? (p.is_hidden || p.hidden)) ? 'eyeOff' : 'eye')}
             </button>
             <button class="btn-icon-square" type="button" data-action="prod-edit" data-id="${p.id}" title="Edit Product">
@@ -1093,10 +1093,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     grid.innerHTML = adminState.productImagesDraft.map((src, idx) => `
-      <div style="position: relative; flex: 0 0 86px; height: 86px; border: 1px solid ${idx === 0 ? '#087f3b' : 'var(--border-color)'}; border-radius: var(--radius-sm); overflow: hidden; background: #edf8f2;">
+      <div style="position: relative; flex: 0 0 86px; height: 86px; border: 1px solid ${idx === 0 ? '#0284c7' : 'var(--border-color)'}; border-radius: var(--radius-sm); overflow: hidden; background: #f0f6fc;">
         <img src="${src}" style="width: 100%; height: 100%; object-fit: cover;" alt="Image ${idx + 1}" onerror="this.onerror=null;this.src='assets/images/logo.png';" />
         
-        ${idx === 0 ? '<span style="position: absolute; bottom: 0; left: 0; right: 0; background: #087f3b; color: #ffffff; font-size: 8px; font-weight: 700; text-align: center; text-transform: uppercase; z-index: 2;">Cover</span>' : ''}
+        ${idx === 0 ? '<span style="position: absolute; bottom: 0; left: 0; right: 0; background: #0284c7; color: #ffffff; font-size: 8px; font-weight: 700; text-align: center; text-transform: uppercase; z-index: 2;">Cover</span>' : ''}
 
         <div style="position: absolute; top: 3px; right: 3px; display: flex; gap: 2px; z-index: 3;">
           <button type="button" data-action="img-del" data-idx="${idx}" title="Remove image" aria-label="Remove image" style="background: #dc2626; border: 1.5px solid #ffffff; color: #ffffff; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,0.3);">
@@ -1421,7 +1421,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="admin-item-row" style="flex-direction: column; align-items: stretch; gap: 12px; padding: 16px; margin-bottom: 12px;">
           <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; flex-wrap: wrap; gap: 8px;">
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-              <strong style="color: #073b1f; font-size: var(--font-base); font-family: monospace;">Order #${(o.id || '').toUpperCase()}</strong>
+              <strong style="color: #0a2540; font-size: var(--font-base); font-family: monospace;">Order #${(o.id || '').toUpperCase()}</strong>
               ${statusBadge}
               <span style="font-size: var(--font-xs); color: var(--text-muted);">${new Date(o.created_at || Date.now()).toLocaleString()}</span>
             </div>
@@ -1437,7 +1437,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div>
                 <span style="color: var(--text-muted);">Product:</span> 
                 <strong>${window.CustomModal.escape(o.product_title || 'Product Item')}</strong> 
-                <span style="color: #087f3b; font-weight: 700; margin-left: 4px;">(${window.formatNaira(o.product_price || 0)})</span>
+                <span style="color: #0284c7; font-weight: 700; margin-left: 4px;">(${window.formatNaira(o.product_price || 0)})</span>
               </div>
               <div>
                 <span style="color: var(--text-muted);">Customer:</span> 
@@ -1467,7 +1467,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <span style="font-size: var(--font-xs); color: var(--text-muted); font-weight: 600;">Status:</span>
               <button type="button" class="btn btn-secondary btn-sm admin-order-status-btn" data-id="${o.id}" data-current="${status}" style="font-size: var(--font-xs); padding: 5px 12px; display: inline-flex; align-items: center; gap: 6px; background: var(--bg-main); border-color: var(--border-color); cursor: pointer;">
                 <span>${curStatusLabel}</span>
-                <span style="display: flex; align-items: center; color: #087f3b;">${window.renderIcon('chevronDown')}</span>
+                <span style="display: flex; align-items: center; color: #0284c7;">${window.renderIcon('chevronDown')}</span>
               </button>
             </div>
 
@@ -1642,7 +1642,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <strong style="font-size: var(--font-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary);">${window.CustomModal.escape(conv.userName || 'Customer')}</strong>
             <span style="font-size: 0.68rem; color: var(--text-muted); flex-shrink: 0;">${conv.latestTime ? new Date(conv.latestTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
           </div>
-          <span style="font-size: var(--font-xs); color: #073b1f; display: inline-flex; align-items: center; gap: 4px;"><span style="color: #25d366; display: inline-flex; align-items: center; width: 12px; height: 12px; line-height: 1;">${window.renderIcon('whatsapp')}</span>${conv.userWhatsapp || ''} &bull; ${window.CustomModal.escape(conv.userLocation || '')}</span>
+          <span style="font-size: var(--font-xs); color: #0a2540; display: inline-flex; align-items: center; gap: 4px;"><span style="color: #25d366; display: inline-flex; align-items: center; width: 12px; height: 12px; line-height: 1;">${window.renderIcon('whatsapp')}</span>${conv.userWhatsapp || ''} &bull; ${window.CustomModal.escape(conv.userLocation || '')}</span>
           <span style="font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${window.CustomModal.escape(conv.latestMessage || 'No messages yet')}</span>
         </div>
         ${conv.unreadCount > 0 ? `<span class="chat-unread-badge" style="position: static; margin-left: 4px; flex-shrink: 0;">${conv.unreadCount}</span>` : ''}
@@ -1699,7 +1699,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (customer) {
         chatActiveCodeTitle.innerHTML = `
           <span>${window.CustomModal.escape(customer.userName)}</span>
-          <span style="font-size: var(--font-xs); color: #073b1f; font-weight: normal; margin-left: 8px; display: inline-flex; align-items: center; gap: 4px;"><span style="color: #25d366; display: inline-flex; align-items: center; width: 12px; height: 12px; line-height: 1;">${window.renderIcon('whatsapp')}</span>${customer.userWhatsapp} &bull; ${window.CustomModal.escape(customer.userLocation)}</span>
+          <span style="font-size: var(--font-xs); color: #0a2540; font-weight: normal; margin-left: 8px; display: inline-flex; align-items: center; gap: 4px;"><span style="color: #25d366; display: inline-flex; align-items: center; width: 12px; height: 12px; line-height: 1;">${window.renderIcon('whatsapp')}</span>${customer.userWhatsapp} &bull; ${window.CustomModal.escape(customer.userLocation)}</span>
         `;
       } else {
         chatActiveCodeTitle.textContent = `Customer Chat`;
@@ -1879,10 +1879,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               </div>
 
               <div style="display: flex; gap: 12px; align-items: flex-start; margin: 10px 0;">
-                <img src="${prodImg}" alt="${window.CustomModal.escape(productTitle)}" class="request-card-thumb" style="width: 72px; height: 72px; min-width: 72px; border-radius: 8px; object-fit: cover; border: 1.5px solid #d1ead9; background: #ffffff;" onerror="this.src='assets/images/logo.png';" />
+                <img src="${prodImg}" alt="${window.CustomModal.escape(productTitle)}" class="request-card-thumb" style="width: 72px; height: 72px; min-width: 72px; border-radius: 8px; object-fit: cover; border: 1.5px solid #d0e4f7; background: #ffffff;" onerror="this.src='assets/images/logo.png';" />
                 <div class="request-card-info" style="flex: 1; min-width: 0; margin: 0; padding: 0; border: none;">
                   <div><strong>Code:</strong> <span class="request-code-badge">${code}</span></div>
-                  <div><strong>Amount:</strong> <span style="color: #087f3b; font-weight: 800;">${amountDisplay}</span></div>
+                  <div><strong>Amount:</strong> <span style="color: #0284c7; font-weight: 800;">${amountDisplay}</span></div>
                   ${cleanAddr ? `<div><strong>Destination:</strong> ${window.CustomModal.escape(cleanAddr)}</div>` : ''}
                 </div>
               </div>
@@ -1894,7 +1894,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <span>Download Receipt</span>
                   </button>
                 ` : ''}
-                <a href="https://wa.me/${custPhone || '2349031932413'}?text=${encodeURIComponent(`Hello, regarding order (${code}): ${productTitle}`)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.78rem; color: #166534; border-color: #25D366; text-decoration: none;">
+                <a href="https://wa.me/${custPhone || '2349031932413'}?text=${encodeURIComponent(`Hello, regarding order (${code}): ${productTitle}`)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.78rem; color: #0369a1; border-color: #25D366; text-decoration: none;">
                   ${window.renderIcon ? window.renderIcon('whatsapp') : '<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>'}
                   <span>WhatsApp ${custPhone ? 'Customer' : 'Support'}</span>
                 </a>
@@ -1971,7 +1971,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return `
         <div class="chat-msg-row ${isOutgoing ? 'outgoing' : 'incoming'}" data-msg-id="${msg.id}">
           <div class="chat-bubble">
-            <div style="font-size: 0.68rem; font-weight: 700; color: ${isOutgoing ? '#ffffff' : '#073b1f'}; margin-bottom: 2px;">
+            <div style="font-size: 0.68rem; font-weight: 700; color: ${isOutgoing ? '#ffffff' : '#0a2540'}; margin-bottom: 2px;">
               ${isOutgoing ? 'Kairoslab Support (You)' : (adminState.activeChatCustomer ? window.CustomModal.escape(adminState.activeChatCustomer.userName) : 'Customer')}
             </div>
             ${msg.message ? `<div class="chat-text-content">${window.CustomModal.escape(msg.message)}</div>` : ''}
@@ -2155,7 +2155,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   <strong style="font-size: var(--font-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary);">${window.CustomModal.escape(conv.userName || 'Customer')}</strong>
                   <span style="font-size: 0.68rem; color: var(--text-muted); flex-shrink: 0;">${conv.latestTime ? new Date(conv.latestTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
                 </div>
-                <span style="font-size: var(--font-xs); color: #073b1f; display: inline-flex; align-items: center; gap: 4px;"><span style="color: #25d366; display: inline-flex; align-items: center; width: 12px; height: 12px; line-height: 1;">${window.renderIcon('whatsapp')}</span>${conv.userWhatsapp || ''} &bull; ${window.CustomModal.escape(conv.userLocation || '')}</span>
+                <span style="font-size: var(--font-xs); color: #0a2540; display: inline-flex; align-items: center; gap: 4px;"><span style="color: #25d366; display: inline-flex; align-items: center; width: 12px; height: 12px; line-height: 1;">${window.renderIcon('whatsapp')}</span>${conv.userWhatsapp || ''} &bull; ${window.CustomModal.escape(conv.userLocation || '')}</span>
                 <span style="font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${window.CustomModal.escape(conv.latestMessage || 'No messages yet')}</span>
               </div>
               ${conv.unreadCount > 0 ? `<span class="chat-unread-badge" style="position: static; margin-left: 4px; flex-shrink: 0;">${conv.unreadCount}</span>` : ''}
@@ -2499,7 +2499,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </td>
                 <td>
                   <div style="display: inline-flex; align-items: center; gap: 6px; background: var(--bg-main); padding: 3px 8px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm);">
-                    <span class="user-pwd-text" data-pwd="${window.CustomModal.escape(u.password_hash || '')}" style="font-family: monospace; font-size: 0.85rem; color: #065f2c; letter-spacing: 0.05em;">${window.CustomModal.escape(u.password_hash || '')}</span>
+                    <span class="user-pwd-text" data-pwd="${window.CustomModal.escape(u.password_hash || '')}" style="font-family: monospace; font-size: 0.85rem; color: #0369a1; letter-spacing: 0.05em;">${window.CustomModal.escape(u.password_hash || '')}</span>
                     <button type="button" class="btn-copy-pwd" data-pwd="${window.CustomModal.escape(u.password_hash || '')}" title="Copy Password" style="background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; padding: 2px;">
                       ${window.renderIcon('copy')}
                     </button>
@@ -2644,9 +2644,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     passwordChangeMsg.textContent = text;
     passwordChangeMsg.style.display = 'block';
     if (type === 'success') {
-      passwordChangeMsg.style.background = '#e8f7ee';
-      passwordChangeMsg.style.border = '1px solid #a1d7b3';
-      passwordChangeMsg.style.color = '#065f2c';
+      passwordChangeMsg.style.background = '#e0f0fd';
+      passwordChangeMsg.style.border = '1px solid #93c5fd';
+      passwordChangeMsg.style.color = '#0369a1';
     } else {
       passwordChangeMsg.style.background = '#fef2f2';
       passwordChangeMsg.style.border = '1px solid #fecaca';

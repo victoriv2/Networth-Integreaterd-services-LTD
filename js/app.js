@@ -895,41 +895,105 @@ document.addEventListener('DOMContentLoaded', async () => {
     applyProductView(state.currentView);
   }
 
-  function applyFiltersAndSort() {
+  function resolveCategory(catInput) {
+    if (!catInput || catInput === 'all') return { id: 'all', name: 'All Products' };
+    const raw = String(catInput).toLowerCase().trim();
+    const found = (state.categories || []).find(c => 
+      c && ((c.id && c.id.toLowerCase() === raw) || (c.name && c.name.toLowerCase() === raw))
+    );
+    if (found) {
+      return { id: found.id, name: found.name };
+    }
+    return { id: catInput, name: catInput };
+  }
+
+  function matchesCategory(p, targetId, targetName) {
+    if (!p) return false;
+    const prodCatId = String(p.category_id || '').toLowerCase().trim();
+    const prodCatField = String(p.category || '').toLowerCase().trim();
+    const prodCatNameField = String(p.category_name || '').toLowerCase().trim();
+
+    let resolvedCatName = '';
+    if (prodCatId) {
+      const match = (state.categories || []).find(c => c && c.id && c.id.toLowerCase() === prodCatId);
+      if (match) resolvedCatName = (match.name || '').toLowerCase();
+    }
+
+    const candidateValues = [prodCatId, prodCatField, prodCatNameField, resolvedCatName].filter(Boolean);
+    if (candidateValues.length === 0) return false;
+
+    const tId = String(targetId || '').toLowerCase().trim();
+    const tName = String(targetName || '').toLowerCase().trim();
+
+    return candidateValues.some(val => 
+      val === tId || 
+      val === tName ||
+      (tName && val.length >= 4 && tName.includes(val)) ||
+      (tName && tName.length >= 4 && val.includes(tName))
+    );
+  }
+
+  let isDefensiveFetching = false;
+
+  async function applyFiltersAndSort(isRetry = false) {
     let prods = [...state.products].filter(p => !window.SupabaseService?.isProductHidden?.(p));
 
     // Filter by Category
+    let targetCat = null;
     if (state.selectedCategory && state.selectedCategory !== 'all') {
-      const rawTarget = String(state.selectedCategory).toLowerCase().trim();
-      const targetCatObj = (state.categories || []).find(c => 
-        (c.id && c.id.toLowerCase() === rawTarget) ||
-        (c.name && c.name.toLowerCase() === rawTarget)
-      );
-      const targetId = targetCatObj ? targetCatObj.id.toLowerCase() : rawTarget;
-      const targetName = targetCatObj ? targetCatObj.name.toLowerCase() : rawTarget;
+      targetCat = resolveCategory(state.selectedCategory);
+      prods = prods.filter(p => matchesCategory(p, targetCat.id, targetCat.name));
 
-      prods = prods.filter(p => {
-        const prodCatId = String(p.category_id || '').toLowerCase().trim();
-        const prodCatField = String(p.category || '').toLowerCase().trim();
-        const prodCatNameField = String(p.category_name || '').toLowerCase().trim();
+      // Defensive Cloud Query Fallback: If in-memory filter returns 0 products, fetch directly from Supabase
+      if (prods.length === 0 && !isRetry && !isDefensiveFetching) {
+        if (productGrid) {
+          productGrid.innerHTML = `
+            <div class="category-cloud-loading" style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; background: #ffffff; border-radius: 14px; border: 1px solid #d1ead9;">
+              <span class="spinner" style="display:inline-block; width:28px; height:28px; border:3px solid #087f3b; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-bottom:12px;"></span>
+              <h4 style="color: #073b1f; font-size: 1.05rem; font-weight: 700; margin-bottom: 4px;">Loading ${window.CustomModal.escape(targetCat.name)}...</h4>
+              <p style="color: #5a6e62; font-size: 0.85rem; margin: 0;">Checking cloud catalog for latest products...</p>
+            </div>
+          `;
+        }
+        isDefensiveFetching = true;
+        try {
+          const cloudProds = await window.SupabaseService.getProducts({
+            categoryId: targetCat.id,
+            limit: state.pageSize,
+            offset: 0,
+            sort: state.selectedSort,
+            includeHidden: false
+          });
 
-        // If product has category_id, resolve its category name from state.categories
-        let resolvedCatName = '';
-        if (prodCatId) {
-          const match = (state.categories || []).find(c => c.id.toLowerCase() === prodCatId);
-          if (match) resolvedCatName = match.name.toLowerCase();
+          if (Array.isArray(cloudProds) && cloudProds.length > 0) {
+            const suitFallbackDesc = 'These particular suits are authentic Italian bespoke cuts, crafted with premium high-twist wool blend fabric for exceptional drape, comfort, and structure. Designed with classic notch lapels, flap pockets, soft interior lining, and dual side vents. Meticulously finished for modern executives and high-profile occasions.';
+            const validCloud = cloudProds
+              .filter(p => !window.SupabaseService?.isProductHidden?.(p))
+              .map(p => {
+                const raw = p.description || p.desc || p.details || p.product_description || '';
+                if (!raw || typeof raw !== 'string' || !raw.trim()) {
+                  return { ...p, description: suitFallbackDesc };
+                }
+                return p;
+              });
+
+            const existingIds = new Set(state.products.map(p => p.id));
+            const newItems = validCloud.filter(p => !existingIds.has(p.id));
+            if (newItems.length > 0) {
+              state.products = [...state.products, ...newItems];
+            }
+            state.hasMoreProducts = cloudProds.length === state.pageSize;
+          } else {
+            state.hasMoreProducts = false;
+          }
+        } catch (err) {
+          console.warn('Defensive cloud query error:', err);
+        } finally {
+          isDefensiveFetching = false;
         }
 
-        const candidateValues = [prodCatId, prodCatField, prodCatNameField, resolvedCatName].filter(Boolean);
-        if (candidateValues.length === 0) return false;
-
-        return candidateValues.some(val => 
-          val === targetId || 
-          val === targetName ||
-          (val.length >= 4 && targetName.includes(val)) ||
-          (targetName.length >= 4 && val.includes(targetName))
-        );
-      });
+        return applyFiltersAndSort(true);
+      }
     }
 
     // Filter by Search Query
@@ -950,12 +1014,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else if (state.selectedSort === 'price_desc') {
       prods.sort((a, b) => Number(b.price) - Number(a.price));
     } else {
-      // Sequential continuation order matching catalog pagination (sort_order ASC 1, 2, 3... then natural continuation)
+      // Sequential continuation order matching catalog pagination (sort_order ASC 1, 2, 3... then newest created_at)
       prods.sort((a, b) => {
         const sA = (a.sort_order !== undefined && a.sort_order !== null) ? Number(a.sort_order) : 999999;
         const sB = (b.sort_order !== undefined && b.sort_order !== null) ? Number(b.sort_order) : 999999;
         if (sA !== sB) return sA - sB;
-        return 0;
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
       });
     }
 
@@ -1150,10 +1214,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       `;
 
       try {
+        const targetCat = (state.selectedCategory && state.selectedCategory !== 'all') ? resolveCategory(state.selectedCategory) : null;
+        const currentCategoryCount = targetCat
+          ? state.products.filter(p => matchesCategory(p, targetCat.id, targetCat.name)).length
+          : state.products.length;
+
         const nextProducts = await window.SupabaseService.getProducts({
           limit: state.pageSize,
-          offset: state.products.length,
-          categoryId: state.selectedCategory,
+          offset: currentCategoryCount,
+          categoryId: targetCat ? targetCat.id : 'all',
           sort: state.selectedSort,
           includeHidden: false
         });

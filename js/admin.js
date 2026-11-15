@@ -806,7 +806,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         is_hidden: false,
         hidden: false,
         images: [],
-        sort_order: adminState.products.length + 1
+        sort_order: 1
       };
       openProductEditDialog(newProd, true);
     });
@@ -1002,6 +1002,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       if (isNew) {
+        updated.sort_order = 1;
         adminState.products.unshift(updated);
       } else {
         const idx = adminState.products.findIndex(p => p.id === updated.id);

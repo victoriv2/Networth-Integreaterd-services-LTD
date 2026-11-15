@@ -2,6 +2,30 @@
 window.SupabaseService = {
   URL: 'https://ykwhhgajybhbmkqkmzhm.supabase.co',
   ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlrd2hoZ2FqeWJoYm1rcWttemhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MTI5NzksImV4cCI6MjEwNzk4ODk3OX0.d-qkmKCGE1bbMBNZb7ROnMXC1t1RcPweeXD4Hg0atBM',
+  CATALOG_VERSION: 'v2026_kairoslab_update_2',
+  CACHE_TTL_MS: 12 * 60 * 60 * 1000, // 12-hour Cache TTL
+
+  initCacheCheck() {
+    try {
+      const storedVer = localStorage.getItem('kairoslab_catalog_version') || localStorage.getItem('nkem_catalog_version');
+      const storedTime = parseInt(localStorage.getItem('kairoslab_catalog_timestamp') || localStorage.getItem('nkem_catalog_timestamp') || '0', 10);
+      const now = Date.now();
+      const isExpired = !storedTime || (now - storedTime > this.CACHE_TTL_MS);
+      const isOutdated = storedVer !== this.CATALOG_VERSION;
+
+      if (isOutdated || isExpired) {
+        console.log(`[Cache Invalidation] Purging stale local cache (Outdated: ${isOutdated}, Expired: ${isExpired})`);
+        localStorage.removeItem('nkem_local_products');
+        localStorage.removeItem('kairoslab_local_products');
+        localStorage.setItem('kairoslab_catalog_version', this.CATALOG_VERSION);
+        localStorage.setItem('nkem_catalog_version', this.CATALOG_VERSION);
+        localStorage.setItem('kairoslab_catalog_timestamp', String(now));
+        localStorage.setItem('nkem_catalog_timestamp', String(now));
+      }
+    } catch (e) {
+      console.warn('Cache check notice:', e);
+    }
+  },
 
   getHeaders() {
     return {
@@ -17,42 +41,51 @@ window.SupabaseService = {
     const isMutation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
     // Allow up to 35 seconds for mobile uploads (e.g. photos/payloads), 12 seconds for reads
     const timeoutMs = options.timeoutMs || (isMutation ? 35000 : 12000);
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const maxAttempts = isMutation ? 1 : 2;
 
-    if (options.signal) {
-      if (options.signal.aborted) {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+      if (options.signal) {
+        if (options.signal.aborted) {
+          clearTimeout(timer);
+          return null;
+        }
+        options.signal.addEventListener('abort', () => controller.abort(), { once: true });
+      }
+
+      try {
+        const url = `${this.URL}/rest/v1/${endpoint}`;
+        const headers = { ...this.getHeaders(), ...(options.headers || {}) };
+        const fetchOpts = { ...options };
+        delete fetchOpts.timeoutMs;
+        fetchOpts.headers = headers;
+        fetchOpts.signal = controller.signal;
+
+        const response = await fetch(url, fetchOpts);
         clearTimeout(timer);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`API error ${response.status}: ${errorText}`);
+        }
+        if (response.status === 204) return true;
+        const text = await response.text();
+        try {
+          return text ? JSON.parse(text) : true;
+        } catch (_) {
+          return text;
+        }
+      } catch (err) {
+        clearTimeout(timer);
+        if (attempt < maxAttempts) {
+          // Brief pause before retry for transient mobile/DNS blips
+          await new Promise(res => setTimeout(res, 400));
+          continue;
+        }
+        console.warn('Supabase request notice (using local):', err.message);
         return null;
       }
-      options.signal.addEventListener('abort', () => controller.abort(), { once: true });
-    }
-
-    try {
-      const url = `${this.URL}/rest/v1/${endpoint}`;
-      const headers = { ...this.getHeaders(), ...(options.headers || {}) };
-      const fetchOpts = { ...options };
-      delete fetchOpts.timeoutMs;
-      fetchOpts.headers = headers;
-      fetchOpts.signal = controller.signal;
-
-      const response = await fetch(url, fetchOpts);
-      clearTimeout(timer);
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API error ${response.status}: ${errorText}`);
-      }
-      if (response.status === 204) return true;
-      const text = await response.text();
-      try {
-        return text ? JSON.parse(text) : true;
-      } catch (_) {
-        return text;
-      }
-    } catch (err) {
-      clearTimeout(timer);
-      console.warn('Supabase request notice (using local):', err.message);
-      return null;
     }
   },
 
@@ -335,18 +368,30 @@ window.SupabaseService = {
     if (cloud && Array.isArray(cloud)) {
       try {
         let local = [];
-        const raw = localStorage.getItem('nkem_local_products');
-        if (raw) local = JSON.parse(raw);
-        cloud.forEach(p => {
-          if (this.isProductHidden(p)) {
-            p.is_hidden = true;
-            p.hidden = true;
-          }
-          const idx = local.findIndex(x => x.id === p.id);
-          if (idx >= 0) local[idx] = { ...local[idx], ...p };
-          else local.push(p);
-        });
+        if ((!categoryId || categoryId === 'all') && offset === 0) {
+          // Authoritative replacement for top catalog page to purge stale products
+          local = cloud.map(p => {
+            if (this.isProductHidden(p)) {
+              p.is_hidden = true;
+              p.hidden = true;
+            }
+            return p;
+          });
+        } else {
+          const raw = localStorage.getItem('nkem_local_products');
+          if (raw) local = JSON.parse(raw);
+          cloud.forEach(p => {
+            if (this.isProductHidden(p)) {
+              p.is_hidden = true;
+              p.hidden = true;
+            }
+            const idx = local.findIndex(x => x.id === p.id);
+            if (idx >= 0) local[idx] = { ...local[idx], ...p };
+            else local.push(p);
+          });
+        }
         localStorage.setItem('nkem_local_products', JSON.stringify(local));
+        localStorage.setItem('kairoslab_catalog_timestamp', String(Date.now()));
       } catch (_) {}
       return includeHidden ? cloud : cloud.filter(p => !this.isProductHidden(p));
     }
@@ -1936,8 +1981,11 @@ window.SupabaseService = {
   }
 };
 
-// Clean slate initialization on startup
+// Clean slate initialization & Cache Invalidation on startup
 try {
+  if (window.SupabaseService && typeof window.SupabaseService.initCacheCheck === 'function') {
+    window.SupabaseService.initCacheCheck();
+  }
   if (window.SupabaseService && typeof window.SupabaseService.initCleanSlateOnce === 'function') {
     window.SupabaseService.initCleanSlateOnce();
   }

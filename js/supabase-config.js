@@ -2,7 +2,7 @@
 window.SupabaseService = {
   URL: 'https://ykwhhgajybhbmkqkmzhm.supabase.co',
   ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlrd2hoZ2FqeWJoYm1rcWttemhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MTI5NzksImV4cCI6MjEwNzk4ODk3OX0.d-qkmKCGE1bbMBNZb7ROnMXC1t1RcPweeXD4Hg0atBM',
-  CATALOG_VERSION: 'v2026_kairoslab_update_4',
+  CATALOG_VERSION: 'v2026_kairoslab_update_5',
   CACHE_TTL_MS: 12 * 60 * 60 * 1000, // 12-hour Cache TTL
 
   initCacheCheck() {

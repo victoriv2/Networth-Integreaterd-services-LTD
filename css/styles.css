@@ -264,11 +264,11 @@ body {
   flex-shrink: 0;
 }
 
-/* BRAND LOGO: True 2:1 Aspect Ratio with Transparent Background */
+/* BRAND LOGO: Clean Vector Scaling with Transparent Background */
 .brand-logo-img {
-  height: clamp(36px, 5.5vw, 46px);
+  height: clamp(42px, 6.5vw, 54px);
   width: auto;
-  aspect-ratio: 2 / 1;
+  aspect-ratio: auto;
   object-fit: contain;
   border-radius: var(--radius-sm);
   border: none;
@@ -2311,10 +2311,10 @@ body.admin-body .header-bar .header-container {
 }
 
 body.admin-body .header-bar .brand-logo-img {
-  height: 34px !important;
-  max-height: 34px !important;
+  height: 38px !important;
+  max-height: 38px !important;
   width: auto !important;
-  aspect-ratio: 2 / 1 !important;
+  aspect-ratio: auto !important;
 }
 
 body.admin-body .brand-title {
@@ -2606,11 +2606,11 @@ body.admin-body .c-modal-footer {
 
   /* Reduced Logo on Mobile */
   body.admin-body .header-bar .brand-logo-img {
-    height: 24px !important;
-    max-height: 24px !important;
+    height: 32px !important;
+    max-height: 32px !important;
     width: auto !important;
-    aspect-ratio: 2 / 1 !important;
-    max-width: 48px !important;
+    aspect-ratio: auto !important;
+    max-width: 44px !important;
     border: none !important;
     background: transparent !important;
     box-shadow: none !important;
@@ -2700,10 +2700,10 @@ body.admin-body .c-modal-footer {
 
   /* Further reduced logo for smartphones */
   body.admin-body .header-bar .brand-logo-img {
-    height: 22px !important;
-    max-height: 22px !important;
-    max-width: 44px !important;
-    aspect-ratio: 2 / 1 !important;
+    height: 30px !important;
+    max-height: 30px !important;
+    max-width: 40px !important;
+    aspect-ratio: auto !important;
     border: none !important;
     background: transparent !important;
     box-shadow: none !important;
@@ -2760,10 +2760,10 @@ body.admin-body .c-modal-footer {
   }
 
   body.admin-body .header-bar .brand-logo-img {
-    height: 19px !important;
-    max-height: 19px !important;
-    max-width: 38px !important;
-    aspect-ratio: 2 / 1 !important;
+    height: 28px !important;
+    max-height: 28px !important;
+    max-width: 36px !important;
+    aspect-ratio: auto !important;
     border: none !important;
     background: transparent !important;
     box-shadow: none !important;
@@ -4982,8 +4982,9 @@ body:not(.admin-body) .brand-title span {
     gap: 6px !important;
   }
   body:not(.admin-body) .brand-logo-img {
-    height: 28px !important;
-    max-width: 44px !important;
+    height: 38px !important;
+    max-width: 48px !important;
+    aspect-ratio: auto !important;
   }
   body:not(.admin-body) .brand-title {
     font-size: 0.92rem !important;

@@ -76,7 +76,7 @@ window.ReceiptGenerator = {
 
     ctx.fillStyle = '#5a6e62';
     ctx.font = '12px sans-serif';
-    ctx.fillText('Base: No. 5, Chief Owna St, Obeama, Oyigbo, Rivers State, Nigeria', 230, 134);
+    ctx.fillText('Base: No. 29, Nkemba St, Off Abak Road, Uyo, Akwa Ibom State, Nigeria', 230, 134);
 
     ctx.fillStyle = '#5a6e62';
     ctx.font = '12px sans-serif';

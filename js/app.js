@@ -2371,7 +2371,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           <div style="background: #f9fbf9; border: 1px solid #e2ece5; border-radius: 8px; padding: 10px 12px; font-size: 0.8rem;">
             <div style="color: #6b7280; font-size: 0.72rem; text-transform: uppercase; font-weight: 700;">Executive Leadership</div>
-            <strong style="color: #073b1f;">Raphael Nkemjika Julius</strong>
+            <strong style="color: #073b1f;">Daniel Inyene Anietie</strong>
             <div style="color: #4b5563; margin-top: 2px;">Managing Director</div>
           </div>
 
@@ -2383,8 +2383,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           <div style="background: #f9fbf9; border: 1px solid #e2ece5; border-radius: 8px; padding: 10px 12px; font-size: 0.8rem;">
             <div style="color: #6b7280; font-size: 0.72rem; text-transform: uppercase; font-weight: 700;">Operational Base</div>
-            <strong style="color: #073b1f;">Oyigbo, Rivers State</strong>
-            <div style="color: #4b5563; margin-top: 2px;">No. 5, Chief Owna St, Obeama</div>
+            <strong style="color: #073b1f;">Uyo, Akwa Ibom State</strong>
+            <div style="color: #4b5563; margin-top: 2px;">No. 29, Nkemba St, Off Abak Road</div>
           </div>
         </div>
 

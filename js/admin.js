@@ -2407,7 +2407,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function loadUsersManager() {
     try {
       const users = await window.SupabaseService.getUsers();
-      adminState.users = (users || []).filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@nkem.global' && u.whatsapp_number !== 'admin');
+      adminState.users = (users || []).filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@nkem.global' && u.email !== 'admin@kairoslab.sbs' && u.whatsapp_number !== 'admin');
       updateAdminUsersBadge();
       renderUsersManager(adminUserSearchInput ? adminUserSearchInput.value : '');
     } catch (err) {
@@ -2862,6 +2862,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const isMatchUser = (
         rawUser === 'admin' ||
+        rawUser === 'admin@kairoslab.sbs' ||
         rawUser === 'admin@nkem.global' ||
         rawUser === creds.username.toLowerCase() ||
         cleanPhone === '08142414888'

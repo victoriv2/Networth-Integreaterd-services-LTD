@@ -641,7 +641,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return `
         <div class="home-category-card" data-cat-name="${window.CustomModal.escape(c.name)}" role="button" tabindex="0">
           <div class="home-category-img-wrap">
-            <img class="home-category-img" src="${img}" alt="${window.CustomModal.escape(c.name)}" loading="lazy" />
+            <img class="home-category-img" src="${img}" alt="${window.CustomModal.escape(c.name)}" loading="lazy" onerror="this.onerror=null;this.src='assets/images/logo.png';" />
           </div>
           <span class="home-category-title">${window.CustomModal.escape(c.name)}</span>
         </div>
@@ -1143,7 +1143,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                    src="${img}" 
                    alt="${window.CustomModal.escape(prod.title)} View ${i + 1}" 
                    data-slide-idx="${i}" 
-                   loading="lazy" />
+                   loading="lazy"
+                   onerror="this.onerror=null;this.src='assets/images/logo.png';" />
             `).join('')}
 
             <span class="product-card-badge ${prod.in_stock ? 'in-stock' : 'out-of-stock'}">
@@ -1362,7 +1363,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="details-modal-content">
         <div class="details-gallery-wrap">
           <div class="details-main-img-box" id="detailsMainImgBox" title="Click to view full image">
-            <img class="details-main-img" id="detailsMainImg" src="${currentModalSelectedImage}" alt="${window.CustomModal.escape(prod.title)}" />
+            <img class="details-main-img" id="detailsMainImg" src="${currentModalSelectedImage}" alt="${window.CustomModal.escape(prod.title)}" onerror="this.onerror=null;this.src='assets/images/logo.png';" />
             <div class="details-img-zoom-hint">
               ${window.renderIcon('search')}
               <span>Tap for Full View</span>
@@ -1378,7 +1379,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div class="details-sub-images-track" id="detailsSubImagesTrack">
                 ${images.map((src, idx) => `
                   <div class="details-sub-thumb ${idx === 0 ? 'active' : ''}" data-src="${src}" role="button" tabindex="0" aria-label="Thumbnail ${idx + 1}">
-                    <img src="${src}" alt="Thumb ${idx + 1}" />
+                    <img src="${src}" alt="Thumb ${idx + 1}" onerror="this.onerror=null;this.src='assets/images/logo.png';" />
                   </div>
                 `).join('')}
               </div>
@@ -1572,7 +1573,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="cart-items-list" id="cartItemsList">
         ${cart.map(item => `
           <div class="cart-item-card" data-item-id="${item.id}">
-            <img src="${item.image || 'assets/images/logo.png'}" alt="${window.CustomModal.escape(item.title)}" class="cart-item-thumb" />
+            <img src="${item.image || 'assets/images/logo.png'}" alt="${window.CustomModal.escape(item.title)}" class="cart-item-thumb" onerror="this.onerror=null;this.src='assets/images/logo.png';" />
             <div class="cart-item-info">
               <h4 class="cart-item-title">${window.CustomModal.escape(item.title)}</h4>
               <div class="cart-item-unit-price">${window.formatNaira(item.price)} each</div>

@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return `
       <div class="admin-item-row" data-id="${c.id}" style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
         <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-          <img src="${cImg}" alt="${window.CustomModal.escape(c.name)}" style="width: 46px; height: 34px; object-fit: contain; border-radius: 4px; border: 1px solid var(--border-color); background: #fff; flex-shrink: 0;" />
+          <img src="${cImg}" alt="${window.CustomModal.escape(c.name)}" style="width: 46px; height: 34px; object-fit: contain; border-radius: 4px; border: 1px solid var(--border-color); background: #fff; flex-shrink: 0;" onerror="this.onerror=null;this.src='assets/images/logo.png';" />
           <div class="admin-item-details">
             <span class="admin-item-title">${window.CustomModal.escape(c.name)}</span>
             <span class="admin-item-sub">Order Position: #${idx + 1} &bull; ID: ${c.id}</span>
@@ -717,14 +717,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 5. Render product rows
     productListContainer.innerHTML = filtered.map((p, idx) => {
-      const coverImg = Array.isArray(p.images) && p.images[0] ? p.images[0] : 'assets/images/logo.jpeg';
+      const coverImg = Array.isArray(p.images) && p.images[0] ? p.images[0] : 'assets/images/logo.png';
       const imgCount = Array.isArray(p.images) ? p.images.length : 0;
       const cat = adminState.categories.find(c => c.id === p.category_id);
       const catName = cat ? cat.name : '';
 
       return `
         <div class="admin-item-row" data-id="${p.id}">
-          <img src="${coverImg}" class="admin-item-thumb" alt="Product" />
+          <img src="${coverImg}" class="admin-item-thumb" alt="Product" onerror="this.onerror=null;this.src='assets/images/logo.png';" />
           <div class="admin-item-details">
             <span class="admin-item-title">${window.CustomModal.escape(p.title)}</span>
             <span class="admin-item-sub">
@@ -1094,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     grid.innerHTML = adminState.productImagesDraft.map((src, idx) => `
       <div style="position: relative; flex: 0 0 86px; height: 86px; border: 1px solid ${idx === 0 ? '#087f3b' : 'var(--border-color)'}; border-radius: var(--radius-sm); overflow: hidden; background: #edf8f2;">
-        <img src="${src}" style="width: 100%; height: 100%; object-fit: cover;" alt="Image ${idx + 1}" />
+        <img src="${src}" style="width: 100%; height: 100%; object-fit: cover;" alt="Image ${idx + 1}" onerror="this.onerror=null;this.src='assets/images/logo.png';" />
         
         ${idx === 0 ? '<span style="position: absolute; bottom: 0; left: 0; right: 0; background: #087f3b; color: #ffffff; font-size: 8px; font-weight: 700; text-align: center; text-transform: uppercase; z-index: 2;">Cover</span>' : ''}
 
@@ -1432,7 +1432,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
 
           <div style="display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap;">
-            <img src="${coverImg}" class="admin-item-thumb" alt="Product" style="width: 76px; height: 76px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" />
+            <img src="${coverImg}" class="admin-item-thumb" alt="Product" style="width: 76px; height: 76px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" onerror="this.onerror=null;this.src='assets/images/logo.png';" />
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; font-size: var(--font-xs); flex: 1;">
               <div>
                 <span style="color: var(--text-muted);">Product:</span> 

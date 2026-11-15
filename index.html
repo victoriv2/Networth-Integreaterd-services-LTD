@@ -4,22 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, interactive-widget=resizes-content" />
   <title>Nkem Global - Everything Dey & Direct Orders</title>
-  <link rel="stylesheet" href="css/styles.css?v=20261114_1340" />
-  <script>
-    (function() {
-      try {
-        var valid = ['shop', 'home', 'requests', 'cart', 'account'];
-        var hash = (window.location.hash || '').replace('#', '').toLowerCase();
-        var saved = sessionStorage.getItem('nkem_current_tab');
-        var tab = valid.indexOf(hash) !== -1 ? hash : (valid.indexOf(saved) !== -1 ? saved : 'shop');
-        var viewId = 'view' + tab.charAt(0).toUpperCase() + tab.slice(1);
-        var st = document.createElement('style');
-        st.id = 'fastTabStyle';
-        st.textContent = '.app-view { display: none !important; } #' + viewId + ' { display: block !important; }';
-        document.head.appendChild(st);
-      } catch (e) {}
-    })();
-  </script>
+  <link rel="stylesheet" href="css/styles.css?v=20261115_1355" />
 </head>
 <body>
 
@@ -53,20 +38,6 @@
           <span class="desktop-nav-badge" id="deskChatBadge" style="display: none; background: #dc2626; color: #ffffff;">0</span>
         </button>
       </nav>
-  <script>
-    (function() {
-      try {
-        var valid = ['shop', 'home', 'requests', 'cart', 'account'];
-        var hash = (window.location.hash || '').replace('#', '').toLowerCase();
-        var saved = sessionStorage.getItem('nkem_current_tab');
-        var tab = valid.indexOf(hash) !== -1 ? hash : (valid.indexOf(saved) !== -1 ? saved : 'shop');
-        document.querySelectorAll('.bottom-nav-item, .desktop-nav-btn').forEach(function(btn) {
-          if (btn.getAttribute('data-tab') === tab) btn.classList.add('active');
-          else btn.classList.remove('active');
-        });
-      } catch (e) {}
-    })();
-  </script>
 
       <!-- Right Header Actions (Chat on WhatsApp Pill Button) -->
       <div class="header-actions">
@@ -367,6 +338,12 @@
         var hash = (window.location.hash || '').replace('#', '').toLowerCase();
         var saved = sessionStorage.getItem('nkem_current_tab');
         var tab = valid.indexOf(hash) !== -1 ? hash : (valid.indexOf(saved) !== -1 ? saved : 'shop');
+        var viewId = 'view' + tab.charAt(0).toUpperCase() + tab.slice(1);
+        var el = document.getElementById(viewId);
+        if (el) {
+          el.classList.add('active');
+          el.style.display = 'block';
+        }
         document.querySelectorAll('.bottom-nav-item, .desktop-nav-btn').forEach(function(btn) {
           if (btn.getAttribute('data-tab') === tab) btn.classList.add('active');
           else btn.classList.remove('active');
@@ -419,6 +396,6 @@
   <script src="js/supabase-config.js?v=20261114_2255"></script>
   <script src="js/receipt-generator.js?v=20261110_1200"></script>
   <script src="js/auth-modal.js?v=20261110_1200"></script>
-  <script src="js/app.js?v=20261114_2255"></script>
+  <script src="js/app.js?v=20261115_1355"></script>
 </body>
 </html>

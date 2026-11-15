@@ -69,7 +69,7 @@
           <div class="auth-form-row two-col">
             <div class="form-group">
               <label class="form-label" for="regWhatsapp">WhatsApp Number *</label>
-              <input type="tel" class="input-field" id="regWhatsapp" required placeholder="e.g. 08155608447" />
+              <input type="tel" class="input-field" id="regWhatsapp" required placeholder="e.g. 09031932413" />
             </div>
             <div class="form-group">
               <label class="form-label" for="regEmail">Email Address (Optional)</label>
@@ -308,7 +308,7 @@
         <form class="auth-modal-form" id="signInForm" novalidate>
           <div class="form-group">
             <label class="form-label" for="loginIdentifier">WhatsApp Number or Email *</label>
-            <input type="text" class="input-field" id="loginIdentifier" required placeholder="e.g. 08155608447 or your@email.com" />
+            <input type="text" class="input-field" id="loginIdentifier" required placeholder="e.g. 09031932413 or your@email.com" />
           </div>
 
           <div class="form-group">
@@ -434,7 +434,7 @@
 
           <div class="form-group" style="margin-top: 6px;">
             <label class="form-label" for="forgotIdentifier">Your Registered WhatsApp Number or Email (Optional)</label>
-            <input type="text" class="input-field" id="forgotIdentifier" placeholder="e.g. 08155608447 or your@email.com" />
+            <input type="text" class="input-field" id="forgotIdentifier" placeholder="e.g. 09031932413 or your@email.com" />
           </div>
 
           <div class="auth-action-row" style="margin-top: 10px;">
@@ -449,11 +449,11 @@
           <div style="text-align: center; margin-top: 10px; font-size: var(--font-xs); color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
             <div style="display: flex; align-items: center; gap: 6px;">
               <span style="color: #25D366; display: inline-flex; align-items: center; font-size: 14px; line-height: 1;">${window.renderIcon('whatsapp')}</span>
-              <span>WhatsApp: <strong style="color: var(--accent-gold);">+234 815 560 8447</strong></span>
+              <span>WhatsApp: <strong style="color: var(--accent-gold);">+234 903 193 2413</strong></span>
               <button type="button" id="copyAdminWaBtn" style="background: none; border: 1px solid var(--border-color); color: var(--text-main); font-size: 11px; padding: 2px 6px; border-radius: 3px; margin-left: 4px; cursor: pointer;">Copy</button>
             </div>
             <div style="font-size: 11px; color: var(--text-subtle);">
-              Major Line: <a href="tel:+2347042087633" style="color: var(--text-main); text-decoration: underline;">+234 704 208 7633</a>
+              Major Line: <a href="tel:+2349031932413" style="color: var(--text-main); text-decoration: underline;">+234 903 193 2413</a>
             </div>
           </div>
 
@@ -478,14 +478,14 @@
     });
 
     overlay.querySelector('#copyAdminWaBtn').addEventListener('click', () => {
-      navigator.clipboard.writeText('08155608447');
-      window.CustomModal.toast({ message: 'WhatsApp number (+234 815 560 8447) copied to clipboard.', type: 'info' });
+      navigator.clipboard.writeText('09031932413');
+      window.CustomModal.toast({ message: 'WhatsApp number (+234 903 193 2413) copied to clipboard.', type: 'info' });
     });
 
     overlay.querySelector('#waContactAdminBtn').addEventListener('click', () => {
       const idVal = overlay.querySelector('#forgotIdentifier').value.trim();
       const message = `Hello Admin, I have forgotten my Kairoslab account password. Please could you verify my identity and recover my login credentials for me?${idVal ? ' My registered details: ' + idVal : ''}`;
-      const url = `https://wa.me/2348155608447?text=${encodeURIComponent(message)}`;
+      const url = `https://wa.me/2349031932413?text=${encodeURIComponent(message)}`;
       window.open(url, '_blank');
     });
   }

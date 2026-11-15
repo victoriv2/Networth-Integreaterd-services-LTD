@@ -2,7 +2,7 @@
 window.SupabaseService = {
   URL: 'https://ykwhhgajybhbmkqkmzhm.supabase.co',
   ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlrd2hoZ2FqeWJoYm1rcWttemhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MTI5NzksImV4cCI6MjEwNzk4ODk3OX0.d-qkmKCGE1bbMBNZb7ROnMXC1t1RcPweeXD4Hg0atBM',
-  CATALOG_VERSION: 'v2026_kairoslab_update_5',
+  CATALOG_VERSION: 'v2026_kairoslab_update_7',
   CACHE_TTL_MS: 12 * 60 * 60 * 1000, // 12-hour Cache TTL
 
   initCacheCheck() {
@@ -202,58 +202,7 @@ window.SupabaseService = {
 
   // ---------------- PRODUCTS ----------------
   _getDefaultProducts() {
-    return [
-      {
-        id: 'prod-italian-suit-01',
-        title: 'Italian Bespoke Wool Tailored Suit',
-        description: 'These particular suits are authentic Italian bespoke cuts, crafted with premium high-twist wool blend fabric for exceptional drape, comfort, and structure. Designed with classic notch lapels, flap pockets, soft interior lining, and dual side vents. Meticulously finished for modern executives and high-profile occasions.',
-        price: 300000,
-        category_id: 'cat-clothes',
-        in_stock: true,
-        is_hidden: false,
-        images: [
-          'assets/products/WhatsApp_Image_2026-11-03_at_12.36.37_PM.jpeg',
-          'assets/products/WhatsApp_Image_2026-11-03_at_12.36.38_PM.jpeg',
-          'assets/products/WhatsApp_Image_2026-11-03_at_12.36.39_PM_1.jpeg',
-          'assets/products/WhatsApp_Image_2026-11-03_at_12.36.39_PM.jpeg',
-          'assets/products/WhatsApp_Image_2026-11-03_at_12.36.40_PM.jpeg',
-          'assets/products/WhatsApp_Image_2026-11-03_at_12.36.41_PM_1.jpeg',
-          'assets/products/WhatsApp_Image_2026-11-03_at_12.36.41_PM.jpeg',
-          'assets/products/WhatsApp_Image_2026-11-03_at_12.36.42_PM_1.jpeg',
-          'assets/products/WhatsApp_Image_2026-11-03_at_12.36.42_PM.jpeg'
-        ],
-        sort_order: 1,
-        created_at: new Date().toISOString()
-      },
-      {
-        id: 'prod-mercedes-gle-coupe-2019',
-        title: 'Mercedes-Benz GLE Coupe (AMG) 2019',
-        description: 'This is not just a car, this is a STATEMENT.\n\nColor: Stunning Matte Burgundy / Maroon (Wrapped)\nEngine: 3.0L V6 Bi-Turbo Petrol - 367HP\nDrive: 4MATIC All-Wheel Drive\nGearbox: 9-Speed Automatic\n\nFEATURES:\n- Panoramic Sunroof\n- AMG Diamond Grille & AMG Alloy Wheels\n- AMG Sports Leather Seats\n- Ambient Lighting\n- Burmester Sound System\n- Reverse Camera + Parking Sensors\n- Electric Memory Seats\n- Keyless Entry\n- Side Steps\n\nCONDITION: Tokunbo American spec\nPRICE: ₦69,000,000\nCALL / WHATSAPP: 09031932413\n\nSerious Buyers Only Please. First Come, First Served!',
-        price: 69000000,
-        category_id: 'cat-vehicles',
-        in_stock: true,
-        is_hidden: false,
-        images: [
-          'assets/products/mercedes-benz-gle-coupe-2019.jpg'
-        ],
-        sort_order: 2,
-        created_at: new Date().toISOString()
-      },
-      {
-        id: 'prod-royal-sceptre-black-gold-shirt',
-        title: 'Royal Sceptre Luxury Embroidered Black Designer Shirt',
-        description: "Royal Sceptre Luxury Men's Embroidered Senator & Formal Shirt\n\nElevate your formal and ceremonial wardrobe with this authentic Royal Sceptre luxury designer shirt. Meticulously tailored in jet-black premium fabric with intricate metallic gold and silver chain embroidery detailing down the front placket.\n\nProduct Details:\n• Brand: Royal Sceptre (Signature High-Class Collection)\n• Color: Classic Jet Black with Metallic Gold & Silver Accents\n• Detailing: Vertical pin-tuck pleats, geometric micro-dot collar & matching cuff/pocket square fold\n• Cut & Fit: Classic Tailored Fit (Tagged Size M)\n• Material: High-grade breathable cotton-poly blend with soft hand-feel and anti-wrinkle structure\n• Occasions: Weddings, Sunday service, high-profile corporate galas, and ceremonial events\n• Condition: Brand New with Original Tags & Seals\n\nPrice: ₦16,000 only\nNationwide Doorstep Delivery across Nigeria. Direct order on website or via WhatsApp.",
-        price: 16000,
-        category_id: 'cat-clothes',
-        in_stock: true,
-        is_hidden: false,
-        images: [
-          'assets/products/royal-sceptre-black-gold-shirt.jpg'
-        ],
-        sort_order: 3,
-        created_at: new Date().toISOString()
-      }
-    ];
+    return [];
   },
 
   isProductHidden(p) {
@@ -292,8 +241,6 @@ window.SupabaseService = {
       if (raw) {
         let parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const defaults = this._getDefaultProducts();
-          let needsUpdate = false;
           parsed = parsed.map(p => {
             if (this.isProductHidden(p)) {
               p.is_hidden = true;
@@ -301,25 +248,14 @@ window.SupabaseService = {
             }
             if (p.category_id === 'cat-suits') {
               p.category_id = 'cat-clothes';
-              needsUpdate = true;
-            }
-            const currentDesc = p.description || p.desc || p.details || p.product_description || '';
-            if (!currentDesc || typeof currentDesc !== 'string' || !currentDesc.trim()) {
-              const def = defaults.find(d => d.id === p.id) || defaults[0];
-              needsUpdate = true;
-              return { ...p, description: (def && def.description) ? def.description : 'These particular suits are authentic Italian bespoke cuts, crafted with premium high-twist wool blend fabric for exceptional drape, comfort, and structure. Designed with classic notch lapels, flap pockets, soft interior lining, and dual side vents. Meticulously finished for modern executives and high-profile occasions.' };
             }
             return p;
           });
-          if (needsUpdate) {
-            try { localStorage.setItem('nkem_local_products', JSON.stringify(parsed)); } catch (_) {}
-          }
           return includeHidden ? parsed : parsed.filter(p => !this.isProductHidden(p));
         }
       }
     } catch (e) {}
-    const defs = this._getDefaultProducts();
-    return includeHidden ? defs : defs.filter(p => !this.isProductHidden(p));
+    return [];
   },
 
   async getProducts(options = {}) {
@@ -347,18 +283,18 @@ window.SupabaseService = {
 
     const normalizedSort = String(sort || 'newest').toLowerCase().trim();
     if (normalizedSort === 'oldest') {
-      queryParts.push('order=created_at.asc');
+      queryParts.push('order=created_at.asc,sort_order.asc,id.asc');
     } else if (normalizedSort === 'price_low' || normalizedSort === 'price_asc' || normalizedSort === 'price-asc') {
-      queryParts.push('order=price.asc');
+      queryParts.push('order=price.asc,created_at.desc');
     } else if (normalizedSort === 'price_high' || normalizedSort === 'price_desc' || normalizedSort === 'price-desc') {
-      queryParts.push('order=price.desc');
+      queryParts.push('order=price.desc,created_at.desc');
     } else if (normalizedSort === 'name_asc' || normalizedSort === 'title_asc' || normalizedSort === 'title-asc') {
       queryParts.push('order=title.asc');
     } else if (normalizedSort === 'title_desc' || normalizedSort === 'title-desc') {
       queryParts.push('order=title.desc');
     } else {
-      // 'newest' (default) -> Strictly newest products first!
-      queryParts.push('order=created_at.desc');
+      // 'newest' (default) -> Strictly newest products first with deterministic sort_order and id fallback
+      queryParts.push('order=created_at.desc,sort_order.desc,id.desc');
     }
 
     if (limit !== null) {
@@ -407,27 +343,7 @@ window.SupabaseService = {
       if (raw) local = JSON.parse(raw);
 
       if (!local || local.length === 0) {
-        local = this._getDefaultProducts();
-        localStorage.setItem('nkem_local_products', JSON.stringify(local));
-      } else {
-        const defaults = this._getDefaultProducts();
-        let needsUpdate = false;
-        local = local.map(p => {
-          if (this.isProductHidden(p)) {
-            p.is_hidden = true;
-            p.hidden = true;
-          }
-          const currentDesc = p.description || p.desc || p.details || p.product_description || '';
-          if (!currentDesc || typeof currentDesc !== 'string' || !currentDesc.trim()) {
-            const def = defaults.find(d => d.id === p.id) || defaults[0];
-            needsUpdate = true;
-            return { ...p, description: (def && def.description) ? def.description : 'These particular suits are authentic Italian bespoke cuts, crafted with premium high-twist wool blend fabric for exceptional drape, comfort, and structure. Designed with classic notch lapels, flap pockets, soft interior lining, and dual side vents. Meticulously finished for modern executives and high-profile occasions.' };
-          }
-          return p;
-        });
-        if (needsUpdate) {
-          try { localStorage.setItem('nkem_local_products', JSON.stringify(local)); } catch (_) {}
-        }
+        return [];
       }
 
       let result = [...local];
@@ -456,7 +372,15 @@ window.SupabaseService = {
 
       const normSort = String(sort || 'newest').toLowerCase().trim();
       if (normSort === 'oldest') {
-        result.sort((a, b) => getTimestamp(a) - getTimestamp(b));
+        result.sort((a, b) => {
+          const tA = getTimestamp(a);
+          const tB = getTimestamp(b);
+          if (tA !== tB) return tA - tB;
+          const sA = (typeof a.sort_order === 'number') ? a.sort_order : 0;
+          const sB = (typeof b.sort_order === 'number') ? b.sort_order : 0;
+          if (sA !== sB) return sA - sB;
+          return String(a.id || '').localeCompare(String(b.id || ''));
+        });
       } else if (normSort === 'price_low' || normSort === 'price_asc' || normSort === 'price-asc') {
         result.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
       } else if (normSort === 'price_high' || normSort === 'price_desc' || normSort === 'price-desc') {
@@ -466,8 +390,16 @@ window.SupabaseService = {
       } else if (normSort === 'title_desc' || normSort === 'title-desc') {
         result.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
       } else {
-        // 'newest' (default) -> Strictly newest products first!
-        result.sort((a, b) => getTimestamp(b) - getTimestamp(a));
+        // 'newest' (default) -> Strictly newest products first with deterministic sort_order and id fallback
+        result.sort((a, b) => {
+          const tA = getTimestamp(a);
+          const tB = getTimestamp(b);
+          if (tB !== tA) return tB - tA;
+          const sA = (typeof a.sort_order === 'number') ? a.sort_order : 0;
+          const sB = (typeof b.sort_order === 'number') ? b.sort_order : 0;
+          if (sB !== sA) return sB - sA;
+          return String(b.id || '').localeCompare(String(a.id || ''));
+        });
       }
 
       if (limit !== null) {

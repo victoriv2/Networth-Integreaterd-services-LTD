@@ -380,32 +380,49 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* ==========================================================================
      3. INITIAL DATA FETCHING (Supabase with Local Preload)
      ========================================================================== */
+  function renderProductGridSkeleton() {
+    if (!productGrid) return;
+    productGrid.innerHTML = `
+      <div style="grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; width: 100%;">
+        ${Array.from({ length: 8 }).map(() => `
+          <div style="background: #ffffff; border-radius: 12px; border: 1.5px solid #d0e4f7; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+            <div style="width: 100%; aspect-ratio: 1/1; background: #eef5fb; border-radius: 8px;"></div>
+            <div style="height: 14px; width: 80%; background: #eef5fb; border-radius: 4px;"></div>
+            <div style="height: 16px; width: 50%; background: #eef5fb; border-radius: 4px;"></div>
+            <div style="height: 34px; width: 100%; background: #eef5fb; border-radius: 6px; margin-top: auto;"></div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
   async function loadInitialData() {
-    // 0ms INSTANT RENDER FROM LOCAL CACHE
+    // 0ms INSTANT RENDER FROM LOCAL CACHE (if valid) OR CLEAN LOADING SKELETON
     try {
       const cachedCategories = window.SupabaseService.getLocalCategories ? window.SupabaseService.getLocalCategories() : [];
       const cachedProducts = window.SupabaseService.getLocalProducts ? window.SupabaseService.getLocalProducts(false) : [];
 
       if (cachedCategories.length > 0) state.categories = cachedCategories;
-      const suitFallbackDesc = 'These particular suits are authentic Italian bespoke cuts, crafted with premium high-twist wool blend fabric for exceptional drape, comfort, and structure. Designed with classic notch lapels, flap pockets, soft interior lining, and dual side vents. Meticulously finished for modern executives and high-profile occasions.';
-      state.products = (cachedProducts || []).filter(p => !window.SupabaseService?.isProductHidden?.(p)).map(p => {
-        const raw = p.description || p.desc || p.details || p.product_description || '';
-        if (!raw || typeof raw !== 'string' || !raw.trim()) {
-          return { ...p, description: suitFallbackDesc };
-        }
-        return p;
-      });
-
       renderHomeCategories();
       renderShopCategoryPills();
       initToolbars();
       initSeeMore();
-      applyFiltersAndSort();
+
+      if (cachedProducts && cachedProducts.length > 0) {
+        state.products = cachedProducts
+          .filter(p => !window.SupabaseService?.isProductHidden?.(p))
+          .sort(compareProductsNewest);
+        applyFiltersAndSort();
+      } else {
+        renderProductGridSkeleton();
+      }
+
       updateCartBadges();
       checkUnreadMessages();
       syncCartWithCloud();
     } catch (e) {
       console.warn('Preload notice:', e);
+      renderProductGridSkeleton();
     }
 
     // Fresh fetch from Supabase
@@ -423,15 +440,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (categories && categories.length > 0) state.categories = categories;
 
-      const suitFallbackDesc = 'These particular suits are authentic Italian bespoke cuts, crafted with premium high-twist wool blend fabric for exceptional drape, comfort, and structure. Designed with classic notch lapels, flap pockets, soft interior lining, and dual side vents. Meticulously finished for modern executives and high-profile occasions.';
-      if (Array.isArray(products)) {
-        state.products = products.filter(p => !window.SupabaseService?.isProductHidden?.(p)).map(p => {
-          const raw = p.description || p.desc || p.details || p.product_description || '';
-          if (!raw || typeof raw !== 'string' || !raw.trim()) {
-            return { ...p, description: suitFallbackDesc };
-          }
-          return p;
-        });
+      if (Array.isArray(products) && products.length > 0) {
+        state.products = products
+          .filter(p => !window.SupabaseService?.isProductHidden?.(p))
+          .sort(compareProductsNewest);
       }
       state.hasMoreProducts = Array.isArray(products) && products.length === state.pageSize;
 
@@ -914,6 +926,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     return 0;
   }
 
+  function compareProductsNewest(a, b) {
+    const tA = getProductTimestamp(a);
+    const tB = getProductTimestamp(b);
+    if (tB !== tA) return tB - tA;
+
+    const sA = (typeof a.sort_order === 'number') ? a.sort_order : 0;
+    const sB = (typeof b.sort_order === 'number') ? b.sort_order : 0;
+    if (sB !== sA) return sB - sA;
+
+    return String(b.id || '').localeCompare(String(a.id || ''));
+  }
+
+  function compareProductsOldest(a, b) {
+    const tA = getProductTimestamp(a);
+    const tB = getProductTimestamp(b);
+    if (tA !== tB) return tA - tB;
+
+    const sA = (typeof a.sort_order === 'number') ? a.sort_order : 0;
+    const sB = (typeof b.sort_order === 'number') ? b.sort_order : 0;
+    if (sA !== sB) return sA - sB;
+
+    return String(a.id || '').localeCompare(String(b.id || ''));
+  }
+
   async function reloadProductsForSort() {
     if (productGrid) {
       productGrid.innerHTML = `
@@ -1071,12 +1107,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else if (sortChoice === 'price_desc' || sortChoice === 'price-desc') {
       prods.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
     } else if (sortChoice === 'oldest') {
-      prods.sort((a, b) => getProductTimestamp(a) - getProductTimestamp(b));
+      prods.sort(compareProductsOldest);
     } else if (sortChoice === 'name_asc' || sortChoice === 'title_asc' || sortChoice === 'title-asc') {
       prods.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
     } else {
       // Default: 'newest' -> Strictly newest arrivals first!
-      prods.sort((a, b) => getProductTimestamp(b) - getProductTimestamp(a));
+      prods.sort(compareProductsNewest);
     }
 
     state.filteredProducts = prods;

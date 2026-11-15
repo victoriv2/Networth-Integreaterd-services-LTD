@@ -89,6 +89,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     return 0;
   }
 
+  function compareProductsNewest(a, b) {
+    const tA = getProductTimestamp(a);
+    const tB = getProductTimestamp(b);
+    if (tB !== tA) return tB - tA;
+
+    const sA = (typeof a.sort_order === 'number') ? a.sort_order : 0;
+    const sB = (typeof b.sort_order === 'number') ? b.sort_order : 0;
+    if (sB !== sA) return sB - sA;
+
+    return String(b.id || '').localeCompare(String(a.id || ''));
+  }
+
+  function compareProductsOldest(a, b) {
+    const tA = getProductTimestamp(a);
+    const tB = getProductTimestamp(b);
+    if (tA !== tB) return tA - tB;
+
+    const sA = (typeof a.sort_order === 'number') ? a.sort_order : 0;
+    const sB = (typeof b.sort_order === 'number') ? b.sort_order : 0;
+    if (sA !== sB) return sA - sB;
+
+    return String(a.id || '').localeCompare(String(b.id || ''));
+  }
+
   /* ==========================================================================
      1. INITIAL DATA LOADING
      ========================================================================== */
@@ -102,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       ]);
 
       adminState.categories = categories || [];
-      adminState.products = products || [];
+      adminState.products = Array.isArray(products) ? products.sort(compareProductsNewest) : [];
       adminState.orders = orders || [];
       adminState.users = users || [];
       adminState.hasMoreProducts = Array.isArray(products) && products.length === adminState.productPageSize;
@@ -672,10 +696,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         return aHidden ? 1 : -1;
       }
       if (sortBy === 'oldest') {
-        return getProductTimestamp(a) - getProductTimestamp(b);
+        return compareProductsOldest(a, b);
       }
       // 'newest' (default) -> Strictly newest arrivals first!
-      return getProductTimestamp(b) - getProductTimestamp(a);
+      return compareProductsNewest(a, b);
     });
 
     // 3. Update count badge

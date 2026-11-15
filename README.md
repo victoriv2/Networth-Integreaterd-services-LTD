@@ -1,4 +1,4 @@
-# NKEM GLOBAL SUPERCENTER
+# KAIROSLAB (kairoslab.sbs)
 
 A luxury multi-category e-commerce and retail platform featuring real-time Supabase cloud synchronization, interactive customer live chat, admin dashboard with product and order management, dynamic receipts, and high-performance search and filtering.
 

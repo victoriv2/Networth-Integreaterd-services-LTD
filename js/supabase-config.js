@@ -500,7 +500,7 @@ window.SupabaseService = {
       {
         id: 'banner-1',
         image_url: 'assets/images/logo.jpeg',
-        caption: 'Welcome to Nkem Global — Quality Products & Express Nationwide Delivery',
+        caption: 'Welcome to Kairoslab — Quality Products & Express Nationwide Delivery',
         sort_order: 1
       },
       {
@@ -525,7 +525,7 @@ window.SupabaseService = {
       {
         id: 'banner-1',
         image_url: 'assets/images/logo.jpeg',
-        caption: 'Welcome to Nkem Global — Quality Products & Express Nationwide Delivery',
+        caption: 'Welcome to Kairoslab — Quality Products & Express Nationwide Delivery',
         sort_order: 1
       },
       {

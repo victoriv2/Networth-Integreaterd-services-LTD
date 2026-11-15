@@ -1,4 +1,4 @@
-// Admin Control Center - Nkem Global
+// Admin Control Center - Kairoslab
 // Enforces Zero Emojis, Zero Shadows/Glows/Gradients, Zero Hover Lifts, Custom Pickers & Modals, <=100KB Image Compression
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -1029,7 +1029,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
       } else {
         window.CustomModal.toast({
-          message: `✅ Product ${isNew ? 'created and published' : 'updated'} live on nkemmarket.com!`,
+          message: `✅ Product ${isNew ? 'created and published' : 'updated'} live on kairoslab.sbs!`,
           type: 'success',
           duration: 5000
         });
@@ -1544,7 +1544,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         pending: 'under review',
         approved: 'APPROVED! Let\'s arrange delivery details and confirm dispatch.',
         shipping: 'IN TRANSIT / SHIPPING. Your order is on the way!',
-        delivered: 'DELIVERED. Thank you for choosing Nkem Global!',
+        delivered: 'DELIVERED. Thank you for choosing Kairoslab!',
         declined: 'DECLINED by store admin.',
         cancelled: 'CANCELLED.'
       };
@@ -1555,7 +1555,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           id: `msg-status-${orderId}-${Date.now()}`,
           order_code: orderId,
           user_id: ord.user_id,
-          user_name: 'Nkem Global Support',
+          user_name: 'Kairoslab Support',
           user_whatsapp: '07042087633',
           sender: 'admin',
           message: `Order #${orderId.toUpperCase()} status update: Your order request for "${ord.product_title}" is now ${statusLabels[newStatus] || newStatus}`,
@@ -1692,7 +1692,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (customer) {
         chatInput.placeholder = `Type message to ${customer.userName}...`;
       } else {
-        chatInput.placeholder = 'Type message as Nkem Global Support...';
+        chatInput.placeholder = 'Type message as Kairoslab Support...';
       }
       setTimeout(() => chatInput.focus(), 150);
     }
@@ -1932,7 +1932,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="chat-msg-row ${isOutgoing ? 'outgoing' : 'incoming'}" data-msg-id="${msg.id}">
           <div class="chat-bubble">
             <div style="font-size: 0.68rem; font-weight: 700; color: ${isOutgoing ? '#ffffff' : '#073b1f'}; margin-bottom: 2px;">
-              ${isOutgoing ? 'Nkem Global Support (You)' : (adminState.activeChatCustomer ? window.CustomModal.escape(adminState.activeChatCustomer.userName) : 'Customer')}
+              ${isOutgoing ? 'Kairoslab Support (You)' : (adminState.activeChatCustomer ? window.CustomModal.escape(adminState.activeChatCustomer.userName) : 'Customer')}
             </div>
             ${msg.message ? `<div class="chat-text-content">${window.CustomModal.escape(msg.message)}</div>` : ''}
             ${msg.image_url ? `

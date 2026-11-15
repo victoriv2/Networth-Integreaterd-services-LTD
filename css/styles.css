@@ -1,5 +1,5 @@
 /* ==========================================================================
-   NKEM GLOBAL - CORE DESIGN SYSTEM
+   KAIROSLAB - CORE DESIGN SYSTEM
    STRICT RULES:
    1. Zero Emojis (SVG icons only)
    2. Zero Shadows (box-shadow: none !important, text-shadow: none !important)
@@ -3438,7 +3438,7 @@ body.chat-body {
   touch-action: pan-y !important;
 }
 
-/* 1. Original Top Header Bar (Emerald Green with NKEM GLOBAL Logo & Store Button) */
+/* 1. Original Top Header Bar (Emerald Green with KAIROSLAB Logo & Store Button) */
 body.chat-body .header-bar {
   position: fixed !important;
   top: 0 !important;
@@ -4861,7 +4861,7 @@ input::-webkit-credentials-auto-fill-button {
 }
 
 /* ==========================================================================
-   NEW NKEM GLOBAL UI - EMERALD & MINT MOCKUP DESIGN SYSTEM
+   NEW KAIROSLAB UI - EMERALD & MINT MOCKUP DESIGN SYSTEM
    ========================================================================== */
 
 /* ---------------- 1. STOREFRONT HEADER BAR (DARK EMERALD GREEN) ---------------- */

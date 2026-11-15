@@ -40,7 +40,7 @@ window.ReceiptGenerator = {
       ctx.fillRect(46, 59, 160, 80);
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 24px sans-serif';
-      ctx.fillText('NKEM GLOBAL', 52, 108);
+      ctx.fillText('KAIROSLAB', 52, 108);
     }
 
     // Shop Title & Subtitle
@@ -64,7 +64,7 @@ window.ReceiptGenerator = {
 
     ctx.fillStyle = '#073b1f';
     ctx.font = 'bold 30px sans-serif';
-    ctx.fillText('NKEM MARKET', 230, 68);
+    ctx.fillText('KAIROSLAB', 230, 68);
 
     ctx.fillStyle = '#087f3b';
     ctx.font = 'bold 14px sans-serif';
@@ -136,12 +136,12 @@ window.ReceiptGenerator = {
     ctx.fillStyle = '#7d9285';
     ctx.font = '12px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('(C) 2026 NKEM MARKET (nkemmarket.com) - Excellence - Integrity - Results - CAC Registered', w / 2, 735);
+    ctx.fillText('(C) 2026 KAIROSLAB (kairoslab.sbs) - Excellence - Integrity - Results - CAC Registered', w / 2, 735);
 
     // Trigger download
     const dataUrl = canvas.toDataURL('image/png');
     const link = document.createElement('a');
-    link.download = `nkem-global-order-${order.id || Date.now()}.png`;
+    link.download = `kairoslab-order-${order.id || Date.now()}.png`;
     link.href = dataUrl;
     link.click();
   },

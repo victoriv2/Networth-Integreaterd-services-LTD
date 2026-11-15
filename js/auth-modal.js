@@ -1,4 +1,4 @@
-// Auth Modal Controller for Nkem Global (Sign Up & Login)
+// Auth Modal Controller for Kairoslab (Sign Up & Login)
 // Strict Zero Native <select>, Zero Emojis, Zero Shadows/Glows/Gradients
 
 (function() {
@@ -47,7 +47,7 @@
         <div class="c-modal-header">
           <div>
             <h3 class="c-modal-title">Create Account</h3>
-            <span style="font-size: var(--font-xs); color: var(--text-muted);">Join Nkem Global for Direct Orders & Live Chat</span>
+            <span style="font-size: var(--font-xs); color: var(--text-muted);">Join Kairoslab for Direct Orders & Live Chat</span>
           </div>
           <button class="c-modal-close-btn" type="button" id="authCloseBtn" aria-label="Close">
             ${window.renderIcon('close')}
@@ -298,7 +298,7 @@
         <div class="c-modal-header">
           <div>
             <h3 class="c-modal-title">Sign In</h3>
-            <span style="font-size: var(--font-xs); color: var(--text-muted);">Access Nkem Global Direct Support & Orders</span>
+            <span style="font-size: var(--font-xs); color: var(--text-muted);">Access Kairoslab Direct Support & Orders</span>
           </div>
           <button class="c-modal-close-btn" type="button" id="authCloseBtn" aria-label="Close">
             ${window.renderIcon('close')}
@@ -417,7 +417,7 @@
         <div class="c-modal-header">
           <div>
             <h3 class="c-modal-title">Password Recovery</h3>
-            <span style="font-size: var(--font-xs); color: var(--text-muted);">Direct Verification by Nkem Global Admin</span>
+            <span style="font-size: var(--font-xs); color: var(--text-muted);">Direct Verification by Kairoslab Admin</span>
           </div>
           <button class="c-modal-close-btn" type="button" id="authCloseBtn" aria-label="Close">
             ${window.renderIcon('close')}
@@ -484,7 +484,7 @@
 
     overlay.querySelector('#waContactAdminBtn').addEventListener('click', () => {
       const idVal = overlay.querySelector('#forgotIdentifier').value.trim();
-      const message = `Hello Admin, I have forgotten my Nkem Global account password. Please could you verify my identity and recover my login credentials for me?${idVal ? ' My registered details: ' + idVal : ''}`;
+      const message = `Hello Admin, I have forgotten my Kairoslab account password. Please could you verify my identity and recover my login credentials for me?${idVal ? ' My registered details: ' + idVal : ''}`;
       const url = `https://wa.me/2348155608447?text=${encodeURIComponent(message)}`;
       window.open(url, '_blank');
     });

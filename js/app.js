@@ -1,4 +1,4 @@
-﻿// Public Storefront Engine - Nkem Global
+﻿// Public Storefront Engine - Kairoslab
 // Complete 5-Tab Architecture: Home ("Everything Dey" & 3-Col Categories), Shop (Catalog & Add to Cart),
 // Requests (Tracking Orders & Sourcing Inquiries), Cart (Quantity Steppers, State/LGA Pickers, Checkout), Account (Profile, Live Chat, WhatsApp)
 
@@ -498,7 +498,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
         </div>
 
-        <a href="https://wa.me/2348155608447?text=${encodeURIComponent(`Hello Nkem Market, I am requesting: ${itemQuery}. Please send me 2 best options with pictures within 30 minutes!`)}" target="_blank" rel="noopener" class="btn btn-secondary" style="width: 100%; justify-content: center; padding: 11px; font-weight: 700; color: #166534; border-color: #25D366; text-decoration: none;">
+        <a href="https://wa.me/2348155608447?text=${encodeURIComponent(`Hello Kairoslab, I am requesting: ${itemQuery}. Please send me 2 best options with pictures within 30 minutes!`)}" target="_blank" rel="noopener" class="btn btn-secondary" style="width: 100%; justify-content: center; padding: 11px; font-weight: 700; color: #166534; border-color: #25D366; text-decoration: none;">
           ${window.renderIcon('whatsapp')}
           <span>Send Directly on WhatsApp (+234 815 560 8447)</span>
         </a>
@@ -522,7 +522,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <span>Submit Sourcing Request</span>
             </button>
 
-            <a href="https://wa.me/2348155608447?text=${encodeURIComponent(`Hello Nkem Market, I am requesting: ${itemQuery}. Please send me 2 best options with pictures within 30 minutes!`)}" target="_blank" rel="noopener" class="btn btn-secondary" style="width: 100%; justify-content: center; padding: 11px; font-weight: 700; color: #166534; border-color: #25D366; text-decoration: none;">
+            <a href="https://wa.me/2348155608447?text=${encodeURIComponent(`Hello Kairoslab, I am requesting: ${itemQuery}. Please send me 2 best options with pictures within 30 minutes!`)}" target="_blank" rel="noopener" class="btn btn-secondary" style="width: 100%; justify-content: center; padding: 11px; font-weight: 700; color: #166534; border-color: #25D366; text-decoration: none;">
               ${window.renderIcon('whatsapp')}
               <span>Send Directly on WhatsApp (+234 815 560 8447)</span>
             </a>
@@ -1013,7 +1013,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ? rawDesc.trim()
         : ((prod.title && /suit/i.test(prod.title))
             ? suitFallbackDesc
-            : 'Authentic premium quality product curated and verified by Nkem Global Supercenter.');
+            : 'Authentic premium quality product curated and verified by Kairoslab.');
 
       return `
         <article class="product-card" data-prod-id="${prod.id}" tabindex="0">
@@ -1052,7 +1052,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ${window.renderIcon('cart')}
                 <span>Add to Cart</span>
               </button>
-              <a href="https://wa.me/2348155608447?text=${encodeURIComponent(`Hello Nkem Market, I would like to order: ${prod.title} (${window.formatNaira(prod.price)}). Is this available?`)}" target="_blank" rel="noopener" class="btn btn-whatsapp-order" title="Order on WhatsApp" onclick="event.stopPropagation();">
+              <a href="https://wa.me/2348155608447?text=${encodeURIComponent(`Hello Kairoslab, I would like to order: ${prod.title} (${window.formatNaira(prod.price)}). Is this available?`)}" target="_blank" rel="noopener" class="btn btn-whatsapp-order" title="Order on WhatsApp" onclick="event.stopPropagation();">
                 ${window.renderIcon('whatsapp')}
                 <span>Order on WhatsApp</span>
               </a>
@@ -1210,7 +1210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           id: cartItem.id || prodId,
           title: cartItem.title,
           price: cartItem.price,
-          description: cartItem.description || 'Authentic quality product available for nationwide delivery from Nkem Global.',
+          description: cartItem.description || 'Authentic quality product available for nationwide delivery from Kairoslab.',
           images: cartItem.images || (cartItem.image ? [cartItem.image] : ['assets/images/logo.png']),
           category: cartItem.category || 'General',
           in_stock: true
@@ -1289,7 +1289,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <span>Add to Cart - ${window.formatNaira(prod.price)}</span>
         </button>
 
-        <a href="https://wa.me/2348155608447?text=${encodeURIComponent(`Hello Nkem Market, I would like to order: ${prod.title} (${window.formatNaira(prod.price)}). Is this available?`)}" target="_blank" rel="noopener" class="btn btn-secondary details-whatsapp-btn">
+        <a href="https://wa.me/2348155608447?text=${encodeURIComponent(`Hello Kairoslab, I would like to order: ${prod.title} (${window.formatNaira(prod.price)}). Is this available?`)}" target="_blank" rel="noopener" class="btn btn-secondary details-whatsapp-btn">
           <span style="color: #25D366; display: inline-flex; align-items: center; font-size: 16px; line-height: 1;">${window.renderIcon('whatsapp')}</span>
           <span>Order on WhatsApp</span>
         </a>
@@ -1626,7 +1626,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         customerDetailsText = `\n\n*Customer Information:*\n- Guest Order (I will provide delivery address via this chat)`;
       }
 
-      const orderMessage = `Hello Nkem Market, I would like to order the following items from my cart:\n\n${itemLines.join('\n')}\n\n*Total Items:* ${totalQty}\n*Grand Total:* *${window.formatNaira(grandTotal)}*${customerDetailsText}\n\nPlease confirm availability and payment details. Thank you!`;
+      const orderMessage = `Hello Kairoslab, I would like to order the following items from my cart:\n\n${itemLines.join('\n')}\n\n*Total Items:* ${totalQty}\n*Grand Total:* *${window.formatNaira(grandTotal)}*${customerDetailsText}\n\nPlease confirm availability and payment details. Thank you!`;
 
       const whatsappUrl = `https://wa.me/2348155608447?text=${encodeURIComponent(orderMessage)}`;
       window.open(whatsappUrl, '_blank');
@@ -2015,7 +2015,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   <span>Download Receipt</span>
                 </button>
               ` : ''}
-              <a href="https://wa.me/2348155608447?text=${encodeURIComponent(`Hello Nkem Market, I am inquiring about my request (${code}): ${productTitle}`)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.78rem; color: #166534; border-color: #25D366; text-decoration: none;">
+              <a href="https://wa.me/2348155608447?text=${encodeURIComponent(`Hello Kairoslab, I am inquiring about my request (${code}): ${productTitle}`)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.78rem; color: #166534; border-color: #25D366; text-decoration: none;">
                 ${window.renderIcon('whatsapp')}
                 <span>WhatsApp Support</span>
               </a>
@@ -2080,7 +2080,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const activeUser = getActiveUser();
     const isLoggedIn = !!(activeUser && (activeUser.id || activeUser.whatsapp_number));
-    const fullName = isLoggedIn ? [activeUser.first_name, activeUser.last_name].filter(Boolean).join(' ') || activeUser.name || 'Valued Customer' : 'Welcome to Nkem Global';
+    const fullName = isLoggedIn ? [activeUser.first_name, activeUser.last_name].filter(Boolean).join(' ') || activeUser.name || 'Valued Customer' : 'Welcome to Kairoslab';
     const avatarInitial = isLoggedIn ? (activeUser.first_name ? activeUser.first_name.charAt(0).toUpperCase() : (activeUser.name ? activeUser.name.charAt(0).toUpperCase() : 'U')) : '';
     const phone = isLoggedIn ? (activeUser.whatsapp_number || activeUser.phone || '') : '';
     const email = isLoggedIn ? (activeUser.email || '') : '';
@@ -2197,7 +2197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </span>
         </a>
 
-        <a href="https://wa.me/2347042087633?text=Hello%20Nkem%20Global%2C%20I%20am%20inquiring%20about%20my%20account" target="_blank" rel="noopener" class="account-support-btn">
+        <a href="https://wa.me/2347042087633?text=Hello%20Kairoslab%2C%20I%20am%20inquiring%20about%20my%20account" target="_blank" rel="noopener" class="account-support-btn">
           <div class="support-left">
             <span style="color: #25D366;">${window.renderIcon('whatsapp')}</span>
             <span>WhatsApp Business Desk (+234 704 208 7633)</span>
@@ -2233,7 +2233,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         <p style="font-size: 0.82rem; color: #4b5563; line-height: 1.5; margin-bottom: 12px;">
-          <strong>NKEM MARKET (nkemmarket.com)</strong> is an indigenous Nigerian enterprise fully registered under the Corporate Affairs Commission (CAC).
+          <strong>KAIROSLAB (kairoslab.sbs)</strong> is an indigenous Nigerian enterprise fully registered under the Corporate Affairs Commission (CAC).
         </p>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-bottom: 14px;">
@@ -2263,11 +2263,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         <div class="account-corp-actions">
-          <a href="https://nkemmarket.com" target="_blank" rel="noopener" class="btn btn-secondary btn-sm account-corp-btn">
+          <a href="https://kairoslab.sbs" target="_blank" rel="noopener" class="btn btn-secondary btn-sm account-corp-btn">
             <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px; flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             <span>Visit Corporate Website</span>
           </a>
-          <a href="https://wa.me/2347042087633?text=Hello%20Nkem%20Global%2C%20I%20would%20like%20to%20submit%20a%20formal%20corporate%20RFQ%20%2F%20Inquiry" target="_blank" rel="noopener" class="btn btn-secondary btn-sm account-corp-btn">
+          <a href="https://wa.me/2347042087633?text=Hello%20Kairoslab%2C%20I%20would%20like%20to%20submit%20a%20formal%20corporate%20RFQ%20%2F%20Inquiry" target="_blank" rel="noopener" class="btn btn-secondary btn-sm account-corp-btn">
             <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px; flex-shrink: 0;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             <span>Send Formal RFQ / Inquiry</span>
           </a>
@@ -2315,7 +2315,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     container.querySelector('#accountLogoutBtn')?.addEventListener('click', () => {
       window.CustomModal.confirm({
         title: 'Confirm Logout',
-        message: 'Are you sure you want to log out of your Nkem Global account?',
+        message: 'Are you sure you want to log out of your Kairoslab account?',
         confirmText: 'Log Out',
         onConfirm: () => {
           window.SupabaseService.logoutUser();
@@ -2385,7 +2385,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
 
           <p style="font-size: 0.78rem; color: #5a6e62; margin: 0; flex-shrink: 0; line-height: 1.4;">
-            Official receipts carry Nkem Global brand details, shop contact info, and retrieval codes for instant tracking.
+            Official receipts carry Kairoslab brand details, shop contact info, and retrieval codes for instant tracking.
           </p>
 
           <div style="padding-top: 10px; border-top: 1px solid #d1ead9; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">

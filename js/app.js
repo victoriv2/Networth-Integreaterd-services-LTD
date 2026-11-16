@@ -1,5 +1,5 @@
 // Public Storefront Engine - Kairoslab
-// Complete 5-Tab Architecture: Home ("Everything Dey" & 3-Col Categories), Shop (Catalog & Add to Cart),
+// Complete 5-Tab Architecture: Home (Categories & Brand Intro), Shop (Catalog & Add to Cart),
 // Requests (Tracking Orders & Sourcing Inquiries), Cart (Quantity Steppers, State/LGA Pickers, Checkout), Account (Profile, Live Chat, WhatsApp)
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -68,7 +68,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Modals
   const detailsModalOverlay = document.getElementById('productDetailsModal');
   const fullViewLightbox = document.getElementById('fullViewLightbox');
-  const customRequestModal = document.getElementById('customRequestModal');
   const orderSuccessModal = document.getElementById('orderSuccessModal');
 
   /* ==========================================================================
@@ -461,180 +460,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   /* ==========================================================================
-     4. HOME VIEW: "EVERYTHING DEY" SOURCING REQUEST & 3-COL CATEGORIES
+     4. HOME VIEW: 3-COL CATEGORIES & STORE SECTIONS
      ========================================================================== */
-  function initHeroRequestForm() {
-    const form = document.getElementById('heroRequestForm');
-    const input = document.getElementById('heroRequestInput');
-    if (!form || !input) return;
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const query = input.value.trim();
-      if (!query) {
-        window.CustomModal.toast({ message: 'Please type what you are looking for.', type: 'info' });
-        input.focus();
-        return;
-      }
-      openCustomSourcingRequestModal(query);
-    });
-  }
-
-  function openCustomSourcingRequestModal(itemQuery) {
-    if (!customRequestModal) return;
-    const body = document.getElementById('customRequestModalBody');
-    if (!body) return;
-
-    const activeUser = getActiveUser() || {};
-    const isLoggedIn = !!(activeUser && (activeUser.id || activeUser.whatsapp_number));
-
-    body.innerHTML = `
-      <div style="background: #e0f0fd; padding: 14px 16px; border-radius: 10px; border: 1.5px solid #d0e4f7; margin-bottom: 16px;">
-        <div style="font-size: 0.74rem; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.04em;">You Are Requesting:</div>
-        <div style="font-size: 1.15rem; font-weight: 900; color: #0a2540; margin-top: 3px;">${window.CustomModal.escape(itemQuery)}</div>
-        <div style="font-size: 0.78rem; color: #5a6e62; margin-top: 4px;">Our procurement team will send you 2 best options with photos within 30 minutes!</div>
-      </div>
-
-      ${!isLoggedIn ? `
-        <div style="background: #f0fbf4; border: 1.5px solid #0284c7; border-radius: 12px; padding: 20px 16px; text-align: center; margin-bottom: 14px;">
-          <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0f0fd; color: #0284c7; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; font-size: 19px;">
-            ${window.renderIcon('user')}
-          </div>
-          <div style="font-weight: 800; color: #0a2540; font-size: 0.98rem; margin-bottom: 6px;">Sign In or Register to Submit</div>
-          <p style="font-size: 0.82rem; color: #5a6e62; margin-bottom: 16px; line-height: 1.4;">
-            Please sign in or create a free account so our procurement team can link this request to your profile and send you options on WhatsApp.
-          </p>
-          <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-            <button type="button" class="btn btn-primary btn-sm" id="sourcingPromptSignInBtn" style="padding: 9px 20px; font-weight: 800; background-color: #0284c7; border-color: #0284c7;">Sign In</button>
-            <button type="button" class="btn btn-secondary btn-sm" id="sourcingPromptSignUpBtn" style="padding: 9px 20px; font-weight: 800; border-color: #0284c7; color: #0284c7; background: #ffffff;">Create Account</button>
-          </div>
-        </div>
-
-        <a href="https://wa.me/2349031932413?text=${encodeURIComponent(`Hello Kairoslab, I am requesting: ${itemQuery}. Please send me 2 best options with pictures within 30 minutes!`)}" target="_blank" rel="noopener" class="btn btn-secondary" style="width: 100%; justify-content: center; padding: 11px; font-weight: 700; color: #0369a1; border-color: #25D366; text-decoration: none;">
-          ${window.renderIcon('whatsapp')}
-          <span>Send Directly on WhatsApp (+234 903 193 2413)</span>
-        </a>
-      ` : `
-        <div style="background: #f7fbf8; border: 1px solid #d0e4f7; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
-          <div style="font-size: 0.82rem; color: #0a2540;">
-            Requesting as: <strong>${window.CustomModal.escape(activeUser.first_name || activeUser.name || 'Valued Customer')}</strong> (${window.CustomModal.escape(activeUser.whatsapp_number || activeUser.phone || '')})
-          </div>
-          <button type="button" class="btn btn-secondary btn-sm" id="sourcingEditProfileBtn" style="padding: 4px 10px; font-size: 0.75rem; border-color: #0284c7; color: #0284c7; background: #ffffff;">Change</button>
-        </div>
-
-        <form id="customSourcingForm" autocomplete="on">
-          <div class="c-input-group" style="margin-bottom: 14px;">
-            <label class="c-input-label" style="display: block; font-size: 0.76rem; color: #5a6e62; font-weight: 700; margin-bottom: 4px;">Target Budget / Specific Details (Optional)</label>
-            <input type="text" class="c-input" id="reqUserNotes" placeholder="e.g. Budget ?250k, Brand new, Size 42, Black color" style="padding: 10px 12px; border-radius: 8px; border: 1.5px solid #d0e4f7; background: #ffffff;" />
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
-            <button type="submit" class="btn btn-primary" id="submitSourcingBtn" style="width: 100%; justify-content: center; padding: 12px; font-weight: 800; background-color: #0284c7; border-color: #0284c7;">
-              ${window.renderIcon('send')}
-              <span>Submit Sourcing Request</span>
-            </button>
-
-            <a href="https://wa.me/2349031932413?text=${encodeURIComponent(`Hello Kairoslab, I am requesting: ${itemQuery}. Please send me 2 best options with pictures within 30 minutes!`)}" target="_blank" rel="noopener" class="btn btn-secondary" style="width: 100%; justify-content: center; padding: 11px; font-weight: 700; color: #0369a1; border-color: #25D366; text-decoration: none;">
-              ${window.renderIcon('whatsapp')}
-              <span>Send Directly on WhatsApp (+234 903 193 2413)</span>
-            </a>
-          </div>
-        </form>
-      `}
-    `;
-
-    const closeBtn = customRequestModal.querySelector('#closeCustomRequestBtn');
-    const closeModal = () => customRequestModal.classList.remove('active');
-    if (closeBtn) closeBtn.onclick = closeModal;
-
-    if (!isLoggedIn) {
-      body.querySelector('#sourcingPromptSignInBtn')?.addEventListener('click', () => {
-        closeModal();
-        if (window.AuthModal) {
-          window.AuthModal.showSignIn(() => openCustomSourcingRequestModal(itemQuery));
-        }
-      });
-      body.querySelector('#sourcingPromptSignUpBtn')?.addEventListener('click', () => {
-        closeModal();
-        if (window.AuthModal) {
-          window.AuthModal.showSignUp(() => openCustomSourcingRequestModal(itemQuery));
-        }
-      });
-    } else {
-      body.querySelector('#sourcingEditProfileBtn')?.addEventListener('click', () => {
-        if (window.AuthModal) {
-          window.AuthModal.showProfile('profile', () => openCustomSourcingRequestModal(itemQuery));
-        }
-      });
-
-      const form = body.querySelector('#customSourcingForm');
-      if (form) {
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const userNotes = (body.querySelector('#reqUserNotes')?.value || '').trim();
-
-          const submitBtn = body.querySelector('#submitSourcingBtn');
-          submitBtn.disabled = true;
-          submitBtn.innerHTML = `
-            <span class="spinner" style="display:inline-block; width:16px; height:16px; border:2px solid #ffffff; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px;"></span>
-            <span>Submitting Request...</span>
-          `;
-
-          const reqId = `sreq-${Date.now()}`;
-          const userName = [activeUser.first_name, activeUser.last_name].filter(Boolean).join(' ') || activeUser.name || 'Valued Customer';
-          const userPhone = activeUser.whatsapp_number || activeUser.phone || '';
-
-          const sourcingData = {
-            request_id: reqId,
-            item: itemQuery,
-            notes: userNotes || null,
-            user_id: activeUser.id,
-            user_name: userName,
-            user_whatsapp: userPhone,
-            created_at: new Date().toISOString()
-          };
-
-          const msgObj = {
-            id: `msg-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-            order_code: activeUser.id,
-            user_id: activeUser.id,
-            user_name: userName,
-            user_whatsapp: userPhone,
-            sender: 'user',
-            message_type: 'sourcing_request',
-            sourcing_data: sourcingData,
-            message: `[SOURCING_REQUEST]:::${JSON.stringify(sourcingData)}`,
-            image_url: null,
-            is_edited: false,
-            is_read_by_admin: false,
-            is_read_by_user: true,
-            deleted_for_everyone: false,
-            deleted_for_user: false,
-            deleted_for_admin: false,
-            created_at: new Date().toISOString()
-          };
-
-          try {
-            await window.SupabaseService.sendUserChatMessage(msgObj);
-          } catch (err) {
-            console.warn('Failed to send sourcing chat message:', err);
-          }
-
-          closeModal();
-          window.CustomModal.toast({
-            message: 'Sourcing request sent to Live Chat! Opening Live Chat...',
-            type: 'success'
-          });
-
-          // Redirect to Live Chat where special sourcing request bubble is displayed
-          window.location.href = 'chat.html';
-        });
-      }
-    }
-
-    customRequestModal.classList.add('active');
-  }
-
   function renderHomeCategories() {
     const grid = document.getElementById('homeCategoriesGrid');
     if (!grid) return;
@@ -2112,7 +1939,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div class="cart-empty-state">
             <div class="cart-empty-icon">${window.renderIcon('requests')}</div>
             <h3 class="cart-empty-title">${isFiltered ? 'No Matching Requests Found' : 'No Orders or Requests Found'}</h3>
-            <p class="cart-empty-sub">${isFiltered ? 'No orders match your search query or selected status filter.' : 'When you place orders or submit sourcing requests via "Everything Dey", they will appear here with live tracking.'}</p>
+            <p class="cart-empty-sub">${isFiltered ? 'No orders match your search query or selected status filter.' : 'When you place orders, they will appear here with live tracking.'}</p>
             ${isFiltered ? `
               <button class="btn btn-secondary" type="button" id="reqResetFilterBtn" style="padding: 10px 22px; font-weight: 700; border-color: #0284c7; color: #0284c7;">
                 Reset Filter & Search
@@ -2734,10 +2561,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Initialize Tab listeners, View Layout Toggle & Hero Request Form
+  // Initialize Tab listeners & View Layout Toggle
   initTabListeners();
   initViewToggle();
-  initHeroRequestForm();
 
   // Listen for user profile updates to instantly re-sync cart & account views
   window.addEventListener('user-profile-updated', () => {

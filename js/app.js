@@ -2940,7 +2940,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             </button>
             <a href="chat.html" class="btn btn-secondary btn-sm" id="accountDirectChatBtn" style="flex: 1 1 100%; justify-content: center; padding: 11px 14px; font-size: 0.86rem; font-weight: 800; background: #eaf7f0; color: #075b2a; border: 1.5px solid #0284c7; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
               <span style="display: inline-flex; align-items: center; color: #0284c7; flex-shrink: 0;">${window.renderIcon('chat')}</span>
-              <span>Open Live Support Chat</span>
+              <span>Open Live Chat</span>
               <span class="account-chat-indicator" id="accountChatIndicator" style="display: none; background: #dc2626; color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; line-height: 1.2; margin-left: 6px; align-items: center; gap: 4px;">
                 <span id="accountChatBadgeText">0</span> New
               </span>
@@ -2977,7 +2977,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <a href="chat.html" class="account-support-btn">
           <div class="support-left" style="display: flex; align-items: center; gap: 8px;">
             <span style="color: #0284c7; display: inline-flex; align-items: center;">${window.renderIcon('chat')}</span>
-            <span>Live Support Chat</span>
+            <span>Live Chat</span>
             <span id="accountSupportChannelBadge" style="display: none; background: #dc2626; color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 2px 7px; border-radius: 999px; line-height: 1.2; margin-left: 6px;">0 New</span>
           </div>
           <span class="support-action-link">

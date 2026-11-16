@@ -460,9 +460,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   /* ==========================================================================
-     4. HOME VIEW: 3-COL CATEGORIES & STORE SECTIONS
+     4. HOME VIEW: CATEGORY SEARCH & 3-COL GRID
      ========================================================================== */
-  function renderHomeCategories() {
+  function initCategorySearch() {
+    const input = document.getElementById('categorySearchInput');
+    const clearBtn = document.getElementById('categorySearchClearBtn');
+    if (!input) return;
+
+    input.addEventListener('input', () => {
+      const val = input.value.trim();
+      if (clearBtn) clearBtn.style.display = input.value ? 'flex' : 'none';
+      renderHomeCategories(val);
+    });
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.style.display = 'none';
+        input.focus();
+        renderHomeCategories('');
+      });
+    }
+  }
+
+  function renderHomeCategories(queryOverride) {
     const grid = document.getElementById('homeCategoriesGrid');
     if (!grid) return;
 
@@ -472,7 +493,41 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    grid.innerHTML = categories.map(c => {
+    const input = document.getElementById('categorySearchInput');
+    const filterQuery = typeof queryOverride === 'string' ? queryOverride : (input ? input.value : '');
+    const q = (filterQuery || '').trim().toLowerCase();
+
+    const filtered = q
+      ? categories.filter(c => (c.name || '').toLowerCase().includes(q))
+      : categories;
+
+    const countBadge = document.getElementById('categoryCountBadge');
+    if (countBadge) {
+      countBadge.textContent = `${filtered.length} ${filtered.length === 1 ? 'Category' : 'Categories'}`;
+    }
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 36px 16px; background: #ffffff; border-radius: 14px; border: 1.5px dashed #d0e4f7;">
+          <div style="font-size: 1.8rem; margin-bottom: 8px;">🔍</div>
+          <div style="font-weight: 800; color: #0a2540; font-size: 1rem; margin-bottom: 4px;">No categories found</div>
+          <div style="font-size: 0.84rem; color: #64748b; margin-bottom: 14px;">No category matches "${window.CustomModal.escape(filterQuery)}"</div>
+          <button type="button" id="clearHomeCatSearchBtn" class="btn btn-secondary btn-sm" style="padding: 7px 18px; font-weight: 700; border-color: #0284c7; color: #0284c7; background: #ffffff;">Clear Search</button>
+        </div>
+      `;
+      grid.querySelector('#clearHomeCatSearchBtn')?.addEventListener('click', () => {
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+        const clearBtn = document.getElementById('categorySearchClearBtn');
+        if (clearBtn) clearBtn.style.display = 'none';
+        renderHomeCategories('');
+      });
+      return;
+    }
+
+    grid.innerHTML = filtered.map(c => {
       let img = c.image_url || 'assets/images/logo.png';
       if (img.startsWith('assets/categories/') && !img.includes('?v=')) {
         img += '?v=20261109_1';
@@ -2561,9 +2616,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Initialize Tab listeners & View Layout Toggle
+  // Initialize Tab listeners, View Layout Toggle & Category Search
   initTabListeners();
   initViewToggle();
+  initCategorySearch();
 
   // Listen for user profile updates to instantly re-sync cart & account views
   window.addEventListener('user-profile-updated', () => {

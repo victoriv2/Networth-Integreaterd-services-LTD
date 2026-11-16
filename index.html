@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, interactive-widget=resizes-content" />
   <title>Kairoslab - Online Store & Direct Orders</title>
-  <link rel="stylesheet" href="css/styles.css?v=20261115_2105" />
+  <link rel="stylesheet" href="css/styles.css?v=20261116_0615" />
 </head>
 <body>
 
@@ -59,10 +59,29 @@
 
     <!-- ---------------- VIEW 1: HOME VIEW ---------------- -->
     <div class="app-view" id="viewHome">
+      <!-- Home Category Search Section -->
+      <section class="home-search-section">
+        <div class="container">
+          <div class="category-search-bar-wrap">
+            <svg class="svg-icon category-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="categorySearchInput" class="category-search-input" placeholder="Search categories..." autocomplete="off" />
+            <button type="button" id="categorySearchClearBtn" class="category-search-clear" style="display: none;" aria-label="Clear search">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
       <!-- "Shop by Category" Section (3-Column Grid on Mobile) -->
       <section class="home-categories-section">
         <div class="container">
-          <h2 class="home-cat-heading">Shop by Category</h2>
+          <div class="home-cat-header-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+            <h2 class="home-cat-heading" style="margin-bottom: 0;">Shop by Category</h2>
+            <span id="categoryCountBadge" style="font-size: 0.8rem; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 3px 10px; border-radius: 999px;"></span>
+          </div>
           <div class="home-categories-grid" id="homeCategoriesGrid">
             <!-- Dynamically populated from Supabase nkem_categories -->
           </div>
@@ -358,6 +377,6 @@
   <script src="js/supabase-config.js?v=20261116_0600"></script>
   <script src="js/receipt-generator.js?v=20261116_0600"></script>
   <script src="js/auth-modal.js?v=20261116_0600"></script>
-  <script src="js/app.js?v=20261116_0600"></script>
+  <script src="js/app.js?v=20261116_0615"></script>
 </body>
 </html>

@@ -5088,109 +5088,73 @@ body:not(.admin-body) .brand-title span {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ---------------- 3. HERO "EVERYTHING DEY" REQUEST CARD (HOME VIEW) ---------------- */
-.hero-request-section {
-  padding-top: clamp(14px, 2.5vw, 24px);
-  padding-bottom: clamp(12px, 2vw, 18px);
+/* ---------------- 3. CATEGORY SEARCH (HOME VIEW) ---------------- */
+.home-search-section {
+  padding-top: clamp(14px, 2.5vw, 22px);
+  padding-bottom: clamp(6px, 1.5vw, 10px);
 }
 
-.hero-request-card {
-  background: #ffffff;
-  border-radius: clamp(16px, 3.5vw, 24px);
-  border: 1px solid #d0e4f7;
-  box-shadow: none !important;
-  padding: clamp(18px, 3vw, 28px);
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.hero-request-title {
-  color: #0284c7;
-  font-size: clamp(1.85rem, 5.2vw, 2.5rem);
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-  margin-bottom: 6px;
-}
-
-.hero-request-subtitle {
-  color: #0369a1;
-  font-size: clamp(1.05rem, 3vw, 1.28rem);
-  font-weight: 800;
-  line-height: 1.3;
-  margin-bottom: 10px;
-}
-
-.hero-request-desc {
-  color: #374151;
-  font-size: clamp(0.85rem, 2vw, 0.94rem);
-  line-height: 1.5;
-  margin-bottom: 18px;
-}
-
-.hero-request-bar {
-  display: flex;
-  align-items: stretch;
-  gap: 10px;
-  flex-wrap: nowrap !important;
-}
-
-.hero-request-input-wrap {
+.category-search-bar-wrap {
   position: relative;
-  flex: 1;
-  min-width: 0 !important;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
-.hero-search-icon {
+.category-search-icon {
   position: absolute;
   left: 14px;
-  width: 18px;
-  height: 18px;
-  color: #6b7280;
+  width: 19px;
+  height: 19px;
+  color: #0284c7;
   pointer-events: none;
 }
 
-.hero-request-input {
+.category-search-input {
   width: 100%;
-  min-width: 0 !important;
-  padding: 13px 14px 13px 42px;
+  padding: 12px 42px 12px 44px;
   background-color: #ffffff;
   border: 1.5px solid #d0e4f7;
-  border-radius: 10px;
-  font-size: clamp(0.84rem, 2vw, 0.94rem);
-  color: #111827;
+  border-radius: 12px;
+  font-size: clamp(0.88rem, 2vw, 0.96rem);
+  font-weight: 500;
+  color: #0f172a;
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.hero-request-input:focus {
+.category-search-input::placeholder {
+  color: #64748b;
+  font-weight: 400;
+}
+
+.category-search-input:focus {
   border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
 }
 
-.btn-send-request {
-  flex-shrink: 0 !important;
-  background-color: #0284c7;
-  color: #ffffff;
-  border: 1px solid #0369a1;
-  border-radius: 10px;
-  padding: 12px clamp(14px, 2.5vw, 24px);
-  font-size: clamp(0.84rem, 2vw, 0.96rem);
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap !important;
-  box-shadow: none !important;
-  transition: background-color 0.15s ease;
-  display: inline-flex;
+.category-search-clear {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: #f1f5f9;
+  border-radius: 50%;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  cursor: pointer;
+  color: #64748b;
+  padding: 0;
+  transition: all 0.15s ease;
 }
 
-.btn-send-request:hover {
-  background-color: #0369a1;
-  border-color: #075985;
+.category-search-clear:hover {
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 /* ---------------- 4. "SHOP BY CATEGORY" 3-COLUMN MOCKUP GRID ---------------- */

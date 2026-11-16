@@ -663,75 +663,91 @@ document.addEventListener('DOMContentLoaded', async () => {
     let bannerDraftImage = bDraft.image_url || '';
 
     bannerModal.innerHTML = `
-      <div class="c-modal-box" style="max-width: 580px;">
+      <form id="adminBannerForm" class="c-modal-box" style="max-width: 580px;">
         <div class="c-modal-header">
           <h3 class="c-modal-title">${isNew ? 'Create New 16:9 Banner Slide' : 'Edit Banner Slide'}</h3>
           <button class="c-modal-close" type="button" id="closeBannerModalBtn" aria-label="Close dialog">
             ${window.renderIcon('x')}
           </button>
         </div>
-        <form id="adminBannerForm" style="display: flex; flex-direction: column; gap: 14px; padding: 18px;">
-          <!-- 16:9 Banner Image Preview and Upload -->
+
+        <div class="c-modal-body" style="display: flex; flex-direction: column; gap: 16px;">
+          <!-- 16:9 Banner Image Preview & Upload Zone -->
           <div class="form-group">
-            <label class="form-label" style="font-weight: 600; display: block; margin-bottom: 6px; font-size: 13px;">
-              Banner Image (16:9 Aspect Ratio &le; 100KB Auto-compressed) *
-            </label>
-            <div id="bannerImagePreviewBox" style="width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: #0c1726; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; position: relative;">
-              <img id="bannerImagePreviewEl" src="${bannerDraftImage}" style="${bannerDraftImage ? 'width:100%; height:100%; object-fit:cover;' : 'display:none;'}" alt="Preview" />
-              <div id="bannerImagePlaceholderEl" style="${bannerDraftImage ? 'display:none;' : 'display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--text-muted); font-size:12px;'}">
-                <svg class="svg-icon" style="width: 32px; height: 32px; opacity: 0.6;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                <span>Select or upload an image (16:9 recommended)</span>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <label class="form-label" style="font-weight: 600; font-size: 13px; margin: 0; color: #0a2540;">
+                Banner Image *
+              </label>
+              <span class="badge badge-primary" style="font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600;">
+                16:9 Ratio
+              </span>
+            </div>
+
+            <!-- Interactive Upload / Preview Box -->
+            <div id="bannerImagePreviewBox" style="width: 100%; min-height: 140px; border-radius: 10px; background: ${bannerDraftImage ? '#0f172a' : '#f8fafc'}; border: ${bannerDraftImage ? '1px solid #cbd5e1' : '2px dashed #94a3b8'}; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; overflow: hidden; transition: all 0.2s ease;">
+              <img id="bannerImagePreviewEl" src="${bannerDraftImage}" style="${bannerDraftImage ? 'width:100%; height:100%; aspect-ratio:16/9; max-height:210px; object-fit:cover; display:block;' : 'display:none;'}" alt="Banner Preview" />
+              <div id="bannerImagePlaceholderEl" style="${bannerDraftImage ? 'display:none;' : 'display:flex; flex-direction:column; align-items:center; gap:8px; padding: 22px 16px; text-align: center; color: #64748b;'}">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: #e0f2fe; display: flex; align-items: center; justify-content: center; color: #0284c7;">
+                  ${window.renderIcon('upload') || '<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'}
+                </div>
+                <div style="font-size: 13px; font-weight: 600; color: #0a2540;">Click or tap to upload 16:9 banner image</div>
+                <div style="font-size: 11px; color: #64748b;">Supports PNG, JPG, WebP &bull; Auto-compressed to &le; 100KB</div>
+              </div>
+              <div id="bannerChangePill" style="${bannerDraftImage ? 'display:inline-flex;' : 'display:none;'} position: absolute; bottom: 10px; right: 10px; background: rgba(15, 23, 42, 0.85); color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; align-items: center; gap: 6px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">
+                ${window.renderIcon('upload')} Change Image
               </div>
             </div>
 
+            <!-- Upload File Input Button & Status -->
             <div style="display: flex; gap: 10px; margin-top: 10px; align-items: center; flex-wrap: wrap;">
               <label class="btn btn-outline btn-sm" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; margin: 0;">
-                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                ${window.renderIcon('upload')}
                 Upload Image File
                 <input type="file" id="bannerFileInputEl" accept="image/*" style="display: none;" />
               </label>
-              <span id="bannerFileStatusEl" style="font-size: 12px; color: var(--text-muted);">Auto-compressed to &le; 100KB</span>
+              <span id="bannerFileStatusEl" style="font-size: 12px; color: #64748b;">Auto-compressed to &le; 100KB</span>
             </div>
 
+            <!-- Optional Image URL Input -->
             <div style="margin-top: 10px;">
-              <label class="form-label" style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Or enter Image URL / Asset Path:</label>
+              <label class="form-label" style="font-size: 11px; color: #64748b; display: block; margin-bottom: 4px;">Or enter Image URL / Asset Path:</label>
               <input type="text" id="bannerImageUrlInputEl" class="form-input" placeholder="e.g. assets/products/mercedes-benz-gle-coupe-2019.jpg" value="${window.CustomModal.escape(bannerDraftImage)}" style="font-size: 12px;" />
             </div>
           </div>
 
           <!-- Title -->
           <div class="form-group">
-            <label class="form-label" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px;">Banner Headline / Title (Optional)</label>
+            <label class="form-label" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px; color: #0a2540;">Banner Headline / Title (Optional)</label>
             <input type="text" id="bannerTitleInputEl" class="form-input" placeholder="e.g. Verified Nigerian Corporate Procurement" value="${window.CustomModal.escape(bDraft.title || '')}" />
           </div>
 
           <!-- Subtitle -->
           <div class="form-group">
-            <label class="form-label" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px;">Subtitle / Caption (Optional)</label>
+            <label class="form-label" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px; color: #0a2540;">Subtitle / Caption (Optional)</label>
             <input type="text" id="bannerSubtitleInputEl" class="form-input" placeholder="e.g. Pre-screened equipment and nationwide direct delivery" value="${window.CustomModal.escape(bDraft.subtitle || '')}" />
           </div>
 
           <!-- Link URL -->
           <div class="form-group">
-            <label class="form-label" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px;">Link URL / Action (Optional)</label>
+            <label class="form-label" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px; color: #0a2540;">Link URL / Action (Optional)</label>
             <input type="text" id="bannerLinkInputEl" class="form-input" placeholder="e.g. #viewShop or #category:cat-vehicles or https://wa.me/..." value="${window.CustomModal.escape(bDraft.link_url || '')}" />
           </div>
 
           <!-- Active Checkbox -->
-          <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
-            <input type="checkbox" id="bannerActiveInputEl" ${bDraft.is_active ? 'checked' : ''} style="width: 16px; height: 16px; cursor: pointer;" />
-            <label for="bannerActiveInputEl" style="font-size: 13px; font-weight: 600; cursor: pointer;">Show this banner on storefront (Active)</label>
+          <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+            <input type="checkbox" id="bannerActiveInputEl" ${bDraft.is_active ? 'checked' : ''} style="width: 17px; height: 17px; cursor: pointer; accent-color: #0284c7;" />
+            <label for="bannerActiveInputEl" style="font-size: 13px; font-weight: 600; color: #0a2540; cursor: pointer;">Show this banner on storefront (Active)</label>
           </div>
+        </div>
 
-          <!-- Modal Action Buttons -->
-          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 14px;">
-            <button type="button" class="btn btn-outline" id="cancelBannerModalBtn">Cancel</button>
-            <button type="submit" class="btn btn-primary" id="saveBannerModalBtn">
-              ${isNew ? 'Create Banner' : 'Save Changes'}
-            </button>
-          </div>
-        </form>
-      </div>
+        <!-- Pinned Modal Footer -->
+        <div class="c-modal-footer">
+          <button type="button" class="btn btn-outline" id="cancelBannerModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveBannerModalBtn">
+            ${isNew ? 'Create Banner' : 'Save Changes'}
+          </button>
+        </div>
+      </form>
     `;
 
     bannerModal.classList.add('active');
@@ -741,37 +757,60 @@ document.addEventListener('DOMContentLoaded', async () => {
     const fileInput = bannerModal.querySelector('#bannerFileInputEl');
     const fileStatus = bannerModal.querySelector('#bannerFileStatusEl');
     const urlInput = bannerModal.querySelector('#bannerImageUrlInputEl');
+    const previewBox = bannerModal.querySelector('#bannerImagePreviewBox');
     const previewEl = bannerModal.querySelector('#bannerImagePreviewEl');
     const placeholderEl = bannerModal.querySelector('#bannerImagePlaceholderEl');
+    const changePill = bannerModal.querySelector('#bannerChangePill');
     const form = bannerModal.querySelector('#adminBannerForm');
 
     function updatePreview(url) {
       if (url) {
         previewEl.src = url;
         previewEl.style.display = 'block';
+        previewEl.style.aspectRatio = '16 / 9';
+        previewEl.style.maxHeight = '210px';
+        previewEl.style.objectFit = 'cover';
         placeholderEl.style.display = 'none';
+        if (changePill) changePill.style.display = 'inline-flex';
+        previewBox.style.background = '#0f172a';
+        previewBox.style.border = '1px solid #cbd5e1';
+        previewBox.style.minHeight = 'unset';
       } else {
         previewEl.src = '';
         previewEl.style.display = 'none';
         placeholderEl.style.display = 'flex';
+        if (changePill) changePill.style.display = 'none';
+        previewBox.style.background = '#f8fafc';
+        previewBox.style.border = '2px dashed #94a3b8';
+        previewBox.style.minHeight = '140px';
       }
     }
 
+    // Clicking preview box opens file selector
+    previewBox?.addEventListener('click', (e) => {
+      if (e.target.closest('#bannerFileInputEl') || e.target.closest('label')) return;
+      fileInput?.click();
+    });
+
     const closeModal = () => {
+      document.removeEventListener('keydown', onKeyDown);
+      bannerModal.removeEventListener('click', onOverlayClick);
       bannerModal.classList.remove('active');
       bannerModal.innerHTML = '';
     };
 
-    closeBtn?.addEventListener('click', closeModal);
-    cancelBtn?.addEventListener('click', closeModal);
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') closeModal();
+    };
+    document.addEventListener('keydown', onKeyDown);
 
     const onOverlayClick = (e) => {
-      if (e.target === bannerModal) {
-        bannerModal.removeEventListener('click', onOverlayClick);
-        closeModal();
-      }
+      if (e.target === bannerModal) closeModal();
     };
     bannerModal.addEventListener('click', onOverlayClick);
+
+    closeBtn?.addEventListener('click', closeModal);
+    cancelBtn?.addEventListener('click', closeModal);
 
     urlInput?.addEventListener('input', () => {
       bannerDraftImage = urlInput.value.trim();

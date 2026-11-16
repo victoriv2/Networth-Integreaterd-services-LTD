@@ -491,11 +491,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   /* ==========================================================================
-     16:9 PRODUCT CATALOG BANNER SLIDER (Auto-slides 2.5s, Touch Swipe, Global Toggle)
+     16:9 PRODUCT CATALOG BANNER SLIDER (Continuous Forward Loop 2.5s, Touch Swipe, Global Toggle)
      ========================================================================== */
   let productBannerInterval = null;
-  let currentBannerIndex = 0;
+  let currentBannerIndex = 0; // Real active banner index: 0 .. N-1
+  let currentTrackVirtualIndex = 1; // Track index with clones: 1 .. N (0 and N+1 are clones)
+  let isBannerTransitioning = false;
   let activeBanners = [];
+
+  function buildSlideHtml(b, realIdx, isClone = false) {
+    const img = b.image_url || 'assets/images/logo.png';
+    const hasOverlay = (b.title && b.title.trim()) || (b.subtitle && b.subtitle.trim());
+    const link = b.link_url || '';
+    return `
+      <div class="product-banner-slide" data-index="${realIdx}" data-link="${link ? (window.CustomModal?.escape ? window.CustomModal.escape(link) : link) : ''}" ${isClone ? 'data-clone="true"' : ''}>
+        <img src="${img}" alt="${b.title ? (window.CustomModal?.escape ? window.CustomModal.escape(b.title) : b.title) : 'Kairoslab'}" onerror="this.onerror=null;this.src='assets/images/logo.png';" loading="${realIdx === 0 && !isClone ? 'eager' : 'lazy'}" />
+        ${hasOverlay ? `
+          <div class="product-banner-caption-overlay">
+            ${b.title ? `<div class="product-banner-caption-title">${window.CustomModal?.escape ? window.CustomModal.escape(b.title) : b.title}</div>` : ''}
+            ${b.subtitle ? `<div class="product-banner-caption-sub">${window.CustomModal?.escape ? window.CustomModal.escape(b.subtitle) : b.subtitle}</div>` : ''}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
 
   async function renderProductPageBanner() {
     const bannerSection = document.getElementById('productBannerSection');
@@ -521,24 +540,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Display 16:9 banner container
       bannerSection.style.display = 'block';
-      currentBannerIndex = 0;
 
-      bannerTrack.innerHTML = activeBanners.map((b, idx) => {
-        const img = b.image_url || 'assets/images/logo.png';
-        const hasOverlay = (b.title && b.title.trim()) || (b.subtitle && b.subtitle.trim());
-        const link = b.link_url || '';
-        return `
-          <div class="product-banner-slide" data-index="${idx}" data-link="${link ? (window.CustomModal?.escape ? window.CustomModal.escape(link) : link) : ''}">
-            <img src="${img}" alt="${b.title ? (window.CustomModal?.escape ? window.CustomModal.escape(b.title) : b.title) : 'Kairoslab'}" onerror="this.onerror=null;this.src='assets/images/logo.png';" loading="${idx === 0 ? 'eager' : 'lazy'}" />
-            ${hasOverlay ? `
-              <div class="product-banner-caption-overlay">
-                ${b.title ? `<div class="product-banner-caption-title">${window.CustomModal?.escape ? window.CustomModal.escape(b.title) : b.title}</div>` : ''}
-                ${b.subtitle ? `<div class="product-banner-caption-sub">${window.CustomModal?.escape ? window.CustomModal.escape(b.subtitle) : b.subtitle}</div>` : ''}
-              </div>
-            ` : ''}
-          </div>
-        `;
-      }).join('');
+      if (activeBanners.length >= 2) {
+        const N = activeBanners.length;
+        // Infinite forward continuous loop: [Clone Last, B0, B1, ... BN-1, Clone First]
+        const lastClone = buildSlideHtml(activeBanners[N - 1], N - 1, true);
+        const realSlides = activeBanners.map((b, idx) => buildSlideHtml(b, idx, false)).join('');
+        const firstClone = buildSlideHtml(activeBanners[0], 0, true);
+
+        bannerTrack.innerHTML = lastClone + realSlides + firstClone;
+        currentBannerIndex = 0;
+        currentTrackVirtualIndex = 1;
+        bannerTrack.style.transition = 'none';
+        bannerTrack.style.transform = 'translateX(-100%)';
+      } else {
+        bannerTrack.innerHTML = buildSlideHtml(activeBanners[0], 0, false);
+        currentBannerIndex = 0;
+        currentTrackVirtualIndex = 0;
+        bannerTrack.style.transition = 'none';
+        bannerTrack.style.transform = 'translateX(0%)';
+      }
 
       // Render dots if 2 or more slides
       if (bannerIndicators) {
@@ -560,7 +581,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       }
 
-      goToBannerSlide(0);
+      updateBannerDots(0);
+      updateDesktopPeekWings(0);
 
       // Slide click navigation
       bannerTrack.querySelectorAll('.product-banner-slide').forEach(slide => {
@@ -645,25 +667,100 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  function goToBannerSlide(index) {
-    const bannerTrack = document.getElementById('productBannerTrack');
+  function updateBannerDots(index) {
     const bannerIndicators = document.getElementById('productBannerIndicators');
-    if (!bannerTrack || !activeBanners || activeBanners.length === 0) return;
+    if (!bannerIndicators) return;
+    const dots = bannerIndicators.querySelectorAll('.product-banner-dot');
+    dots.forEach((dot, idx) => {
+      if (idx === index) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  }
 
-    currentBannerIndex = (index + activeBanners.length) % activeBanners.length;
-    bannerTrack.style.transform = `translateX(-${currentBannerIndex * 100}%)`;
+  // Continuous Seamless Forward Slide: 1 -> 2 -> 3 -> 4 -> 1 -> 2... (Never rewinds backward)
+  function slideNext() {
+    if (!activeBanners || activeBanners.length < 2 || isBannerTransitioning) return;
+    const bannerTrack = document.getElementById('productBannerTrack');
+    if (!bannerTrack) return;
 
-    if (bannerIndicators) {
-      const dots = bannerIndicators.querySelectorAll('.product-banner-dot');
-      dots.forEach((dot, idx) => {
-        if (idx === currentBannerIndex) {
-          dot.classList.add('active');
-        } else {
-          dot.classList.remove('active');
-        }
-      });
+    isBannerTransitioning = true;
+    const N = activeBanners.length;
+    currentTrackVirtualIndex++;
+
+    bannerTrack.style.transition = 'transform 0.4s ease-in-out';
+    bannerTrack.style.transform = `translateX(-${currentTrackVirtualIndex * 100}%)`;
+
+    currentBannerIndex = (currentTrackVirtualIndex - 1 + N) % N;
+    updateBannerDots(currentBannerIndex);
+    updateDesktopPeekWings(currentBannerIndex);
+
+    setTimeout(() => {
+      if (currentTrackVirtualIndex >= N + 1) {
+        // Reached the clone of slide 1 at end: snap silently without transition to real slide 1
+        bannerTrack.style.transition = 'none';
+        currentTrackVirtualIndex = 1;
+        bannerTrack.style.transform = 'translateX(-100%)';
+        void bannerTrack.offsetHeight; // force reflow
+      }
+      isBannerTransitioning = false;
+    }, 420);
+  }
+
+  // Continuous Seamless Backward Slide
+  function slidePrev() {
+    if (!activeBanners || activeBanners.length < 2 || isBannerTransitioning) return;
+    const bannerTrack = document.getElementById('productBannerTrack');
+    if (!bannerTrack) return;
+
+    isBannerTransitioning = true;
+    const N = activeBanners.length;
+    currentTrackVirtualIndex--;
+
+    bannerTrack.style.transition = 'transform 0.4s ease-in-out';
+    bannerTrack.style.transform = `translateX(-${currentTrackVirtualIndex * 100}%)`;
+
+    currentBannerIndex = (currentTrackVirtualIndex - 1 + N) % N;
+    updateBannerDots(currentBannerIndex);
+    updateDesktopPeekWings(currentBannerIndex);
+
+    setTimeout(() => {
+      if (currentTrackVirtualIndex <= 0) {
+        // Reached clone of last slide at start: snap silently to real last slide
+        bannerTrack.style.transition = 'none';
+        currentTrackVirtualIndex = N;
+        bannerTrack.style.transform = `translateX(-${N * 100}%)`;
+        void bannerTrack.offsetHeight; // force reflow
+      }
+      isBannerTransitioning = false;
+    }, 420);
+  }
+
+  function goToBannerSlide(realIndex) {
+    if (!activeBanners || activeBanners.length === 0) return;
+    const bannerTrack = document.getElementById('productBannerTrack');
+    if (!bannerTrack) return;
+
+    const N = activeBanners.length;
+    if (N < 2) {
+      currentBannerIndex = 0;
+      currentTrackVirtualIndex = 0;
+      bannerTrack.style.transition = 'none';
+      bannerTrack.style.transform = 'translateX(0%)';
+      updateBannerDots(0);
+      updateDesktopPeekWings(0);
+      return;
     }
 
+    currentBannerIndex = (realIndex + N) % N;
+    currentTrackVirtualIndex = currentBannerIndex + 1;
+
+    bannerTrack.style.transition = 'transform 0.4s ease-in-out';
+    bannerTrack.style.transform = `translateX(-${currentTrackVirtualIndex * 100}%)`;
+
+    updateBannerDots(currentBannerIndex);
     updateDesktopPeekWings(currentBannerIndex);
   }
 
@@ -678,7 +775,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       peekLeft.addEventListener('click', (e) => {
         e.stopPropagation();
         if (activeBanners.length >= 2) {
-          goToBannerSlide(currentBannerIndex - 1);
+          slidePrev();
           restartBannerAutoSlide();
         }
       });
@@ -693,7 +790,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       peekRight.addEventListener('click', (e) => {
         e.stopPropagation();
         if (activeBanners.length >= 2) {
-          goToBannerSlide(currentBannerIndex + 1);
+          slideNext();
           restartBannerAutoSlide();
         }
       });
@@ -750,9 +847,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (activeSlide) activeSlide._wasSwiping = true;
 
         if (touchDeltaX < 0) {
-          goToBannerSlide(currentBannerIndex + 1);
+          slideNext();
         } else {
-          goToBannerSlide(currentBannerIndex - 1);
+          slidePrev();
         }
       }
       restartBannerAutoSlide();
@@ -784,9 +881,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (activeSlide) activeSlide._wasSwiping = true;
 
         if (mouseDeltaX < 0) {
-          goToBannerSlide(currentBannerIndex + 1);
+          slideNext();
         } else {
-          goToBannerSlide(currentBannerIndex - 1);
+          slidePrev();
         }
       }
       restartBannerAutoSlide();
@@ -798,10 +895,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function startBannerAutoSlide() {
     stopBannerAutoSlide();
-    // Auto-slide 2.5 seconds (2500ms) when 2 and above
+    // Continuous forward auto-slide every 2.5 seconds (2500ms)
     productBannerInterval = setInterval(() => {
       if (activeBanners.length >= 2) {
-        goToBannerSlide(currentBannerIndex + 1);
+        slideNext();
       }
     }, 2500);
   }

@@ -1409,7 +1409,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const id = String(o.id || o.order_id || '').toLowerCase();
     const code = String(o.retrieval_code || '').toLowerCase();
     const title = String(o.product_title || '').toLowerCase();
-    return pid === 'custom-sourcing' || id.startsWith('req-') || id.startsWith('sreq-') || code.startsWith('nkg-req-') || title.startsWith('sourcing request:');
+    return pid === 'custom-sourcing' || id.startsWith('req-') || id.startsWith('sreq-') || code.startsWith('kl-req-') || code.startsWith('nkg-req-') || title.startsWith('sourcing request:');
   }
 
   function updateAdminOrdersPendingBadge() {

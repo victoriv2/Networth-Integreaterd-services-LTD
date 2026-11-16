@@ -732,6 +732,9 @@ window.SupabaseService = {
       window.dispatchEvent(new CustomEvent('kairoslab_order_status_updated', {
         detail: { orderId: clean, status: s }
       }));
+      window.dispatchEvent(new CustomEvent('nkem_order_status_updated', {
+        detail: { orderId: clean, status: s }
+      }));
     } catch (e) {}
   },
 
@@ -883,7 +886,7 @@ window.SupabaseService = {
     const id = String(o.id || o.order_id || '').toLowerCase();
     const code = String(o.retrieval_code || '').toLowerCase();
     const title = String(o.product_title || '').toLowerCase();
-    return pid === 'custom-sourcing' || id.startsWith('req-') || id.startsWith('sreq-') || code.startsWith('nkg-req-') || title.startsWith('sourcing request:');
+    return pid === 'custom-sourcing' || id.startsWith('req-') || id.startsWith('sreq-') || code.startsWith('kl-req-') || code.startsWith('nkg-req-') || title.startsWith('sourcing request:');
   },
 
   getLocalOrders() {
@@ -1360,6 +1363,7 @@ window.SupabaseService = {
     }
     // Dispatch custom event for reactive UI updates across pages
     window.dispatchEvent(new CustomEvent('kairoslab_auth_changed', { detail: { user } }));
+    window.dispatchEvent(new CustomEvent('nkem_auth_changed', { detail: { user } }));
   },
 
   setActiveUser(user) {

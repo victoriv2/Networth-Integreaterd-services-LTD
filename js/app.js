@@ -47,20 +47,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (user && user.id) {
         syncCartWithCloud(true);
       }
-      // Never wipe local cart on auth check or guest mode
+      renderAccountView();
+      renderCartView();
+      renderRequestsView();
+      updateCartBadges();
+      checkUnreadMessages();
     } catch (e) {
       console.warn('Auth reactive notice:', e);
     }
   };
   window.addEventListener('kairoslab_auth_changed', onAuthChangeHandler);
   window.addEventListener('nkem_auth_changed', onAuthChangeHandler);
-      renderAccountView();
-      renderCartView();
-      renderRequestsView();
-      updateCartBadges();
-      checkUnreadMessages();
-    } catch (_) {}
-  });
 
   // DOM Elements
   const productGrid = document.getElementById('productGrid');
@@ -1921,7 +1918,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           const unitPrice = Number(item.price) || 0;
           const itemTotal = unitPrice * qty;
           const orderId = `ord-${baseTimestamp}-${idx + 1}`;
-          const retCode = `NKG-${baseTimestamp.toString().slice(-6)}${idx + 1}`;
+          const retCode = `KL-${baseTimestamp.toString().slice(-6)}${idx + 1}`;
           const itemImg = item.image || (item.images && item.images[0]) || 'assets/images/logo.png';
           const titleWithQty = qty > 1 ? `${item.title} (Qty: ${qty})` : item.title;
 

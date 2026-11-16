@@ -491,7 +491,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   /* ==========================================================================
-     16:9 PRODUCT CATALOG BANNER SLIDER (Auto-slides 1.5s, Touch Swipe, Global Toggle)
+     16:9 PRODUCT CATALOG BANNER SLIDER (Auto-slides 2.5s, Touch Swipe, Global Toggle)
      ========================================================================== */
   let productBannerInterval = null;
   let currentBannerIndex = 0;
@@ -798,12 +798,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function startBannerAutoSlide() {
     stopBannerAutoSlide();
-    // Auto-slide 1.5 seconds (1500ms) when 2 and above
+    // Auto-slide 2.5 seconds (2500ms) when 2 and above
     productBannerInterval = setInterval(() => {
       if (activeBanners.length >= 2) {
         goToBannerSlide(currentBannerIndex + 1);
       }
-    }, 1500);
+    }, 2500);
   }
 
   function stopBannerAutoSlide() {

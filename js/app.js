@@ -491,13 +491,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   /* ==========================================================================
-     16:9 PRODUCT CATALOG BANNER SLIDER (Continuous Forward Loop 2.0s, Touch Swipe, Global Toggle)
+     16:9 PRODUCT CATALOG BANNER SLIDER (Unified Sliding Container 2.0s, Touch Swipe, Global Toggle)
      ========================================================================== */
   let productBannerInterval = null;
   let currentBannerIndex = 0; // Real active banner index: 0 .. N-1
-  let currentTrackVirtualIndex = 1; // Track index with clones: 1 .. N (0 and N+1 are clones)
+  let currentTrackVirtualIndex = 2; // Track index with clones: start at 2 (real B0) when N >= 2
   let isBannerTransitioning = false;
   let activeBanners = [];
+
+  function getTrackTransform(virtualIdx) {
+    const isDesktop = window.innerWidth >= 769;
+    if (!isDesktop) {
+      return `translateX(-${virtualIdx * 100}%)`;
+    } else {
+      // 70% card width + 2% margin-right = 72% per slide.
+      // To center active slide in 100% viewport: (100% - 70%) / 2 = 15% left offset.
+      return `translateX(calc(15% - ${virtualIdx * 72}%))`;
+    }
+  }
+
+  function updateActiveSlideClasses(virtualIdx) {
+    const slides = document.querySelectorAll('#productBannerTrack .product-banner-slide');
+    slides.forEach((s, idx) => {
+      if (idx === virtualIdx) {
+        s.classList.add('is-active-slide');
+      } else {
+        s.classList.remove('is-active-slide');
+      }
+    });
+  }
 
   function buildSlideHtml(b, realIdx, isClone = false) {
     const img = b.image_url || 'assets/images/logo.png';
@@ -520,6 +542,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const bannerSection = document.getElementById('productBannerSection');
     const bannerTrack = document.getElementById('productBannerTrack');
     const bannerIndicators = document.getElementById('productBannerIndicators');
+    const prevBtn = document.getElementById('bannerStagePrevBtn');
+    const nextBtn = document.getElementById('bannerStageNextBtn');
     if (!bannerSection || !bannerTrack) return;
 
     // Clear any active auto-slide interval
@@ -543,23 +567,36 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (activeBanners.length >= 2) {
         const N = activeBanners.length;
-        // Infinite forward continuous loop: [Clone Last, B0, B1, ... BN-1, Clone First]
-        const lastClone = buildSlideHtml(activeBanners[N - 1], N - 1, true);
+        // Infinite forward continuous loop buffer with 2 clones on each side:
+        // [Clone(N-2), Clone(N-1), B0, B1, ... B(N-1), Clone(0), Clone(1)]
+        const c1 = buildSlideHtml(activeBanners[(N - 2 + N) % N], (N - 2 + N) % N, true);
+        const c2 = buildSlideHtml(activeBanners[N - 1], N - 1, true);
         const realSlides = activeBanners.map((b, idx) => buildSlideHtml(b, idx, false)).join('');
-        const firstClone = buildSlideHtml(activeBanners[0], 0, true);
+        const c3 = buildSlideHtml(activeBanners[0], 0, true);
+        const c4 = buildSlideHtml(activeBanners[1 % N], 1 % N, true);
 
-        bannerTrack.innerHTML = lastClone + realSlides + firstClone;
+        bannerTrack.innerHTML = c1 + c2 + realSlides + c3 + c4;
         currentBannerIndex = 0;
-        currentTrackVirtualIndex = 1;
+        currentTrackVirtualIndex = 2; // Real B0 is at index 2
         bannerTrack.style.transition = 'none';
-        bannerTrack.style.transform = 'translateX(-100%)';
+        bannerTrack.style.transform = getTrackTransform(2);
+
+        if (prevBtn) prevBtn.style.display = '';
+        if (nextBtn) nextBtn.style.display = '';
       } else {
-        bannerTrack.innerHTML = buildSlideHtml(activeBanners[0], 0, false);
+        // N === 1: [Clone 0, Real 0, Clone 0] so peeking wings carry the same banner seamlessly
+        const b0 = activeBanners[0];
+        bannerTrack.innerHTML = buildSlideHtml(b0, 0, true) + buildSlideHtml(b0, 0, false) + buildSlideHtml(b0, 0, true);
         currentBannerIndex = 0;
-        currentTrackVirtualIndex = 0;
+        currentTrackVirtualIndex = 1; // Real B0 is at index 1
         bannerTrack.style.transition = 'none';
-        bannerTrack.style.transform = 'translateX(0%)';
+        bannerTrack.style.transform = getTrackTransform(1);
+
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
       }
+
+      updateActiveSlideClasses(currentTrackVirtualIndex);
 
       // Render dots if 2 or more slides
       if (bannerIndicators) {
@@ -582,15 +619,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       updateBannerDots(0);
-      updateDesktopPeekWings(0);
 
       // Slide click navigation
-      bannerTrack.querySelectorAll('.product-banner-slide').forEach(slide => {
+      bannerTrack.querySelectorAll('.product-banner-slide').forEach((slide, slideIdx) => {
         slide.addEventListener('click', () => {
           if (slide._wasSwiping) {
             slide._wasSwiping = false;
             return;
           }
+
+          // If on desktop and user clicked a side peeking slide (not currently centered)
+          if (window.innerWidth >= 769 && activeBanners.length >= 2) {
+            if (slideIdx < currentTrackVirtualIndex) {
+              slidePrev();
+              restartBannerAutoSlide();
+              return;
+            } else if (slideIdx > currentTrackVirtualIndex) {
+              slideNext();
+              restartBannerAutoSlide();
+              return;
+            }
+          }
+
+          // Centered active slide clicked: follow banner link
           const link = slide.getAttribute('data-link');
           if (link) {
             if (link.startsWith('#')) {
@@ -617,56 +668,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  function updateDesktopPeekWings(index) {
-    const leftImg = document.getElementById('bannerPeekLeftImg');
-    const rightImg = document.getElementById('bannerPeekRightImg');
-    const peekLeft = document.getElementById('bannerPeekLeft');
-    const peekRight = document.getElementById('bannerPeekRight');
-    if (!leftImg || !rightImg || !activeBanners || activeBanners.length === 0) return;
-
-    const N = activeBanners.length;
-    const prevIdx = (index - 1 + N) % N;
-    const nextIdx = (index + 1) % N;
-
-    const prevBanner = activeBanners[prevIdx];
-    const nextBanner = activeBanners[nextIdx];
-
-    if (prevBanner) {
-      leftImg.src = prevBanner.image_url || 'assets/images/logo.png';
-      leftImg.alt = prevBanner.title || 'Previous Banner';
-    }
-    if (nextBanner) {
-      rightImg.src = nextBanner.image_url || 'assets/images/logo.png';
-      rightImg.alt = nextBanner.title || 'Next Banner';
-    }
-
-    if (peekLeft && peekRight) {
-      if (N <= 1) {
-        peekLeft.style.cursor = 'default';
-        peekRight.style.cursor = 'default';
-        peekLeft.style.opacity = '0.52';
-        peekRight.style.opacity = '0.52';
-        leftImg.style.filter = 'blur(1.5px)';
-        rightImg.style.filter = 'blur(1.5px)';
-        const prevBtn = peekLeft.querySelector('.peek-nav-btn');
-        const nextBtn = peekRight.querySelector('.peek-nav-btn');
-        if (prevBtn) prevBtn.style.display = 'none';
-        if (nextBtn) nextBtn.style.display = 'none';
-      } else {
-        peekLeft.style.cursor = 'pointer';
-        peekRight.style.cursor = 'pointer';
-        peekLeft.style.opacity = '0.68';
-        peekRight.style.opacity = '0.68';
-        leftImg.style.filter = 'none';
-        rightImg.style.filter = 'none';
-        const prevBtn = peekLeft.querySelector('.peek-nav-btn');
-        const nextBtn = peekRight.querySelector('.peek-nav-btn');
-        if (prevBtn) prevBtn.style.display = 'inline-flex';
-        if (nextBtn) nextBtn.style.display = 'inline-flex';
-      }
-    }
-  }
-
   function updateBannerDots(index) {
     const bannerIndicators = document.getElementById('productBannerIndicators');
     if (!bannerIndicators) return;
@@ -680,7 +681,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Continuous Seamless Forward Slide: 1 -> 2 -> 3 -> 4 -> 1 -> 2... (Never rewinds backward)
+  // Continuous Seamless Forward Slide: 1 -> 2 -> 3 -> 4 -> 1 -> 2... (Entire container slides together)
   function slideNext() {
     if (!activeBanners || activeBanners.length < 2 || isBannerTransitioning) return;
     const bannerTrack = document.getElementById('productBannerTrack');
@@ -690,20 +691,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const N = activeBanners.length;
     currentTrackVirtualIndex++;
 
-    bannerTrack.style.transition = 'transform 0.4s ease-in-out';
-    bannerTrack.style.transform = `translateX(-${currentTrackVirtualIndex * 100}%)`;
+    bannerTrack.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
+    bannerTrack.style.transform = getTrackTransform(currentTrackVirtualIndex);
 
-    currentBannerIndex = (currentTrackVirtualIndex - 1 + N) % N;
+    currentBannerIndex = (currentTrackVirtualIndex - 2 + N) % N;
     updateBannerDots(currentBannerIndex);
-    updateDesktopPeekWings(currentBannerIndex);
+    updateActiveSlideClasses(currentTrackVirtualIndex);
 
     setTimeout(() => {
-      if (currentTrackVirtualIndex >= N + 1) {
-        // Reached the clone of slide 1 at end: snap silently without transition to real slide 1
+      if (currentTrackVirtualIndex >= N + 2) {
+        // Reached clone of slide 0 at end: snap silently without transition to real slide 0 at index 2
         bannerTrack.style.transition = 'none';
-        currentTrackVirtualIndex = 1;
-        bannerTrack.style.transform = 'translateX(-100%)';
-        void bannerTrack.offsetHeight; // force reflow
+        currentTrackVirtualIndex = 2;
+        bannerTrack.style.transform = getTrackTransform(2);
+        updateActiveSlideClasses(2);
+        void bannerTrack.offsetHeight; // Force reflow
       }
       isBannerTransitioning = false;
     }, 420);
@@ -719,20 +721,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const N = activeBanners.length;
     currentTrackVirtualIndex--;
 
-    bannerTrack.style.transition = 'transform 0.4s ease-in-out';
-    bannerTrack.style.transform = `translateX(-${currentTrackVirtualIndex * 100}%)`;
+    bannerTrack.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
+    bannerTrack.style.transform = getTrackTransform(currentTrackVirtualIndex);
 
-    currentBannerIndex = (currentTrackVirtualIndex - 1 + N) % N;
+    currentBannerIndex = (currentTrackVirtualIndex - 2 + N) % N;
     updateBannerDots(currentBannerIndex);
-    updateDesktopPeekWings(currentBannerIndex);
+    updateActiveSlideClasses(currentTrackVirtualIndex);
 
     setTimeout(() => {
-      if (currentTrackVirtualIndex <= 0) {
-        // Reached clone of last slide at start: snap silently to real last slide
+      if (currentTrackVirtualIndex <= 1) {
+        // Reached clone of last slide at start: snap silently without transition to real last slide at N+1
         bannerTrack.style.transition = 'none';
-        currentTrackVirtualIndex = N;
-        bannerTrack.style.transform = `translateX(-${N * 100}%)`;
-        void bannerTrack.offsetHeight; // force reflow
+        currentTrackVirtualIndex = N + 1;
+        bannerTrack.style.transform = getTrackTransform(N + 1);
+        updateActiveSlideClasses(N + 1);
+        void bannerTrack.offsetHeight; // Force reflow
       }
       isBannerTransitioning = false;
     }, 420);
@@ -746,56 +749,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     const N = activeBanners.length;
     if (N < 2) {
       currentBannerIndex = 0;
-      currentTrackVirtualIndex = 0;
+      currentTrackVirtualIndex = 1;
       bannerTrack.style.transition = 'none';
-      bannerTrack.style.transform = 'translateX(0%)';
+      bannerTrack.style.transform = getTrackTransform(1);
       updateBannerDots(0);
-      updateDesktopPeekWings(0);
+      updateActiveSlideClasses(1);
       return;
     }
 
     currentBannerIndex = (realIndex + N) % N;
-    currentTrackVirtualIndex = currentBannerIndex + 1;
+    currentTrackVirtualIndex = currentBannerIndex + 2;
 
-    bannerTrack.style.transition = 'transform 0.4s ease-in-out';
-    bannerTrack.style.transform = `translateX(-${currentTrackVirtualIndex * 100}%)`;
+    bannerTrack.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
+    bannerTrack.style.transform = getTrackTransform(currentTrackVirtualIndex);
 
     updateBannerDots(currentBannerIndex);
-    updateDesktopPeekWings(currentBannerIndex);
+    updateActiveSlideClasses(currentTrackVirtualIndex);
   }
 
   function setupBannerGesturesAndAutoSlide() {
     const slider = document.getElementById('productBannerSlider');
-    const peekLeft = document.getElementById('bannerPeekLeft');
-    const peekRight = document.getElementById('bannerPeekRight');
+    const stage = document.getElementById('productBannerStage');
+    const prevBtn = document.getElementById('bannerStagePrevBtn');
+    const nextBtn = document.getElementById('bannerStageNextBtn');
 
-    // Desktop Peeking Wings click and pause support
-    if (peekLeft && !peekLeft._hasClickListener) {
-      peekLeft._hasClickListener = true;
-      peekLeft.addEventListener('click', (e) => {
+    // Desktop Nav Buttons
+    if (prevBtn && !prevBtn._hasNavListener) {
+      prevBtn._hasNavListener = true;
+      prevBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (activeBanners.length >= 2) {
           slidePrev();
           restartBannerAutoSlide();
         }
       });
-      peekLeft.addEventListener('mouseenter', () => stopBannerAutoSlide());
-      peekLeft.addEventListener('mouseleave', () => {
-        if (activeBanners.length >= 2) startBannerAutoSlide();
-      });
     }
 
-    if (peekRight && !peekRight._hasClickListener) {
-      peekRight._hasClickListener = true;
-      peekRight.addEventListener('click', (e) => {
+    if (nextBtn && !nextBtn._hasNavListener) {
+      nextBtn._hasNavListener = true;
+      nextBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (activeBanners.length >= 2) {
           slideNext();
           restartBannerAutoSlide();
         }
       });
-      peekRight.addEventListener('mouseenter', () => stopBannerAutoSlide());
-      peekRight.addEventListener('mouseleave', () => {
+    }
+
+    // Hover pause on stage
+    if (stage && !stage._hasHoverListener) {
+      stage._hasHoverListener = true;
+      stage.addEventListener('mouseenter', () => stopBannerAutoSlide());
+      stage.addEventListener('mouseleave', () => {
         if (activeBanners.length >= 2) startBannerAutoSlide();
       });
     }
@@ -806,17 +811,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     slider._hasGestureListeners = true;
 
-    // Pause on hover over center slider
-    slider.addEventListener('mouseenter', () => stopBannerAutoSlide());
-    slider.addEventListener('mouseleave', () => {
-      if (activeBanners.length >= 2) startBannerAutoSlide();
-    });
-
     if (activeBanners.length >= 2) {
       startBannerAutoSlide();
     }
 
-    // Touch Swipe Gestures
+    // Touch Swipe Gestures (Mobile)
     let touchStartX = 0;
     let touchStartY = 0;
     let touchDeltaX = 0;
@@ -916,6 +915,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       startBannerAutoSlide();
     }
   }
+
+  // Smooth responsive repositioning on screen resize
+  let bannerResizeTimer = null;
+  window.addEventListener('resize', () => {
+    if (bannerResizeTimer) clearTimeout(bannerResizeTimer);
+    bannerResizeTimer = setTimeout(() => {
+      const bannerTrack = document.getElementById('productBannerTrack');
+      if (bannerTrack && activeBanners && activeBanners.length > 0) {
+        bannerTrack.style.transition = 'none';
+        bannerTrack.style.transform = getTrackTransform(currentTrackVirtualIndex);
+        updateActiveSlideClasses(currentTrackVirtualIndex);
+      }
+    }, 120);
+  });
 
   // Reactive listener for banner changes from Admin
   window.addEventListener('kairoslab_banners_updated', () => {

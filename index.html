@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, interactive-widget=resizes-content" />
   <title>Kairoslab - Online Store & Direct Orders</title>
-  <link rel="stylesheet" href="css/styles.css?v=20261116_0930" />
+  <link rel="stylesheet" href="css/styles.css?v=20261116_0955" />
 </head>
 <body>
 
@@ -197,36 +197,20 @@
           <!-- 16:9 Product Catalog Banner Slider (Mounted directly above search input card) -->
           <div id="productBannerSection" class="product-banner-section" style="display: none;">
             <div class="product-banner-stage" id="productBannerStage">
-              <!-- Desktop Left Peeking Wing (Previous Banner) -->
-              <div class="product-banner-peek peek-left" id="bannerPeekLeft" title="Previous Slide" role="button" aria-label="Previous Slide">
-                <div class="peek-img-box">
-                  <img id="bannerPeekLeftImg" src="" alt="Previous Banner" />
-                  <div class="peek-overlay"></div>
-                  <button type="button" class="peek-nav-btn peek-nav-prev" aria-label="Previous Banner">
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><polyline points="15 18 9 12 15 6"/></svg>
-                  </button>
-                </div>
-              </div>
+              <!-- Desktop Floating Nav Arrows -->
+              <button type="button" class="banner-stage-nav banner-stage-prev" id="bannerStagePrevBtn" aria-label="Previous Slide">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <button type="button" class="banner-stage-nav banner-stage-next" id="bannerStageNextBtn" aria-label="Next Slide">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
 
-              <!-- Center Active 16:9 Banner Card -->
-              <div class="product-banner-center-card">
-                <div class="product-banner-slider" id="productBannerSlider">
-                  <div class="product-banner-track" id="productBannerTrack">
-                    <!-- Rendered dynamically by app.js -->
-                  </div>
-                  <div class="product-banner-indicators" id="productBannerIndicators"></div>
+              <!-- Unified Sliding Viewport Track -->
+              <div class="product-banner-slider" id="productBannerSlider">
+                <div class="product-banner-track" id="productBannerTrack">
+                  <!-- Rendered dynamically by app.js: complete .product-banner-slide cards -->
                 </div>
-              </div>
-
-              <!-- Desktop Right Peeking Wing (Next Banner) -->
-              <div class="product-banner-peek peek-right" id="bannerPeekRight" title="Next Slide" role="button" aria-label="Next Slide">
-                <div class="peek-img-box">
-                  <img id="bannerPeekRightImg" src="" alt="Next Banner" />
-                  <div class="peek-overlay"></div>
-                  <button type="button" class="peek-nav-btn peek-nav-next" aria-label="Next Banner">
-                    <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><polyline points="9 18 15 12 9 6"/></svg>
-                  </button>
-                </div>
+                <div class="product-banner-indicators" id="productBannerIndicators"></div>
               </div>
             </div>
           </div>
@@ -619,6 +603,6 @@
   <script src="js/supabase-config.js?v=20261116_0850"></script>
   <script src="js/receipt-generator.js?v=20261116_0850"></script>
   <script src="js/auth-modal.js?v=20261116_0850"></script>
-  <script src="js/app.js?v=20261116_0945"></script>
+  <script src="js/app.js?v=20261116_0955"></script>
 </body>
 </html>

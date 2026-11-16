@@ -506,31 +506,30 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isVisible = b.is_active !== false;
 
       return `
-        <div class="admin-item-row" data-id="${b.id}" style="display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 16px; background: var(--bg-surface, #fff); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px;">
-          <div style="display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1;">
-            <!-- 16:9 Thumbnail -->
-            <div style="width: 110px; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: #0c1726; border: 1px solid var(--border-color); flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-              <img src="${b.image_url}" alt="${window.CustomModal.escape(b.title || 'Banner')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.src='assets/images/logo.png';" />
-            </div>
+        <div class="admin-banner-row ${isVisible ? '' : 'is-hidden-banner'}" data-id="${b.id}">
+          <!-- Left: 16:9 Thumbnail -->
+          <div class="admin-banner-thumb">
+            <img src="${b.image_url}" alt="${window.CustomModal.escape(b.title || 'Banner')}" onerror="this.onerror=null;this.src='assets/images/logo.png';" />
+          </div>
 
-            <div style="min-width: 0; flex: 1;">
-              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <span style="font-size: 14px; font-weight: 700; color: var(--text-main);">${window.CustomModal.escape(b.title || 'Untitled Slide')}</span>
-                <span class="badge ${isVisible ? 'badge-success' : 'badge-neutral'}" style="font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
-                  ${isVisible ? 'Active' : 'Hidden'}
-                </span>
-              </div>
-              ${b.subtitle ? `<div style="font-size: 12px; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 420px;">${window.CustomModal.escape(b.subtitle)}</div>` : ''}
-              <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                <span>Position: <strong>#${idx + 1}</strong></span>
-                <span>Ratio: <strong>16:9</strong></span>
-                ${b.link_url ? `<span>Target: <strong style="color: var(--primary);">${window.CustomModal.escape(b.link_url)}</strong></span>` : ''}
-              </div>
+          <!-- Middle: Info Details -->
+          <div class="admin-banner-info">
+            <div class="admin-banner-info-top">
+              <span class="admin-banner-title">${window.CustomModal.escape(b.title || 'Untitled Banner')}</span>
+              <span class="badge ${isVisible ? 'badge-success' : 'badge-neutral'}" style="font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600;">
+                ${isVisible ? 'Active' : 'Hidden'}
+              </span>
+            </div>
+            ${b.subtitle ? `<div class="admin-banner-subtitle">${window.CustomModal.escape(b.subtitle)}</div>` : ''}
+            <div class="admin-banner-meta">
+              <span>Position: <strong>#${idx + 1}</strong></span>
+              <span>Ratio: <strong>16:9</strong></span>
+              ${b.link_url ? `<span>Target: <strong style="color: var(--primary);">${window.CustomModal.escape(b.link_url)}</strong></span>` : ''}
             </div>
           </div>
 
-          <!-- Action buttons -->
-          <div class="admin-item-actions" style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+          <!-- Right: Action Buttons -->
+          <div class="admin-banner-actions">
             <button class="btn-icon-square" type="button" data-action="banner-up" data-idx="${idx}" title="Move Up (Earlier Slide)" ${isFirst ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>
               ${window.renderIcon('arrowUp')}
             </button>
@@ -553,7 +552,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Banner Up Action
     bannersContainer.querySelectorAll('[data-action="banner-up"]').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
         const idx = parseInt(btn.getAttribute('data-idx'), 10);
         if (idx > 0) {
           const temp = adminState.banners[idx];
@@ -573,7 +573,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Banner Down Action
     bannersContainer.querySelectorAll('[data-action="banner-down"]').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
         const idx = parseInt(btn.getAttribute('data-idx'), 10);
         if (idx < adminState.banners.length - 1) {
           const temp = adminState.banners[idx];
@@ -593,7 +594,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Banner Toggle Active/Hide Action
     bannersContainer.querySelectorAll('[data-action="banner-toggle"]').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
         const id = btn.getAttribute('data-id');
         const b = adminState.banners.find(x => x.id === id);
         if (!b) return;
@@ -613,7 +615,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Banner Edit Action
     bannersContainer.querySelectorAll('[data-action="banner-edit"]').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const id = btn.getAttribute('data-id');
         const b = adminState.banners.find(x => x.id === id);
         if (b) openBannerEditModal(b);
@@ -622,7 +625,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Banner Delete Action
     bannersContainer.querySelectorAll('[data-action="banner-delete"]').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
         const id = btn.getAttribute('data-id');
         const confirmed = await window.CustomModal.confirm({
           title: 'Delete Banner Slide',
@@ -659,12 +663,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     let bannerDraftImage = bDraft.image_url || '';
 
     bannerModal.innerHTML = `
-      <div class="c-modal-card" style="max-width: 580px; width: 92%; max-height: 90vh; overflow-y: auto;">
-        <div class="c-modal-header" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--border-color);">
-          <h3 class="c-modal-title" style="margin: 0; font-size: 16px; font-weight: 700;">
-            ${isNew ? 'Create New 16:9 Banner Slide' : 'Edit Banner Slide'}
-          </h3>
-          <button class="c-modal-close" type="button" id="closeBannerModalBtn" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted);">&times;</button>
+      <div class="c-modal-box" style="max-width: 580px;">
+        <div class="c-modal-header">
+          <h3 class="c-modal-title">${isNew ? 'Create New 16:9 Banner Slide' : 'Edit Banner Slide'}</h3>
+          <button class="c-modal-close" type="button" id="closeBannerModalBtn" aria-label="Close dialog">
+            ${window.renderIcon('x')}
+          </button>
         </div>
         <form id="adminBannerForm" style="display: flex; flex-direction: column; gap: 14px; padding: 18px;">
           <!-- 16:9 Banner Image Preview and Upload -->
@@ -691,7 +695,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             <div style="margin-top: 10px;">
               <label class="form-label" style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Or enter Image URL / Asset Path:</label>
-              <input type="text" id="bannerImageUrlInputEl" class="form-input" placeholder="e.g. assets/banners/mercedes-gle.jpg" value="${window.CustomModal.escape(bannerDraftImage)}" style="font-size: 12px;" />
+              <input type="text" id="bannerImageUrlInputEl" class="form-input" placeholder="e.g. assets/products/mercedes-benz-gle-coupe-2019.jpg" value="${window.CustomModal.escape(bannerDraftImage)}" style="font-size: 12px;" />
             </div>
           </div>
 
@@ -710,7 +714,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <!-- Link URL -->
           <div class="form-group">
             <label class="form-label" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px;">Link URL / Action (Optional)</label>
-            <input type="text" id="bannerLinkInputEl" class="form-input" placeholder="e.g. #viewShop or https://wa.me/..." value="${window.CustomModal.escape(bDraft.link_url || '')}" />
+            <input type="text" id="bannerLinkInputEl" class="form-input" placeholder="e.g. #viewShop or #category:cat-vehicles or https://wa.me/..." value="${window.CustomModal.escape(bDraft.link_url || '')}" />
           </div>
 
           <!-- Active Checkbox -->
@@ -730,7 +734,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>
     `;
 
-    bannerModal.style.display = 'flex';
+    bannerModal.classList.add('active');
 
     const closeBtn = bannerModal.querySelector('#closeBannerModalBtn');
     const cancelBtn = bannerModal.querySelector('#cancelBannerModalBtn');
@@ -754,12 +758,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const closeModal = () => {
-      bannerModal.style.display = 'none';
+      bannerModal.classList.remove('active');
       bannerModal.innerHTML = '';
     };
 
     closeBtn?.addEventListener('click', closeModal);
     cancelBtn?.addEventListener('click', closeModal);
+
+    const onOverlayClick = (e) => {
+      if (e.target === bannerModal) {
+        bannerModal.removeEventListener('click', onOverlayClick);
+        closeModal();
+      }
+    };
+    bannerModal.addEventListener('click', onOverlayClick);
 
     urlInput?.addEventListener('input', () => {
       bannerDraftImage = urlInput.value.trim();

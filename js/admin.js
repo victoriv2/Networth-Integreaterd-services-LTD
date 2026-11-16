@@ -1645,7 +1645,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         is_hidden: false,
         hidden: false,
         images: [],
-        sort_order: 1
+        sort_order: 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       };
       openProductEditDialog(newProd, true);
     });
@@ -1842,6 +1844,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (isNew) {
         updated.sort_order = 1;
+        if (!updated.created_at) updated.created_at = new Date().toISOString();
         adminState.products.unshift(updated);
       } else {
         const idx = adminState.products.findIndex(p => p.id === updated.id);
@@ -1852,6 +1855,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.SupabaseService.setProductHidden(updated.id, isHidden);
       }
       const savedProd = await window.SupabaseService.saveProduct(updated);
+      if (savedProd) {
+        const adminIdx = adminState.products.findIndex(p => p.id === savedProd.id);
+        if (adminIdx >= 0) {
+          adminState.products[adminIdx] = { ...adminState.products[adminIdx], ...savedProd };
+        }
+      }
 
       if (submitBtn) {
         submitBtn.disabled = false;

@@ -250,7 +250,7 @@ window.SupabaseService = {
           await this.request(`kairoslab_products?id=in.(${chunk.map(encodeURIComponent).join(',')})`, {
             method: 'PATCH',
             headers: { 'Prefer': 'return=minimal' },
-            body: JSON.stringify({ is_hidden: true })
+            body: JSON.stringify({ is_hidden: true, hidden: true })
           });
         }
         productIds.forEach(id => this.setProductHidden(id, true));
@@ -258,7 +258,7 @@ window.SupabaseService = {
         await this.request('kairoslab_products?id=not.is.null', {
           method: 'PATCH',
           headers: { 'Prefer': 'return=minimal' },
-          body: JSON.stringify({ is_hidden: true })
+          body: JSON.stringify({ is_hidden: true, hidden: true })
         });
       }
 
@@ -298,7 +298,7 @@ window.SupabaseService = {
           await this.request(`kairoslab_products?id=in.(${chunk.map(encodeURIComponent).join(',')})`, {
             method: 'PATCH',
             headers: { 'Prefer': 'return=minimal' },
-            body: JSON.stringify({ is_hidden: false })
+            body: JSON.stringify({ is_hidden: false, hidden: false })
           });
         }
         productIds.forEach(id => this.setProductHidden(id, false));
@@ -306,7 +306,7 @@ window.SupabaseService = {
         await this.request('kairoslab_products?id=not.is.null', {
           method: 'PATCH',
           headers: { 'Prefer': 'return=minimal' },
-          body: JSON.stringify({ is_hidden: false })
+          body: JSON.stringify({ is_hidden: false, hidden: false })
         });
         localStorage.setItem('kairoslab_hidden_product_ids', '[]');
       }
@@ -411,8 +411,13 @@ window.SupabaseService = {
     if (cloud && Array.isArray(cloud)) {
       try {
         let local = [];
-        if ((!categoryId || categoryId === 'all') && offset === 0) {
-          // Authoritative replacement for top catalog page to purge stale products
+        const raw = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
+        if (raw) {
+          try { local = JSON.parse(raw) || []; } catch (_) { local = []; }
+        }
+
+        if (limit === null && (!categoryId || categoryId === 'all') && offset === 0) {
+          // Authoritative full catalog replacement when fetching complete catalog
           local = cloud.map(p => {
             if (this.isProductHidden(p)) {
               p.is_hidden = true;
@@ -421,8 +426,7 @@ window.SupabaseService = {
             return p;
           });
         } else {
-          const raw = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
-          if (raw) local = JSON.parse(raw);
+          // Paginated or filtered: merge into local cache by ID without wiping other products
           cloud.forEach(p => {
             if (this.isProductHidden(p)) {
               p.is_hidden = true;
@@ -430,7 +434,7 @@ window.SupabaseService = {
             }
             const idx = local.findIndex(x => x.id === p.id);
             if (idx >= 0) local[idx] = { ...local[idx], ...p };
-            else local.push(p);
+            else local.unshift(p);
           });
         }
         localStorage.setItem('kairoslab_local_products', JSON.stringify(local));
@@ -634,13 +638,15 @@ window.SupabaseService = {
     try {
       const stored = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
       if (stored) localList = JSON.parse(stored);
-      if (!Array.isArray(localList) || localList.length === 0) localList = this._getDefaultProducts();
+      if (!Array.isArray(localList)) localList = [];
     } catch (_) {
-      localList = this._getDefaultProducts();
+      localList = [];
     }
 
+    const createdAt = prod.created_at || new Date().toISOString();
     const cleanProd = {
       ...prod,
+      created_at: createdAt,
       is_hidden: isHidden,
       hidden: isHidden,
       updated_at: new Date().toISOString()
@@ -650,7 +656,7 @@ window.SupabaseService = {
     if (idx >= 0) {
       localList[idx] = { ...localList[idx], ...cleanProd };
     } else {
-      localList.push(cleanProd);
+      localList.unshift(cleanProd);
     }
     localStorage.setItem('kairoslab_local_products', JSON.stringify(localList));
 
@@ -665,9 +671,9 @@ window.SupabaseService = {
       hidden: isHidden,
       images: Array.isArray(cleanProd.images) ? cleanProd.images : [],
       sort_order: typeof cleanProd.sort_order === 'number' ? cleanProd.sort_order : 0,
+      created_at: cleanProd.created_at,
       updated_at: cleanProd.updated_at
     };
-    if (cleanProd.created_at) dbPayload.created_at = cleanProd.created_at;
 
     let cloudRes = null;
     try {
@@ -678,10 +684,18 @@ window.SupabaseService = {
         body: JSON.stringify(dbPayload),
         timeoutMs: 45000
       });
+      if (cloudRes && Array.isArray(cloudRes) && cloudRes[0]) {
+        const returned = cloudRes[0];
+        const updateIdx = localList.findIndex(p => p.id === cleanProd.id);
+        if (updateIdx >= 0) {
+          localList[updateIdx] = { ...localList[updateIdx], ...returned, is_hidden: isHidden, hidden: isHidden };
+          localStorage.setItem('kairoslab_local_products', JSON.stringify(localList));
+        }
+      }
     } catch (e) {
       console.warn('saveProduct cloud notice:', e);
     }
-    cleanProd._cloudSynced = Boolean(cloudRes && (typeof cloudRes === 'object' || cloudRes === true));
+    cleanProd._cloudSynced = Boolean(cloudRes && (Array.isArray(cloudRes) ? cloudRes.length > 0 : (typeof cloudRes === 'object' || cloudRes === true)));
     return cleanProd;
   },
 

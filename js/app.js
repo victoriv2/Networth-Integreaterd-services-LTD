@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     hasMoreProducts: false,
     isLoadingMore: false,
     productCardTimers: {},
-    currentView: localStorage.getItem('nkem_product_view') || 'grid',
+    currentView: localStorage.getItem('kairoslab_product_view') || localStorage.getItem('nkem_product_view') || 'grid',
     cart: []
   };
 
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
     try {
-      const raw = localStorage.getItem('nkem_current_user') || localStorage.getItem('nkem_user');
+      const raw = localStorage.getItem('kairoslab_current_user') || localStorage.getItem('kairoslab_user') || localStorage.getItem('nkem_current_user') || localStorage.getItem('nkem_user');
       return raw ? JSON.parse(raw) : null;
     } catch (_) {
       return null;
@@ -41,13 +41,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Reactive UI update on authentication state change
-  window.addEventListener('nkem_auth_changed', (evt) => {
+  const onAuthChangeHandler = (evt) => {
     try {
       const user = evt?.detail?.user || getActiveUser();
       if (user && user.id) {
         syncCartWithCloud(true);
       }
       // Never wipe local cart on auth check or guest mode
+    } catch (e) {
+      console.warn('Auth reactive notice:', e);
+    }
+  };
+  window.addEventListener('kairoslab_auth_changed', onAuthChangeHandler);
+  window.addEventListener('nkem_auth_changed', onAuthChangeHandler);
       renderAccountView();
       renderCartView();
       renderRequestsView();
@@ -75,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
      ========================================================================== */
   function getCart() {
     try {
-      const stored = localStorage.getItem('nkem_cart');
+      const stored = localStorage.getItem('kairoslab_cart') || localStorage.getItem('nkem_cart');
       return stored ? JSON.parse(stored) : [];
     } catch (e) {
       return [];
@@ -90,9 +96,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const safeCart = Array.isArray(cart) ? cart : [];
     try {
       if (safeCart.length === 0) {
+        localStorage.removeItem('kairoslab_cart');
         localStorage.removeItem('nkem_cart');
       } else {
-        localStorage.setItem('nkem_cart', JSON.stringify(safeCart));
+        localStorage.setItem('kairoslab_cart', JSON.stringify(safeCart));
       }
     } catch (e) {}
     state.cart = safeCart;
@@ -352,6 +359,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
       history.replaceState(null, '', '#' + tabName);
+      sessionStorage.setItem('kairoslab_current_tab', tabName);
       sessionStorage.setItem('nkem_current_tab', tabName);
     } catch (e) {}
   };
@@ -789,6 +797,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function applyProductView(view) {
     state.currentView = view || 'grid';
     try {
+      localStorage.setItem('kairoslab_product_view', state.currentView);
       localStorage.setItem('nkem_product_view', state.currentView);
     } catch (e) {}
 
@@ -2779,7 +2788,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Instantly activate target tab (from hash or saved session) before data fetching
   const validTabs = ['shop', 'home', 'requests', 'cart', 'account'];
   const hash = (window.location.hash || '').replace('#', '').toLowerCase();
-  const savedTab = sessionStorage.getItem('nkem_current_tab');
+  const savedTab = sessionStorage.getItem('kairoslab_current_tab') || sessionStorage.getItem('nkem_current_tab');
   const initialTab = validTabs.includes(hash) ? hash : (validTabs.includes(savedTab) ? savedTab : 'shop');
   window.switchAppTab(initialTab);
 

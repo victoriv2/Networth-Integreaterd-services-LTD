@@ -1305,13 +1305,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Purge any legacy sourcing orders from cloud and local storage so they never linger in Orders table
       try {
         if (window.SupabaseService && window.SupabaseService.request) {
-          window.SupabaseService.request('nkem_orders?product_id=eq.custom-sourcing', { method: 'DELETE' }).catch(() => {});
-          window.SupabaseService.request('nkem_orders?id=like.req-*', { method: 'DELETE' }).catch(() => {});
+          window.SupabaseService.request('kairoslab_orders?product_id=eq.custom-sourcing', { method: 'DELETE' }).catch(() => {});
+          window.SupabaseService.request('kairoslab_orders?id=like.req-*', { method: 'DELETE' }).catch(() => {});
         }
-        const local = JSON.parse(localStorage.getItem('nkem_local_orders') || '[]');
+        const local = JSON.parse(localStorage.getItem('kairoslab_local_orders') || localStorage.getItem('nkem_local_orders') || '[]');
         if (Array.isArray(local) && local.length > 0) {
           const cleaned = local.filter(o => !isSourcingRequestOrder(o));
-          localStorage.setItem('nkem_local_orders', JSON.stringify(cleaned));
+          localStorage.setItem('kairoslab_local_orders', JSON.stringify(cleaned));
         }
       } catch (_) {}
 
@@ -2431,7 +2431,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function loadUsersManager() {
     try {
       const users = await window.SupabaseService.getUsers();
-      adminState.users = (users || []).filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@nkem.global' && u.email !== 'admin@kairoslab.sbs' && u.whatsapp_number !== 'admin');
+      adminState.users = (users || []).filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@kairoslab.sbs' && u.whatsapp_number !== 'admin');
       updateAdminUsersBadge();
       renderUsersManager(adminUserSearchInput ? adminUserSearchInput.value : '');
     } catch (err) {
@@ -2580,8 +2580,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* ==========================================================================
      ADMIN AUTHENTICATION & SECURITY CONTROLLER
      ========================================================================== */
-  const ADMIN_CRED_KEY = 'nkem_admin_credentials';
-  const ADMIN_AUTH_KEY = 'nkem_admin_session_auth';
+  const ADMIN_CRED_KEY = 'kairoslab_admin_credentials';
+  const ADMIN_AUTH_KEY = 'kairoslab_admin_session_auth';
 
   function getAdminCredentials() {
     try {
@@ -2887,7 +2887,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isMatchUser = (
         rawUser === 'admin' ||
         rawUser === 'admin@kairoslab.sbs' ||
-        rawUser === 'admin@nkem.global' ||
         rawUser === creds.username.toLowerCase() ||
         cleanPhone === '09031932413' ||
         cleanPhone === '08142414888'

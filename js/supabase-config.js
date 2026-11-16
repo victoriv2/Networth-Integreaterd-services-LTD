@@ -1,4 +1,4 @@
-// Supabase Config & Cloud Sync Layer with Local Storage Fallback Cache
+﻿// Supabase Config & Cloud Sync Layer with Local Storage Fallback Cache
 window.SupabaseService = {
   URL: 'https://mhneirompaqyjwbachxg.supabase.co',
   ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1obmVpcm9tcGFxeWp3YmFjaHhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3NzE5NjAsImV4cCI6MjExMDM0Nzk2MH0.eMmtxhK38CVU_7cBvaWleZOoO7j15qdLO7zboW9kUy0',
@@ -7,20 +7,20 @@ window.SupabaseService = {
 
   initCacheCheck() {
     try {
-      const storedVer = localStorage.getItem('kairoslab_catalog_version') || localStorage.getItem('nkem_catalog_version');
-      const storedTime = parseInt(localStorage.getItem('kairoslab_catalog_timestamp') || localStorage.getItem('nkem_catalog_timestamp') || '0', 10);
+      const storedVer = localStorage.getItem('kairoslab_catalog_version') || localStorage.getItem('kairoslab_catalog_version');
+      const storedTime = parseInt(localStorage.getItem('kairoslab_catalog_timestamp') || localStorage.getItem('kairoslab_catalog_timestamp') || '0', 10);
       const now = Date.now();
       const isExpired = !storedTime || (now - storedTime > this.CACHE_TTL_MS);
       const isOutdated = storedVer !== this.CATALOG_VERSION;
 
       if (isOutdated || isExpired) {
         console.log(`[Cache Invalidation] Purging stale local cache (Outdated: ${isOutdated}, Expired: ${isExpired})`);
-        localStorage.removeItem('nkem_local_products');
+        localStorage.removeItem('kairoslab_local_products');
         localStorage.removeItem('kairoslab_local_products');
         localStorage.setItem('kairoslab_catalog_version', this.CATALOG_VERSION);
-        localStorage.setItem('nkem_catalog_version', this.CATALOG_VERSION);
+        localStorage.setItem('kairoslab_catalog_version', this.CATALOG_VERSION);
         localStorage.setItem('kairoslab_catalog_timestamp', String(now));
-        localStorage.setItem('nkem_catalog_timestamp', String(now));
+        localStorage.setItem('kairoslab_catalog_timestamp', String(now));
       }
     } catch (e) {
       console.warn('Cache check notice:', e);
@@ -116,7 +116,7 @@ window.SupabaseService = {
 
   getLocalCategories() {
     try {
-      const local = localStorage.getItem('nkem_local_categories');
+      const local = (localStorage.getItem('kairoslab_local_categories') || localStorage.getItem('nkem_local_categories'));
       let list = local ? JSON.parse(local) : this._getDefaultCategories();
       if (Array.isArray(list)) {
         list = list.filter(c => c && c.id !== 'cat-suits');
@@ -141,7 +141,7 @@ window.SupabaseService = {
   },
 
   async getCategories() {
-    const cloud = await this.request('nkem_categories?select=*&order=sort_order.asc');
+    const cloud = await this.request('kairoslab_categories?select=*&order=sort_order.asc');
     if (cloud && Array.isArray(cloud) && cloud.length > 0) {
       const filtered = cloud.filter(c => c && c.id !== 'cat-suits');
       const clothes = filtered.find(c => c && c.id === 'cat-clothes');
@@ -157,10 +157,10 @@ window.SupabaseService = {
         equipment.name = 'Equipment & Oil Tools';
         equipment.image_url = 'assets/categories/cat-equipment.png';
       }
-      localStorage.setItem('nkem_local_categories', JSON.stringify(filtered));
+      localStorage.setItem('kairoslab_local_categories', JSON.stringify(filtered));
       return filtered;
     }
-    const local = localStorage.getItem('nkem_local_categories');
+    const local = (localStorage.getItem('kairoslab_local_categories') || localStorage.getItem('nkem_local_categories'));
     return this.getLocalCategories();
   },
 
@@ -172,12 +172,12 @@ window.SupabaseService = {
     } else {
       localList.push(cat);
     }
-    localStorage.setItem('nkem_local_categories', JSON.stringify(localList));
+    localStorage.setItem('kairoslab_local_categories', JSON.stringify(localList));
 
     // Sync to Supabase with generous 30s mobile timeout
     let cloudRes = null;
     try {
-      cloudRes = await this.request('nkem_categories', {
+      cloudRes = await this.request('kairoslab_categories', {
         method: 'POST',
         headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify(cat),
@@ -192,9 +192,9 @@ window.SupabaseService = {
   async deleteCategory(id) {
     let localList = await this.getCategories();
     localList = localList.filter(c => c.id !== id);
-    localStorage.setItem('nkem_local_categories', JSON.stringify(localList));
+    localStorage.setItem('kairoslab_local_categories', JSON.stringify(localList));
 
-    await this.request(`nkem_categories?id=eq.${encodeURIComponent(id)}`, {
+    await this.request(`kairoslab_categories?id=eq.${encodeURIComponent(id)}`, {
       method: 'DELETE'
     });
     return true;
@@ -210,7 +210,7 @@ window.SupabaseService = {
     if (p.is_hidden === true || p.is_hidden === 'true') return true;
     if (p.hidden === true || p.hidden === 'true') return true;
     try {
-      const raw = localStorage.getItem('nkem_hidden_product_ids');
+      const raw = localStorage.getItem('kairoslab_hidden_product_ids');
       if (raw) {
         const arr = JSON.parse(raw);
         if (Array.isArray(arr) && arr.includes(p.id)) return true;
@@ -223,7 +223,7 @@ window.SupabaseService = {
     if (!productId) return;
     try {
       let arr = [];
-      const raw = localStorage.getItem('nkem_hidden_product_ids');
+      const raw = localStorage.getItem('kairoslab_hidden_product_ids');
       if (raw) arr = JSON.parse(raw) || [];
       const set = new Set(arr);
       if (isHidden) {
@@ -231,13 +231,13 @@ window.SupabaseService = {
       } else {
         set.delete(productId);
       }
-      localStorage.setItem('nkem_hidden_product_ids', JSON.stringify(Array.from(set)));
+      localStorage.setItem('kairoslab_hidden_product_ids', JSON.stringify(Array.from(set)));
     } catch (_) {}
   },
 
   getLocalProducts(includeHidden = false) {
     try {
-      const raw = localStorage.getItem('nkem_local_products');
+      const raw = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
       if (raw) {
         let parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -302,7 +302,7 @@ window.SupabaseService = {
       queryParts.push(`offset=${offset}`);
     }
 
-    const endpoint = `nkem_products?${queryParts.join('&')}`;
+    const endpoint = `kairoslab_products?${queryParts.join('&')}`;
     const cloud = await this.request(endpoint);
 
     if (cloud && Array.isArray(cloud)) {
@@ -318,7 +318,7 @@ window.SupabaseService = {
             return p;
           });
         } else {
-          const raw = localStorage.getItem('nkem_local_products');
+          const raw = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
           if (raw) local = JSON.parse(raw);
           cloud.forEach(p => {
             if (this.isProductHidden(p)) {
@@ -330,7 +330,7 @@ window.SupabaseService = {
             else local.push(p);
           });
         }
-        localStorage.setItem('nkem_local_products', JSON.stringify(local));
+        localStorage.setItem('kairoslab_local_products', JSON.stringify(local));
         localStorage.setItem('kairoslab_catalog_timestamp', String(Date.now()));
       } catch (_) {}
       return includeHidden ? cloud : cloud.filter(p => !this.isProductHidden(p));
@@ -339,7 +339,7 @@ window.SupabaseService = {
     // Fallback to local storage
     try {
       let local = [];
-      const raw = localStorage.getItem('nkem_local_products');
+      const raw = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
       if (raw) local = JSON.parse(raw);
 
       if (!local || local.length === 0) {
@@ -485,12 +485,12 @@ window.SupabaseService = {
 
     queryParts.push(`limit=${limit}`);
 
-    const endpoint = `nkem_products?${queryParts.join('&')}`;
+    const endpoint = `kairoslab_products?${queryParts.join('&')}`;
     const cloud = await this.request(endpoint);
 
     if (cloud && Array.isArray(cloud)) {
       try {
-        const raw = localStorage.getItem('nkem_local_products');
+        const raw = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
         let local = raw ? JSON.parse(raw) : [];
         cloud.forEach(p => {
           if (this.isProductHidden(p)) {
@@ -501,14 +501,14 @@ window.SupabaseService = {
           if (idx >= 0) local[idx] = { ...local[idx], ...p };
           else local.push(p);
         });
-        localStorage.setItem('nkem_local_products', JSON.stringify(local));
+        localStorage.setItem('kairoslab_local_products', JSON.stringify(local));
       } catch (_) {}
       return includeHidden ? cloud : cloud.filter(p => !this.isProductHidden(p));
     }
 
     // Fallback: search across all cached products
     try {
-      const raw = localStorage.getItem('nkem_local_products');
+      const raw = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
       const local = raw ? JSON.parse(raw) : [];
       const qLower = q.toLowerCase();
       return local.filter(p => {
@@ -529,7 +529,7 @@ window.SupabaseService = {
 
     let localList = [];
     try {
-      const stored = localStorage.getItem('nkem_local_products');
+      const stored = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
       if (stored) localList = JSON.parse(stored);
       if (!Array.isArray(localList) || localList.length === 0) localList = this._getDefaultProducts();
     } catch (_) {
@@ -549,7 +549,7 @@ window.SupabaseService = {
     } else {
       localList.push(cleanProd);
     }
-    localStorage.setItem('nkem_local_products', JSON.stringify(localList));
+    localStorage.setItem('kairoslab_local_products', JSON.stringify(localList));
 
     const dbPayload = {
       id: cleanProd.id,
@@ -569,7 +569,7 @@ window.SupabaseService = {
     let cloudRes = null;
     try {
       // Single direct upsert with 45s mobile timeout - handles both new items & updates seamlessly in 1 round trip
-      cloudRes = await this.request('nkem_products', {
+      cloudRes = await this.request('kairoslab_products', {
         method: 'POST',
         headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify(dbPayload),
@@ -585,14 +585,14 @@ window.SupabaseService = {
   async deleteProduct(id) {
     let localList = [];
     try {
-      const stored = localStorage.getItem('nkem_local_products');
+      const stored = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
       if (stored) localList = JSON.parse(stored);
     } catch (_) {}
 
     localList = localList.filter(p => p.id !== id);
-    localStorage.setItem('nkem_local_products', JSON.stringify(localList));
+    localStorage.setItem('kairoslab_local_products', JSON.stringify(localList));
 
-    const cloudRes = await this.request(`nkem_products?id=eq.${encodeURIComponent(id)}`, {
+    const cloudRes = await this.request(`kairoslab_products?id=eq.${encodeURIComponent(id)}`, {
       method: 'DELETE',
       timeoutMs: 25000
     });
@@ -602,7 +602,7 @@ window.SupabaseService = {
   // ---------------- BANNERS ----------------
   getLocalBanners() {
     try {
-      const local = localStorage.getItem('nkem_local_banners');
+      const local = localStorage.getItem('kairoslab_local_banners');
       if (local) return JSON.parse(local);
     } catch (e) {}
     return [
@@ -622,12 +622,12 @@ window.SupabaseService = {
   },
 
   async getBanners() {
-    const cloud = await this.request('nkem_banners?select=*&order=sort_order.asc');
+    const cloud = await this.request('kairoslab_banners?select=*&order=sort_order.asc');
     if (cloud && Array.isArray(cloud) && cloud.length > 0) {
-      localStorage.setItem('nkem_local_banners', JSON.stringify(cloud));
+      localStorage.setItem('kairoslab_local_banners', JSON.stringify(cloud));
       return cloud;
     }
-    const local = localStorage.getItem('nkem_local_banners');
+    const local = localStorage.getItem('kairoslab_local_banners');
     if (local) return JSON.parse(local);
 
     const defaultBanners = [
@@ -644,7 +644,7 @@ window.SupabaseService = {
         sort_order: 2
       }
     ];
-    localStorage.setItem('nkem_local_banners', JSON.stringify(defaultBanners));
+    localStorage.setItem('kairoslab_local_banners', JSON.stringify(defaultBanners));
     return defaultBanners;
   },
 
@@ -656,11 +656,11 @@ window.SupabaseService = {
     } else {
       localList.push(banner);
     }
-    localStorage.setItem('nkem_local_banners', JSON.stringify(localList));
+    localStorage.setItem('kairoslab_local_banners', JSON.stringify(localList));
 
     let cloudRes = null;
     try {
-      cloudRes = await this.request('nkem_banners', {
+      cloudRes = await this.request('kairoslab_banners', {
         method: 'POST',
         headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify(banner),
@@ -675,9 +675,9 @@ window.SupabaseService = {
   async deleteBanner(id) {
     let localList = await this.getBanners();
     localList = localList.filter(b => b.id !== id);
-    localStorage.setItem('nkem_local_banners', JSON.stringify(localList));
+    localStorage.setItem('kairoslab_local_banners', JSON.stringify(localList));
 
-    const cloudRes = await this.request(`nkem_banners?id=eq.${encodeURIComponent(id)}`, {
+    const cloudRes = await this.request(`kairoslab_banners?id=eq.${encodeURIComponent(id)}`, {
       method: 'DELETE',
       timeoutMs: 25000
     });
@@ -696,12 +696,12 @@ window.SupabaseService = {
     if (!orderId) return 'pending';
     const clean = this.canonicalOrderId(orderId);
     try {
-      const raw = localStorage.getItem('nkem_order_statuses');
+      const raw = localStorage.getItem('kairoslab_order_statuses');
       const statuses = raw ? JSON.parse(raw) : {};
       if (statuses && statuses[clean]) return String(statuses[clean]).toLowerCase();
     } catch (e) {}
     try {
-      const local = localStorage.getItem('nkem_local_orders');
+      const local = (localStorage.getItem('kairoslab_local_orders') || localStorage.getItem('nkem_local_orders'));
       const list = local ? JSON.parse(local) : [];
       if (Array.isArray(list)) {
         const found = list.find(o => this.canonicalOrderId(o) === clean);
@@ -716,14 +716,14 @@ window.SupabaseService = {
     const clean = this.canonicalOrderId(orderId);
     const s = String(newStatus || 'pending').toLowerCase();
     try {
-      const raw = localStorage.getItem('nkem_order_statuses');
+      const raw = localStorage.getItem('kairoslab_order_statuses');
       const statuses = raw ? JSON.parse(raw) : {};
       statuses[clean] = s;
-      localStorage.setItem('nkem_order_statuses', JSON.stringify(statuses));
+      localStorage.setItem('kairoslab_order_statuses', JSON.stringify(statuses));
     } catch (e) {}
 
     try {
-      window.dispatchEvent(new CustomEvent('nkem_order_status_updated', {
+      window.dispatchEvent(new CustomEvent('kairoslab_order_status_updated', {
         detail: { orderId: clean, status: s }
       }));
     } catch (e) {}
@@ -733,47 +733,47 @@ window.SupabaseService = {
   // Purges all legacy customer accounts, cart, test orders, and chat records from client localStorage
   // Leaves the master admin credentials and catalog products completely intact.
   initCleanSlateOnce() {
-    const RESET_FLAG = 'nkem_factory_reset_2026_11_10_v2';
+    const RESET_FLAG = 'kairoslab_factory_reset_2026_11_10_v2';
     if (!localStorage.getItem(RESET_FLAG)) {
       try {
-        localStorage.removeItem('nkem_current_user');
-        localStorage.removeItem('nkem_user');
-        localStorage.removeItem('nkem_local_users');
-        localStorage.removeItem('nkem_cart');
-        localStorage.removeItem('nkem_local_orders');
-        localStorage.removeItem('nkem_order_statuses');
-        localStorage.removeItem('nkem_active_chat_user');
+        localStorage.removeItem('kairoslab_current_user');
+        localStorage.removeItem('kairoslab_user');
+        localStorage.removeItem('kairoslab_local_users');
+        localStorage.removeItem('kairoslab_cart');
+        localStorage.removeItem('kairoslab_local_orders');
+        localStorage.removeItem('kairoslab_order_statuses');
+        localStorage.removeItem('kairoslab_active_chat_user');
         for (let i = localStorage.length - 1; i >= 0; i--) {
           const k = localStorage.key(i);
-          if (k && (k.startsWith('nkem_user_chats_') || k.startsWith('nkem_chats_') || k.startsWith('nkem_cached_'))) {
+          if (k && (k.startsWith('kairoslab_user_chats_') || k.startsWith('kairoslab_chats_') || k.startsWith('kairoslab_cached_'))) {
             localStorage.removeItem(k);
           }
         }
         localStorage.setItem(RESET_FLAG, 'true');
-        console.log('Nkem Global: Factory reset completed. User accounts and activities purged cleanly.');
+        console.log('Kairoslab: Factory reset completed. User accounts and activities purged cleanly.');
       } catch (e) {}
     }
   },
 
   async clearOrdersAndChats() {
     try {
-      localStorage.removeItem('nkem_local_orders');
-      localStorage.removeItem('nkem_order_statuses');
-      localStorage.removeItem('nkem_active_chat_user');
+      localStorage.removeItem('kairoslab_local_orders');
+      localStorage.removeItem('kairoslab_order_statuses');
+      localStorage.removeItem('kairoslab_active_chat_user');
       for (let i = localStorage.length - 1; i >= 0; i--) {
         const k = localStorage.key(i);
-        if (k && (k.startsWith('nkem_user_chats_') || k.startsWith('nkem_chats_'))) {
+        if (k && (k.startsWith('kairoslab_user_chats_') || k.startsWith('kairoslab_chats_'))) {
           localStorage.removeItem(k);
         }
       }
       try {
         await Promise.all([
-          this.request('nkem_orders?id=not.is.null', { method: 'DELETE' }),
-          this.request('nkem_chats?id=not.is.null', { method: 'DELETE' })
+          this.request('kairoslab_orders?id=not.is.null', { method: 'DELETE' }),
+          this.request('kairoslab_chats?id=not.is.null', { method: 'DELETE' })
         ]);
       } catch (cloudErr) {}
       try {
-        window.dispatchEvent(new CustomEvent('nkem_order_status_updated', { detail: {} }));
+        window.dispatchEvent(new CustomEvent('kairoslab_order_status_updated', { detail: {} }));
       } catch (e) {}
       return true;
     } catch (e) {
@@ -886,8 +886,8 @@ window.SupabaseService = {
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && key.startsWith('nkem_user_chats_')) {
-          const userIdFromKey = key.replace('nkem_user_chats_', '');
+        if (key && key.startsWith('kairoslab_user_chats_')) {
+          const userIdFromKey = key.replace('kairoslab_user_chats_', '');
           const raw = localStorage.getItem(key);
           if (raw && (raw.includes('[ORDER_CARD]::') || raw.includes('"order_data"'))) {
             const msgs = JSON.parse(raw);
@@ -914,7 +914,7 @@ window.SupabaseService = {
       }
     } catch (e) {}
 
-    // Load nkem_local_orders and merge cleanly
+    // Load kairoslab_local_orders and merge cleanly
     const finalOrdersMap = new Map();
 
     // 1. Add all chat orders
@@ -924,7 +924,7 @@ window.SupabaseService = {
 
     // 2. Add and merge all stored local orders (never exclude genuine customer orders!)
     try {
-      const local = localStorage.getItem('nkem_local_orders');
+      const local = (localStorage.getItem('kairoslab_local_orders') || localStorage.getItem('nkem_local_orders'));
       const list = local ? JSON.parse(local) : [];
       if (Array.isArray(list)) {
         list.forEach(item => {
@@ -951,7 +951,7 @@ window.SupabaseService = {
 
     const deduplicated = Array.from(finalOrdersMap.values()).filter(o => !this.isSourcingOrder(o));
     try {
-      localStorage.setItem('nkem_local_orders', JSON.stringify(deduplicated));
+      localStorage.setItem('kairoslab_local_orders', JSON.stringify(deduplicated));
     } catch (e) {}
 
     return deduplicated;
@@ -1042,7 +1042,7 @@ window.SupabaseService = {
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), timeoutMs);
-      const cloud = await this.request('nkem_orders?select=*&order=created_at.desc', { signal: controller.signal, timeoutMs });
+      const cloud = await this.request('kairoslab_orders?select=*&order=created_at.desc', { signal: controller.signal, timeoutMs });
       clearTimeout(timer);
       if (cloud && Array.isArray(cloud)) {
         const orderMap = new Map();
@@ -1074,7 +1074,7 @@ window.SupabaseService = {
         });
 
         const merged = Array.from(orderMap.values());
-        localStorage.setItem('nkem_local_orders', JSON.stringify(merged));
+        localStorage.setItem('kairoslab_local_orders', JSON.stringify(merged));
         return merged;
       }
     } catch (err) {
@@ -1086,7 +1086,7 @@ window.SupabaseService = {
   async getOrderByCode(code) {
     if (!code) return null;
     const cleanCode = code.trim().toUpperCase();
-    const cloud = await this.request(`nkem_orders?retrieval_code=eq.${encodeURIComponent(cleanCode)}&select=*`);
+    const cloud = await this.request(`kairoslab_orders?retrieval_code=eq.${encodeURIComponent(cleanCode)}&select=*`);
     if (cloud && Array.isArray(cloud) && cloud.length > 0) {
       return cloud[0];
     }
@@ -1115,7 +1115,7 @@ window.SupabaseService = {
 
       const cloudOrdersMap = new Map();
       const filterParam = orClauses.length > 1 ? `or=(${orClauses.join(',')})` : orClauses[0];
-      const res = await this.request(`nkem_orders?${filterParam}&order=created_at.desc`, { timeoutMs });
+      const res = await this.request(`kairoslab_orders?${filterParam}&order=created_at.desc`, { timeoutMs });
 
       if (Array.isArray(res)) {
         res.forEach(o => {
@@ -1136,7 +1136,7 @@ window.SupabaseService = {
             allLocal.unshift(cloudOrd);
           }
         });
-        localStorage.setItem('nkem_local_orders', JSON.stringify(allLocal));
+        localStorage.setItem('kairoslab_local_orders', JSON.stringify(allLocal));
 
         // Return combined list for this user directly!
         const mergedUserOrders = new Map();
@@ -1166,7 +1166,7 @@ window.SupabaseService = {
     const cid = this.canonicalOrderId(norm);
     localList = localList.filter(o => this.canonicalOrderId(o) !== cid);
     localList.unshift(norm);
-    localStorage.setItem('nkem_local_orders', JSON.stringify(localList));
+    localStorage.setItem('kairoslab_local_orders', JSON.stringify(localList));
 
     const payload = {
       id: norm.id,
@@ -1187,7 +1187,7 @@ window.SupabaseService = {
     };
 
     try {
-      await this.request('nkem_orders', {
+      await this.request('kairoslab_orders', {
         method: 'POST',
         headers: { 'Prefer': 'return=representation' },
         body: JSON.stringify(payload)
@@ -1214,13 +1214,13 @@ window.SupabaseService = {
       }
       return o;
     });
-    localStorage.setItem('nkem_local_orders', JSON.stringify(localList));
+    localStorage.setItem('kairoslab_local_orders', JSON.stringify(localList));
 
     // Also update any chat messages stored in localStorage containing this order
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && key.startsWith('nkem_user_chats_')) {
+        if (key && key.startsWith('kairoslab_user_chats_')) {
           const raw = localStorage.getItem(key);
           if (raw && (raw.toLowerCase().includes(bareCleanId) || raw.includes('[ORDER_CARD]:::'))) {
             let msgs = JSON.parse(raw);
@@ -1247,7 +1247,7 @@ window.SupabaseService = {
     } catch (e) {}
 
     try {
-      await this.request(`nkem_orders?id=eq.${encodeURIComponent(orderId)}`, {
+      await this.request(`kairoslab_orders?id=eq.${encodeURIComponent(orderId)}`, {
         method: 'PATCH',
         headers: { 'Prefer': 'return=representation' },
         body: JSON.stringify({ status: newStatus })
@@ -1274,12 +1274,12 @@ window.SupabaseService = {
   async getChatMessages(orderCode) {
     if (!orderCode) return [];
     const cleanCode = orderCode.trim().toUpperCase();
-    const cloud = await this.request(`nkem_chats?order_code=eq.${encodeURIComponent(cleanCode)}&order=created_at.asc`);
+    const cloud = await this.request(`kairoslab_chats?order_code=eq.${encodeURIComponent(cleanCode)}&order=created_at.asc`);
     if (cloud && Array.isArray(cloud)) {
-      localStorage.setItem(`nkem_chats_${cleanCode}`, JSON.stringify(cloud));
+      localStorage.setItem(`kairoslab_chats_${cleanCode}`, JSON.stringify(cloud));
       return cloud;
     }
-    const local = localStorage.getItem(`nkem_chats_${cleanCode}`);
+    const local = localStorage.getItem(`kairoslab_chats_${cleanCode}`);
     return local ? JSON.parse(local) : [];
   },
 
@@ -1287,9 +1287,9 @@ window.SupabaseService = {
     const cleanCode = msg.order_code.trim().toUpperCase();
     let localList = await this.getChatMessages(cleanCode);
     localList.push(msg);
-    localStorage.setItem(`nkem_chats_${cleanCode}`, JSON.stringify(localList));
+    localStorage.setItem(`kairoslab_chats_${cleanCode}`, JSON.stringify(localList));
 
-    await this.request('nkem_chats', {
+    await this.request('kairoslab_chats', {
       method: 'POST',
       headers: { 'Prefer': 'return=representation' },
       body: JSON.stringify(msg)
@@ -1317,7 +1317,7 @@ window.SupabaseService = {
     // Update local caches across both user chat and legacy keys
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key && (key.startsWith('nkem_chats_') || key.startsWith('nkem_user_chats_'))) {
+      if (key && (key.startsWith('kairoslab_chats_') || key.startsWith('kairoslab_user_chats_'))) {
         try {
           let list = JSON.parse(localStorage.getItem(key) || '[]');
           const idx = list.findIndex(m => m.id === id);
@@ -1329,7 +1329,7 @@ window.SupabaseService = {
       }
     }
 
-    await this.request(`nkem_chats?id=eq.${encodeURIComponent(id)}`, {
+    await this.request(`kairoslab_chats?id=eq.${encodeURIComponent(id)}`, {
       method: 'PATCH',
       body: JSON.stringify(patchBody)
     });
@@ -1338,7 +1338,7 @@ window.SupabaseService = {
 
   // ---------------- USER AUTHENTICATION & MANAGEMENT ----------------
   getCurrentUser() {
-    const u = localStorage.getItem('nkem_current_user');
+    const u = (localStorage.getItem('kairoslab_current_user') || localStorage.getItem('nkem_current_user'));
     return u ? JSON.parse(u) : null;
   },
 
@@ -1348,12 +1348,12 @@ window.SupabaseService = {
 
   setCurrentUser(user) {
     if (!user) {
-      localStorage.removeItem('nkem_current_user');
+      localStorage.removeItem('kairoslab_current_user');
     } else {
-      localStorage.setItem('nkem_current_user', JSON.stringify(user));
+      localStorage.setItem('kairoslab_current_user', JSON.stringify(user));
     }
     // Dispatch custom event for reactive UI updates across pages
-    window.dispatchEvent(new CustomEvent('nkem_auth_changed', { detail: { user } }));
+    window.dispatchEvent(new CustomEvent('kairoslab_auth_changed', { detail: { user } }));
   },
 
   setActiveUser(user) {
@@ -1365,15 +1365,15 @@ window.SupabaseService = {
   },
 
   async getUsers() {
-    const cloud = await this.request('nkem_users?select=*&order=created_at.desc');
+    const cloud = await this.request('kairoslab_users?select=*&order=created_at.desc');
     if (cloud && Array.isArray(cloud)) {
-      const customers = cloud.filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@nkem.global' && u.whatsapp_number !== 'admin');
-      localStorage.setItem('nkem_local_users', JSON.stringify(customers));
+      const customers = cloud.filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@kairoslab.sbs' && u.whatsapp_number !== 'admin');
+      localStorage.setItem('kairoslab_local_users', JSON.stringify(customers));
       return customers;
     }
-    const local = localStorage.getItem('nkem_local_users');
+    const local = (localStorage.getItem('kairoslab_local_users') || localStorage.getItem('nkem_local_users'));
     const parsed = local ? JSON.parse(local) : [];
-    return parsed.filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@nkem.global' && u.whatsapp_number !== 'admin');
+    return parsed.filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@kairoslab.sbs' && u.whatsapp_number !== 'admin');
   },
 
   async signUpUser(userData) {
@@ -1415,10 +1415,10 @@ window.SupabaseService = {
 
     // Save locally
     users.unshift(newUser);
-    localStorage.setItem('nkem_local_users', JSON.stringify(users));
+    localStorage.setItem('kairoslab_local_users', JSON.stringify(users));
 
     // Save to Supabase
-    await this.request('nkem_users', {
+    await this.request('kairoslab_users', {
       method: 'POST',
       headers: { 'Prefer': 'return=representation' },
       body: JSON.stringify(newUser)
@@ -1461,7 +1461,7 @@ window.SupabaseService = {
     };
 
     users[idx] = updatedUser;
-    localStorage.setItem('nkem_local_users', JSON.stringify(users));
+    localStorage.setItem('kairoslab_local_users', JSON.stringify(users));
 
     const current = this.getCurrentUser();
     if (current && current.id === userId) {
@@ -1478,7 +1478,7 @@ window.SupabaseService = {
       address: updatedUser.address
     };
 
-    await this.request(`nkem_users?id=eq.${encodeURIComponent(userId)}`, {
+    await this.request(`kairoslab_users?id=eq.${encodeURIComponent(userId)}`, {
       method: 'PATCH',
       headers: { 'Prefer': 'return=representation' },
       body: JSON.stringify(dbPayload)
@@ -1515,7 +1515,7 @@ window.SupabaseService = {
     }
 
     users[idx].password_hash = cleanNew;
-    localStorage.setItem('nkem_local_users', JSON.stringify(users));
+    localStorage.setItem('kairoslab_local_users', JSON.stringify(users));
 
     const current = this.getCurrentUser();
     if (current && current.id === userId) {
@@ -1523,7 +1523,7 @@ window.SupabaseService = {
       this.setCurrentUser(current);
     }
 
-    await this.request(`nkem_users?id=eq.${encodeURIComponent(userId)}`, {
+    await this.request(`kairoslab_users?id=eq.${encodeURIComponent(userId)}`, {
       method: 'PATCH',
       headers: { 'Prefer': 'return=representation' },
       body: JSON.stringify({ password_hash: cleanNew })
@@ -1575,20 +1575,20 @@ window.SupabaseService = {
       const curr = this.getCurrentUser();
       if (curr && curr.id === userId) {
         curr.cart = cleanCart;
-        localStorage.setItem('nkem_current_user', JSON.stringify(curr));
+        localStorage.setItem('kairoslab_current_user', JSON.stringify(curr));
       }
-      const localUsers = JSON.parse(localStorage.getItem('nkem_local_users') || '[]');
+      const localUsers = JSON.parse((localStorage.getItem('kairoslab_local_users') || localStorage.getItem('nkem_local_users')) || '[]');
       if (Array.isArray(localUsers)) {
         const idx = localUsers.findIndex(u => u.id === userId);
         if (idx !== -1) {
           localUsers[idx].cart = cleanCart;
-          localStorage.setItem('nkem_local_users', JSON.stringify(localUsers));
+          localStorage.setItem('kairoslab_local_users', JSON.stringify(localUsers));
         }
       }
     } catch (_) {}
 
     try {
-      await this.request(`nkem_users?id=eq.${encodeURIComponent(userId)}`, {
+      await this.request(`kairoslab_users?id=eq.${encodeURIComponent(userId)}`, {
         method: 'PATCH',
         keepalive: true,
         headers: {
@@ -1607,7 +1607,7 @@ window.SupabaseService = {
   async getUserCartFromCloud(userId) {
     if (!userId) return null;
     try {
-      const res = await this.request(`nkem_users?id=eq.${encodeURIComponent(userId)}&select=cart`, {
+      const res = await this.request(`kairoslab_users?id=eq.${encodeURIComponent(userId)}&select=cart`, {
         headers: {
           'Cache-Control': 'no-cache, no-store'
         }
@@ -1682,7 +1682,7 @@ window.SupabaseService = {
   getUserChatMessagesSync(userId) {
     if (!userId) return [];
     try {
-      const local = localStorage.getItem(`nkem_user_chats_${userId}`);
+      const local = localStorage.getItem(`kairoslab_user_chats_${userId}`);
       const parsed = local ? JSON.parse(local) : [];
       const decoded = parsed.map(m => {
         if (m.message && typeof m.message === 'string' && m.message.startsWith('[ORDER_CARD]:::') && !m.order_data) {
@@ -1707,7 +1707,7 @@ window.SupabaseService = {
 
   async getUserChatMessages(userId) {
     if (!userId) return [];
-    const cloud = await this.request(`nkem_chats?user_id=eq.${encodeURIComponent(userId)}&order=created_at.asc`);
+    const cloud = await this.request(`kairoslab_chats?user_id=eq.${encodeURIComponent(userId)}&order=created_at.asc`);
     if (cloud && Array.isArray(cloud)) {
       const decoded = cloud.map(m => {
         if (m.message && typeof m.message === 'string' && m.message.startsWith('[ORDER_CARD]:::')) {
@@ -1725,10 +1725,10 @@ window.SupabaseService = {
         return m;
       });
       const deduplicated = this.deduplicateChatMessages(decoded);
-      localStorage.setItem(`nkem_user_chats_${userId}`, JSON.stringify(deduplicated));
+      localStorage.setItem(`kairoslab_user_chats_${userId}`, JSON.stringify(deduplicated));
       return deduplicated;
     }
-    const local = localStorage.getItem(`nkem_user_chats_${userId}`);
+    const local = localStorage.getItem(`kairoslab_user_chats_${userId}`);
     const parsed = local ? JSON.parse(local) : [];
     const decoded = parsed.map(m => {
       if (m.message && typeof m.message === 'string' && m.message.startsWith('[ORDER_CARD]:::') && !m.order_data) {
@@ -1752,7 +1752,7 @@ window.SupabaseService = {
     const userId = msg.user_id;
     if (!userId) throw new Error('Missing user_id for chat message.');
 
-    // Ensure order_code is NEVER empty (required by nkem_chats schema)
+    // Ensure order_code is NEVER empty (required by kairoslab_chats schema)
     const cleanOrderCode = msg.order_code || msg.user_id || 'DIRECT';
 
     // Serialize order_card or sourcing_request data cleanly into message text if present
@@ -1763,7 +1763,7 @@ window.SupabaseService = {
       cleanMessage = `[SOURCING_REQUEST]:::${JSON.stringify(msg.sourcing_data)}`;
     }
 
-    // Strict sanitization: ONLY send valid nkem_chats database columns to Supabase
+    // Strict sanitization: ONLY send valid kairoslab_chats database columns to Supabase
     const cleanPayload = {
       id: msg.id || `msg-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       order_code: cleanOrderCode,
@@ -1811,10 +1811,10 @@ window.SupabaseService = {
       localList.push(memoryMsg);
     }
     localList = this.deduplicateChatMessages(localList);
-    localStorage.setItem(`nkem_user_chats_${userId}`, JSON.stringify(localList));
+    localStorage.setItem(`kairoslab_user_chats_${userId}`, JSON.stringify(localList));
 
     // Send strictly sanitized payload to Supabase
-    await this.request('nkem_chats', {
+    await this.request('kairoslab_chats', {
       method: 'POST',
       headers: { 'Prefer': 'return=representation' },
       body: JSON.stringify(cleanPayload)
@@ -1834,10 +1834,10 @@ window.SupabaseService = {
       }
     });
     if (updated) {
-      localStorage.setItem(`nkem_user_chats_${userId}`, JSON.stringify(localList));
+      localStorage.setItem(`kairoslab_user_chats_${userId}`, JSON.stringify(localList));
     }
 
-    await this.request(`nkem_chats?user_id=eq.${encodeURIComponent(userId)}&sender=eq.admin&is_read_by_user=eq.false`, {
+    await this.request(`kairoslab_chats?user_id=eq.${encodeURIComponent(userId)}&sender=eq.admin&is_read_by_user=eq.false`, {
       method: 'PATCH',
       body: JSON.stringify({ is_read_by_user: true })
     });
@@ -1854,10 +1854,10 @@ window.SupabaseService = {
       }
     });
     if (updated) {
-      localStorage.setItem(`nkem_user_chats_${userId}`, JSON.stringify(localList));
+      localStorage.setItem(`kairoslab_user_chats_${userId}`, JSON.stringify(localList));
     }
 
-    await this.request(`nkem_chats?user_id=eq.${encodeURIComponent(userId)}&sender=eq.user&is_read_by_admin=eq.false`, {
+    await this.request(`kairoslab_chats?user_id=eq.${encodeURIComponent(userId)}&sender=eq.user&is_read_by_admin=eq.false`, {
       method: 'PATCH',
       body: JSON.stringify({ is_read_by_admin: true })
     });
@@ -1867,12 +1867,12 @@ window.SupabaseService = {
     if (!userId) return 0;
     // Free-tier optimization: lightweight query selects ONLY id, eliminating payload transfers
     const cloud = await this.request(
-      `nkem_chats?user_id=eq.${encodeURIComponent(userId)}&sender=eq.admin&is_read_by_user=eq.false&deleted_for_everyone=eq.false&deleted_for_user=eq.false&select=id`
+      `kairoslab_chats?user_id=eq.${encodeURIComponent(userId)}&sender=eq.admin&is_read_by_user=eq.false&deleted_for_everyone=eq.false&deleted_for_user=eq.false&select=id`
     );
     if (cloud && Array.isArray(cloud)) {
       return cloud.length;
     }
-    const local = localStorage.getItem(`nkem_user_chats_${userId}`);
+    const local = localStorage.getItem(`kairoslab_user_chats_${userId}`);
     if (local) {
       try {
         const msgs = JSON.parse(local);
@@ -1884,13 +1884,13 @@ window.SupabaseService = {
 
   async getAllCustomerConversations() {
     // Admin helper: fetches recent conversation messages with limit to conserve free-tier bandwidth
-    const cloud = await this.request('nkem_chats?order=created_at.desc&limit=100');
+    const cloud = await this.request('kairoslab_chats?order=created_at.desc&limit=100');
     let allMsgs = (cloud && Array.isArray(cloud)) ? cloud : [];
 
     // Also include any local chats from localStorage
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key && key.startsWith('nkem_user_chats_')) {
+      if (key && key.startsWith('kairoslab_user_chats_')) {
         try {
           const localItems = JSON.parse(localStorage.getItem(key) || '[]');
           localItems.forEach(item => {
@@ -1973,7 +1973,7 @@ window.SupabaseService = {
 
   async purgeDeletedChatMessages() {
     // Permanently removes messages marked deleted_for_everyone=true from Supabase to reclaim storage
-    await this.request('nkem_chats?deleted_for_everyone=eq.true', {
+    await this.request('kairoslab_chats?deleted_for_everyone=eq.true', {
       method: 'DELETE'
     });
     return true;
@@ -1981,13 +1981,13 @@ window.SupabaseService = {
 
   async getAdminCredentialsCloud() {
     try {
-      const records = await this.request('nkem_users?id=eq.usr-admin-master&select=*');
+      const records = await this.request('kairoslab_users?id=eq.usr-admin-master&select=*');
       if (records && records.length > 0 && records[0].password_hash) {
         const creds = {
           username: 'admin',
           password: records[0].password_hash
         };
-        localStorage.setItem('nkem_admin_credentials', JSON.stringify(creds));
+        localStorage.setItem('kairoslab_admin_credentials', JSON.stringify(creds));
         return creds;
       } else {
         // Master admin record doesn't exist yet, seed it directly in Supabase
@@ -1996,20 +1996,20 @@ window.SupabaseService = {
           first_name: 'Administrator',
           last_name: 'System',
           whatsapp_number: 'admin',
-          email: 'admin@nkem.global',
+          email: 'admin@kairoslab.sbs',
           state: 'Headquarters',
           lga: 'HQ',
           address: 'Master Admin Console',
           password_hash: 'admin123',
           created_at: new Date().toISOString()
         };
-        await this.request('nkem_users', {
+        await this.request('kairoslab_users', {
           method: 'POST',
           headers: { 'Prefer': 'return=representation' },
           body: JSON.stringify(defaultAdmin)
         });
         const creds = { username: 'admin', password: 'admin123' };
-        localStorage.setItem('nkem_admin_credentials', JSON.stringify(creds));
+        localStorage.setItem('kairoslab_admin_credentials', JSON.stringify(creds));
         return creds;
       }
     } catch (e) {
@@ -2017,7 +2017,7 @@ window.SupabaseService = {
     }
     // Fallback to local storage or defaults
     try {
-      const local = localStorage.getItem('nkem_admin_credentials');
+      const local = localStorage.getItem('kairoslab_admin_credentials');
       if (local) {
         const parsed = JSON.parse(local);
         if (parsed && parsed.username && parsed.password) return parsed;
@@ -2032,7 +2032,7 @@ window.SupabaseService = {
     if (cleanPass.length < 6) throw new Error('New password must be at least 6 characters.');
 
     // 1. Update master admin record in Supabase
-    await this.request('nkem_users?id=eq.usr-admin-master', {
+    await this.request('kairoslab_users?id=eq.usr-admin-master', {
       method: 'PATCH',
       headers: { 'Prefer': 'return=representation' },
       body: JSON.stringify({ password_hash: cleanPass })
@@ -2040,7 +2040,7 @@ window.SupabaseService = {
 
     // 2. Cache in local storage
     const creds = { username: 'admin', password: cleanPass };
-    localStorage.setItem('nkem_admin_credentials', JSON.stringify(creds));
+    localStorage.setItem('kairoslab_admin_credentials', JSON.stringify(creds));
     return creds;
   }
 };

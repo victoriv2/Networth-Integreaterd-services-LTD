@@ -5531,11 +5531,6 @@ body:not(.admin-body) .brand-title span {
     border: 1px solid rgba(2, 132, 199, 0.28) !important;
     z-index: 3 !important;
   }
-
-  .product-banner-slide:not(.is-active-slide):hover {
-    opacity: 0.82 !important;
-    transform: scale(0.94) translateZ(0) !important;
-  }
 }
 
 /* Admin Banner Management Styles */

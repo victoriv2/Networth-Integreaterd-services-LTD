@@ -697,8 +697,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
           }
 
-          // Centered active slide clicked: follow banner link
-          const link = slide.getAttribute('data-link');
+          // Centered active slide clicked: follow banner link if configured
+          const link = (slide.getAttribute('data-link') || '').trim();
           if (link) {
             if (link.startsWith('#')) {
               const targetTab = link.replace('#', '');
@@ -713,6 +713,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
               window.location.href = link;
             }
+          }
+
+          // Always ensure auto-slide keeps running smoothly and never freezes on tap
+          if (activeBanners.length >= 2 && !productBannerInterval) {
+            startBannerAutoSlide();
           }
         });
       });
@@ -868,23 +873,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
-    // On Desktop: when mouse hovers over the banner stage, pause auto-sliding so the banner does NOT change while the user is reading or aiming at it!
-    // When the mouse leaves, resume auto-slide.
-    // NOTE: Mouse movement itself NEVER changes the banner (all mouse drag handlers are completely removed).
-    if (stage && !stage._hasHoverListener) {
-      stage._hasHoverListener = true;
-      stage.addEventListener('mouseenter', () => {
-        stopBannerAutoSlide();
-      });
-      stage.addEventListener('mouseleave', () => {
-        if (activeBanners.length >= 2) {
-          restartBannerAutoSlide();
-        }
-      });
-    }
-
     if (!slider || slider._hasGestureListeners) {
-      if (activeBanners.length >= 2) startBannerAutoSlide();
+      if (activeBanners.length >= 2 && !productBannerInterval) startBannerAutoSlide();
       return;
     }
     slider._hasGestureListeners = true;
@@ -911,7 +901,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       touchStartTime = Date.now();
       isHorizontalSwipe = false;
       isVerticalScroll = false;
-      stopBannerAutoSlide();
+      // Do NOT stop auto-slide on touchstart, so tapping never freezes the carousel
     }, { passive: true });
 
     slider.addEventListener('touchmove', (e) => {

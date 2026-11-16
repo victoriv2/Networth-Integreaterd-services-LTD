@@ -405,13 +405,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const savedCat = await window.SupabaseService.saveCategory(catDraft);
         if (savedCat && savedCat._cloudSynced === false) {
           window.CustomModal.toast({
-            message: '⚠️ Category saved locally, but live store sync timed out. Please check network and re-save.',
+            message: 'Category saved locally, but live store sync timed out. Please check network and re-save.',
             type: 'warning',
             duration: 6000
           });
         } else {
           window.CustomModal.toast({
-            message: isNew ? '✅ Category created and published live.' : '✅ Category updated and published live.',
+            message: isNew ? 'Category created and published live.' : 'Category updated and published live.',
             type: 'success'
           });
         }
@@ -1231,13 +1231,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (savedProd && savedProd._cloudSynced === false) {
         window.CustomModal.toast({
-          message: '⚠️ Saved locally on device, but live store sync timed out. Please check your internet connection and re-save to publish live.',
+          message: 'Saved locally on device, but live store sync timed out. Please check your internet connection and re-save to publish live.',
           type: 'warning',
           duration: 7000
         });
       } else {
         window.CustomModal.toast({
-          message: `✅ Product ${isNew ? 'created and published' : 'updated'} live on kairoslab.sbs!`,
+          message: `Product ${isNew ? 'created and published' : 'updated'} live on kairoslab.sbs!`,
           type: 'success',
           duration: 5000
         });

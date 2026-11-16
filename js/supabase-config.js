@@ -177,10 +177,16 @@ window.SupabaseService = {
     // Sync to Supabase with generous 30s mobile timeout
     let cloudRes = null;
     try {
+      const payload = {
+        id: cat.id,
+        name: cat.name,
+        image_url: cat.image_url || cat.image || null,
+        sort_order: typeof cat.sort_order === 'number' ? cat.sort_order : 0
+      };
       cloudRes = await this.request('kairoslab_categories', {
         method: 'POST',
         headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
-        body: JSON.stringify(cat),
+        body: JSON.stringify(payload),
         timeoutMs: 30000
       });
     } catch (e) {

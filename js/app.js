@@ -595,6 +595,56 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  function updateDesktopPeekWings(index) {
+    const leftImg = document.getElementById('bannerPeekLeftImg');
+    const rightImg = document.getElementById('bannerPeekRightImg');
+    const peekLeft = document.getElementById('bannerPeekLeft');
+    const peekRight = document.getElementById('bannerPeekRight');
+    if (!leftImg || !rightImg || !activeBanners || activeBanners.length === 0) return;
+
+    const N = activeBanners.length;
+    const prevIdx = (index - 1 + N) % N;
+    const nextIdx = (index + 1) % N;
+
+    const prevBanner = activeBanners[prevIdx];
+    const nextBanner = activeBanners[nextIdx];
+
+    if (prevBanner) {
+      leftImg.src = prevBanner.image_url || 'assets/images/logo.png';
+      leftImg.alt = prevBanner.title || 'Previous Banner';
+    }
+    if (nextBanner) {
+      rightImg.src = nextBanner.image_url || 'assets/images/logo.png';
+      rightImg.alt = nextBanner.title || 'Next Banner';
+    }
+
+    if (peekLeft && peekRight) {
+      if (N <= 1) {
+        peekLeft.style.cursor = 'default';
+        peekRight.style.cursor = 'default';
+        peekLeft.style.opacity = '0.52';
+        peekRight.style.opacity = '0.52';
+        leftImg.style.filter = 'blur(1.5px)';
+        rightImg.style.filter = 'blur(1.5px)';
+        const prevBtn = peekLeft.querySelector('.peek-nav-btn');
+        const nextBtn = peekRight.querySelector('.peek-nav-btn');
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+      } else {
+        peekLeft.style.cursor = 'pointer';
+        peekRight.style.cursor = 'pointer';
+        peekLeft.style.opacity = '0.68';
+        peekRight.style.opacity = '0.68';
+        leftImg.style.filter = 'none';
+        rightImg.style.filter = 'none';
+        const prevBtn = peekLeft.querySelector('.peek-nav-btn');
+        const nextBtn = peekRight.querySelector('.peek-nav-btn');
+        if (prevBtn) prevBtn.style.display = 'inline-flex';
+        if (nextBtn) nextBtn.style.display = 'inline-flex';
+      }
+    }
+  }
+
   function goToBannerSlide(index) {
     const bannerTrack = document.getElementById('productBannerTrack');
     const bannerIndicators = document.getElementById('productBannerIndicators');
@@ -613,15 +663,57 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       });
     }
+
+    updateDesktopPeekWings(currentBannerIndex);
   }
 
   function setupBannerGesturesAndAutoSlide() {
     const slider = document.getElementById('productBannerSlider');
+    const peekLeft = document.getElementById('bannerPeekLeft');
+    const peekRight = document.getElementById('bannerPeekRight');
+
+    // Desktop Peeking Wings click and pause support
+    if (peekLeft && !peekLeft._hasClickListener) {
+      peekLeft._hasClickListener = true;
+      peekLeft.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (activeBanners.length >= 2) {
+          goToBannerSlide(currentBannerIndex - 1);
+          restartBannerAutoSlide();
+        }
+      });
+      peekLeft.addEventListener('mouseenter', () => stopBannerAutoSlide());
+      peekLeft.addEventListener('mouseleave', () => {
+        if (activeBanners.length >= 2) startBannerAutoSlide();
+      });
+    }
+
+    if (peekRight && !peekRight._hasClickListener) {
+      peekRight._hasClickListener = true;
+      peekRight.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (activeBanners.length >= 2) {
+          goToBannerSlide(currentBannerIndex + 1);
+          restartBannerAutoSlide();
+        }
+      });
+      peekRight.addEventListener('mouseenter', () => stopBannerAutoSlide());
+      peekRight.addEventListener('mouseleave', () => {
+        if (activeBanners.length >= 2) startBannerAutoSlide();
+      });
+    }
+
     if (!slider || slider._hasGestureListeners) {
       if (activeBanners.length >= 2) startBannerAutoSlide();
       return;
     }
     slider._hasGestureListeners = true;
+
+    // Pause on hover over center slider
+    slider.addEventListener('mouseenter', () => stopBannerAutoSlide());
+    slider.addEventListener('mouseleave', () => {
+      if (activeBanners.length >= 2) startBannerAutoSlide();
+    });
 
     if (activeBanners.length >= 2) {
       startBannerAutoSlide();

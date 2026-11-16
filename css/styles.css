@@ -5348,7 +5348,16 @@ body:not(.admin-body) .brand-title span {
   position: relative;
 }
 
-.product-banner-card {
+.product-banner-stage {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Center 16:9 Active Banner Card */
+.product-banner-center-card {
   width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 14px;
@@ -5356,6 +5365,7 @@ body:not(.admin-body) .brand-title span {
   background-color: #0b192c;
   border: 1px solid rgba(2, 132, 199, 0.16);
   position: relative;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
 }
 
 .product-banner-slider {
@@ -5445,6 +5455,130 @@ body:not(.admin-body) .brand-title span {
   width: 18px;
   border-radius: 4px;
   background: #0284c7;
+}
+
+/* Mobile & Tablet (< 769px): Peeking Wings hidden, Banner is 100% width 16:9 */
+@media (max-width: 768px) {
+  .product-banner-peek {
+    display: none !important;
+  }
+}
+
+/* Desktop (>= 769px): Controlled 16:9 Width + Left/Right Peeking Wings */
+@media (min-width: 769px) {
+  .product-banner-stage {
+    gap: 14px !important;
+    overflow: hidden !important;
+    padding: 4px 0 8px 0 !important;
+    align-items: stretch !important;
+  }
+
+  .product-banner-center-card {
+    flex: 0 0 auto !important;
+    width: 66% !important;
+    max-width: 760px !important;
+    aspect-ratio: 16 / 9 !important;
+    box-shadow: 0 12px 30px rgba(11, 25, 44, 0.2) !important;
+    z-index: 3 !important;
+    border: 1px solid rgba(2, 132, 199, 0.22) !important;
+  }
+
+  .product-banner-peek {
+    display: block !important;
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    align-self: stretch !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    position: relative !important;
+    cursor: pointer !important;
+    opacity: 0.68 !important;
+    transform: scale(0.94) !important;
+    transition: opacity 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease !important;
+    box-shadow: 0 4px 16px rgba(11, 25, 44, 0.14) !important;
+    border: 1px solid rgba(2, 132, 199, 0.12) !important;
+    background-color: #0b192c !important;
+    z-index: 2 !important;
+  }
+
+  .product-banner-peek:hover {
+    opacity: 0.95 !important;
+    transform: scale(0.97) !important;
+    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.22) !important;
+  }
+
+  .product-banner-peek .peek-img-box {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .product-banner-peek img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    transition: transform 0.3s ease, filter 0.25s ease !important;
+  }
+
+  .product-banner-peek:hover img {
+    transform: scale(1.04) !important;
+  }
+
+  .product-banner-peek .peek-overlay {
+    position: absolute !important;
+    inset: 0 !important;
+    transition: background 0.2s ease !important;
+    pointer-events: none !important;
+  }
+
+  .peek-left .peek-overlay {
+    background: linear-gradient(to left, rgba(11, 25, 44, 0.1) 0%, rgba(11, 25, 44, 0.45) 100%) !important;
+  }
+
+  .peek-right .peek-overlay {
+    background: linear-gradient(to right, rgba(11, 25, 44, 0.1) 0%, rgba(11, 25, 44, 0.45) 100%) !important;
+  }
+
+  .product-banner-peek:hover .peek-overlay {
+    background: rgba(11, 25, 44, 0.1) !important;
+  }
+
+  .peek-nav-btn {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #0a2540 !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    z-index: 5 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    opacity: 0.88 !important;
+    transition: all 0.15s ease !important;
+    padding: 0 !important;
+  }
+
+  .peek-nav-prev {
+    left: 14px !important;
+  }
+
+  .peek-nav-next {
+    right: 14px !important;
+  }
+
+  .product-banner-peek:hover .peek-nav-btn {
+    opacity: 1 !important;
+    background: #ffffff !important;
+    transform: translateY(-50%) scale(1.1) !important;
+  }
 }
 
 /* Admin Banner Management Styles */

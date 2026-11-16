@@ -3527,6 +3527,93 @@ body.chat-body .header-bar .header-container {
   width: 100% !important;
 }
 
+/* High-contrast bright button for Back to Store on chat page header */
+body.chat-body .header-bar .nav-links-desktop .nav-link,
+body.chat-body .header-bar .chat-back-store-btn {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+  border-radius: 9999px !important;
+  padding: 6px 16px !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  text-decoration: none !important;
+  transition: all 0.15s ease !important;
+}
+
+body.chat-body .header-bar .nav-links-desktop .nav-link:hover,
+body.chat-body .header-bar .chat-back-store-btn:hover {
+  background-color: rgba(255, 255, 255, 0.28) !important;
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+  transform: none !important;
+}
+
+body.chat-body .header-bar .nav-links-desktop .nav-link .svg-icon,
+body.chat-body .header-bar .chat-back-store-btn .svg-icon {
+  stroke: #ffffff !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+body.chat-body .header-bar .header-actions .btn,
+body.chat-body .header-bar .chat-back-store-btn-mobile {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+  border-radius: 9999px !important;
+  padding: 5px 12px !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  transition: all 0.15s ease !important;
+}
+
+body.chat-body .header-bar .header-actions .btn:hover,
+body.chat-body .header-bar .chat-back-store-btn-mobile:hover {
+  background-color: rgba(255, 255, 255, 0.28) !important;
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+  transform: none !important;
+}
+
+body.chat-body .header-bar .header-actions .btn .svg-icon,
+body.chat-body .header-bar .chat-back-store-btn-mobile .svg-icon {
+  stroke: #ffffff !important;
+  width: 15px !important;
+  height: 15px !important;
+}
+
+body.chat-body .header-bar #headerSignInBtn {
+  color: #ffffff !important;
+  background-color: #0284c7 !important;
+  border: 1.5px solid #0284c7 !important;
+  border-radius: 9999px !important;
+  padding: 6px 14px !important;
+  font-weight: 700 !important;
+}
+
+body.chat-body .header-bar .user-pill {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+body.chat-body .header-bar .user-pill .user-pill-name {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+body.chat-body .header-bar .user-pill .svg-icon {
+  stroke: #ffffff !important;
+}
+
 /* 2. Chat Section (Directly locked from below 54px header down to 0 at bottom) */
 body.chat-body .chat-page-section {
   position: fixed !important;

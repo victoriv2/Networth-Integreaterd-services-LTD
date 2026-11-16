@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     editingCategory: null,
     productImagesDraft: [], // Temporary array for product image editing
     productSearchQuery: '',
+    searchResults: null,
+    isSearchingProducts: false,
     productFilter: 'all',
     productSortBy: 'newest',
     orderFilterStatus: 'all',
@@ -475,23 +477,137 @@ document.addEventListener('DOMContentLoaded', async () => {
     return opts;
   }
 
+  let adminProductSearchDebounceTimer = null;
+
+  async function performAdminProductSearch(query) {
+    const q = (query || '').trim();
+    if (!q) {
+      adminState.searchResults = null;
+      adminState.isSearchingProducts = false;
+      renderProductsManager();
+      return;
+    }
+
+    adminState.isSearchingProducts = true;
+    if (productListContainer) {
+      const qEscaped = window.CustomModal?.escape ? window.CustomModal.escape(q) : q;
+      productListContainer.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--text-muted);">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px; color: var(--accent-gold); animation: spin 0.8s linear infinite; margin-bottom: 12px;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+          <div style="font-weight: 600; font-size: 14px; color: var(--text-main);">Searching entire catalog for "${qEscaped}"...</div>
+          <div style="font-size: 12px; margin-top: 4px; color: var(--text-muted);">Querying titles, categories, descriptions, and prices across the entire database</div>
+        </div>
+      `;
+    }
+    if (adminSeeMoreContainer) {
+      adminSeeMoreContainer.style.display = 'none';
+    }
+
+    try {
+      const results = await window.SupabaseService.searchProducts(q, {
+        limit: 200,
+        includeHidden: true,
+        sort: adminState.productSortBy || 'newest'
+      });
+
+      // Guard against race conditions if user continued typing
+      const currentInput = (adminProductSearchInput?.value || '').trim();
+      if (currentInput.toLowerCase() !== q.toLowerCase()) {
+        return;
+      }
+
+      // Merge into adminState.products so row actions (edit, stock, hide, delete) work seamlessly
+      if (Array.isArray(results) && results.length > 0) {
+        results.forEach(item => {
+          const idx = adminState.products.findIndex(p => p.id === item.id);
+          if (idx >= 0) {
+            adminState.products[idx] = item;
+          } else {
+            adminState.products.push(item);
+          }
+        });
+      }
+
+      // Also gather in-memory matches from currently loaded products
+      const qLower = q.toLowerCase();
+      const inMemoryMatches = (adminState.products || []).filter(p => {
+        const titleMatch = (p.title || '').toLowerCase().includes(qLower);
+        const descMatch = (p.description || '').toLowerCase().includes(qLower);
+        const priceMatch = String(p.price || '').includes(qLower);
+        const cat = adminState.categories.find(c => c.id === p.category_id);
+        const catMatch = cat && (cat.name || '').toLowerCase().includes(qLower);
+        return titleMatch || descMatch || priceMatch || catMatch;
+      });
+
+      const map = new Map();
+      (results || []).forEach(p => map.set(p.id, p));
+      inMemoryMatches.forEach(p => map.set(p.id, p));
+
+      adminState.searchResults = Array.from(map.values());
+    } catch (err) {
+      console.warn('Admin global product search error:', err);
+      const qLower = q.toLowerCase();
+      adminState.searchResults = (adminState.products || []).filter(p => {
+        const titleMatch = (p.title || '').toLowerCase().includes(qLower);
+        const descMatch = (p.description || '').toLowerCase().includes(qLower);
+        const priceMatch = String(p.price || '').includes(qLower);
+        const cat = adminState.categories.find(c => c.id === p.category_id);
+        const catMatch = cat && (cat.name || '').toLowerCase().includes(qLower);
+        return titleMatch || descMatch || priceMatch || catMatch;
+      });
+    } finally {
+      adminState.isSearchingProducts = false;
+      renderProductsManager();
+    }
+  }
+
   function initProductControls() {
     if (adminProductSearchInput && !adminProductSearchInput._hasBoundEvents) {
       adminProductSearchInput._hasBoundEvents = true;
       adminProductSearchInput.addEventListener('input', () => {
-        adminState.productSearchQuery = (adminProductSearchInput.value || '').trim().toLowerCase();
+        const query = (adminProductSearchInput.value || '').trim();
+        adminState.productSearchQuery = query.toLowerCase();
+
         if (adminProductSearchClearBtn) {
-          adminProductSearchClearBtn.style.display = adminState.productSearchQuery ? 'inline-flex' : 'none';
+          adminProductSearchClearBtn.style.display = query ? 'inline-flex' : 'none';
         }
-        renderProductsManager();
+
+        if (adminProductSearchDebounceTimer) {
+          clearTimeout(adminProductSearchDebounceTimer);
+        }
+
+        if (!query) {
+          adminState.searchResults = null;
+          adminState.isSearchingProducts = false;
+          renderProductsManager();
+          return;
+        }
+
+        adminProductSearchDebounceTimer = setTimeout(async () => {
+          await performAdminProductSearch(query);
+        }, 220);
+      });
+
+      adminProductSearchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (adminProductSearchDebounceTimer) clearTimeout(adminProductSearchDebounceTimer);
+          const query = (adminProductSearchInput.value || '').trim();
+          if (query) {
+            performAdminProductSearch(query);
+          }
+        }
       });
     }
 
     if (adminProductSearchClearBtn && !adminProductSearchClearBtn._hasBoundEvents) {
       adminProductSearchClearBtn._hasBoundEvents = true;
       adminProductSearchClearBtn.addEventListener('click', () => {
+        if (adminProductSearchDebounceTimer) clearTimeout(adminProductSearchDebounceTimer);
         if (adminProductSearchInput) adminProductSearchInput.value = '';
         adminState.productSearchQuery = '';
+        adminState.searchResults = null;
+        adminState.isSearchingProducts = false;
         adminProductSearchClearBtn.style.display = 'none';
         renderProductsManager();
         if (adminProductSearchInput) adminProductSearchInput.focus();
@@ -543,6 +659,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   async function reloadAdminProductsForSort() {
+    if (adminState.productSearchQuery) {
+      await performAdminProductSearch(adminState.productSearchQuery);
+      return;
+    }
+
     if (productListContainer) {
       productListContainer.innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
@@ -570,6 +691,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function updateAdminSeeMoreButton() {
     if (!adminSeeMoreContainer) return;
+    if (adminState.productSearchQuery) {
+      adminSeeMoreContainer.style.display = 'none';
+      return;
+    }
     if (adminState.hasMoreProducts && adminState.products.length > 0) {
       adminSeeMoreContainer.style.display = 'block';
     } else {
@@ -627,6 +752,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       adminProductFilterPickerInstance.setOptions(getProductFilterOptions(), true);
     }
 
+    if (adminState.isSearchingProducts) {
+      return;
+    }
+
     if (!adminState.products || adminState.products.length === 0) {
       productListContainer.innerHTML = `
         <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: var(--font-sm);">
@@ -638,11 +767,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    // 1. Filtering
-    let filtered = [...adminState.products];
+    // 1. Choose source array: if searching and searchResults available, use searchResults
+    let sourceList = (adminState.productSearchQuery && Array.isArray(adminState.searchResults))
+      ? adminState.searchResults
+      : adminState.products;
 
-    // Search query filter
-    if (adminState.productSearchQuery) {
+    let filtered = [...sourceList];
+
+    // If searching but searchResults hasn't loaded yet (instant filter during typing), filter in-memory
+    if (adminState.productSearchQuery && !Array.isArray(adminState.searchResults)) {
       const q = adminState.productSearchQuery;
       filtered = filtered.filter(p => {
         const titleMatch = (p.title || '').toLowerCase().includes(q);
@@ -704,28 +837,39 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 3. Update count badge
     if (adminProductCountBadge) {
-      const total = adminState.products.length;
-      if (filtered.length === total) {
-        adminProductCountBadge.textContent = `Showing all ${total} product${total !== 1 ? 's' : ''}`;
+      if (adminState.productSearchQuery) {
+        adminProductCountBadge.textContent = `Showing ${filtered.length} matching product${filtered.length !== 1 ? 's' : ''}`;
       } else {
-        adminProductCountBadge.textContent = `Showing ${filtered.length} of ${total} product${total !== 1 ? 's' : ''}`;
+        const total = adminState.products.length;
+        if (filtered.length === total) {
+          adminProductCountBadge.textContent = `Showing all ${total} product${total !== 1 ? 's' : ''}`;
+        } else {
+          adminProductCountBadge.textContent = `Showing ${filtered.length} of ${total} product${total !== 1 ? 's' : ''}`;
+        }
       }
     }
 
     // 4. Empty search/filter result state
     if (filtered.length === 0) {
+      const isSearchActive = !!adminState.productSearchQuery;
+      const queryEscaped = window.CustomModal?.escape ? window.CustomModal.escape(adminState.productSearchQuery) : adminState.productSearchQuery;
       productListContainer.innerHTML = `
         <div style="padding: 32px 16px; text-align: center; color: var(--text-muted); font-size: var(--font-sm); background: var(--bg-surface); border: 1px dashed var(--border-color); border-radius: var(--radius-md); margin-top: 8px;">
-          <p style="margin: 0 0 10px 0; font-weight: 600; color: var(--text-main);">No products match your search or filter.</p>
+          <p style="margin: 0 0 10px 0; font-weight: 600; color: var(--text-main);">
+            ${isSearchActive ? `No products found matching "${queryEscaped}" across the entire catalog.` : 'No products match your search or filter.'}
+          </p>
           <button type="button" class="btn btn-secondary btn-sm" id="adminResetProductFiltersBtn" style="padding: 6px 14px;">
-            Reset Search & Filters
+            ${isSearchActive ? 'Clear Search' : 'Reset Search & Filters'}
           </button>
         </div>
       `;
       const resetBtn = productListContainer.querySelector('#adminResetProductFiltersBtn');
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
+          if (adminProductSearchDebounceTimer) clearTimeout(adminProductSearchDebounceTimer);
           adminState.productSearchQuery = '';
+          adminState.searchResults = null;
+          adminState.isSearchingProducts = false;
           adminState.productFilter = 'all';
           adminState.productSortBy = 'newest';
           if (adminProductSearchInput) adminProductSearchInput.value = '';

@@ -510,16 +510,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-      const isEnabled = await window.SupabaseService.isBannerGloballyEnabled();
-      if (!isEnabled) {
-        bannerSection.style.display = 'none';
-        bannerTrack.innerHTML = '';
-        if (bannerIndicators) bannerIndicators.innerHTML = '';
-        return;
-      }
-
       activeBanners = await window.SupabaseService.getBanners(false);
-      if (!Array.isArray(activeBanners) || activeBanners.length === 0) {
+      const isEnabled = await window.SupabaseService.isBannerGloballyEnabled();
+      if (!isEnabled || !Array.isArray(activeBanners) || activeBanners.length === 0) {
         bannerSection.style.display = 'none';
         bannerTrack.innerHTML = '';
         if (bannerIndicators) bannerIndicators.innerHTML = '';

@@ -630,18 +630,18 @@ window.SupabaseService = {
   // ---------------- BANNERS (16:9 PROMOTIONAL SLIDER) ----------------
   async isBannerGloballyEnabled() {
     try {
-      const local = localStorage.getItem('kairoslab_banner_global_enabled');
-      if (local !== null) {
-        return local === 'true';
-      }
       const cloud = await this.request('kairoslab_banners?id=eq.config-banner-global&select=is_active');
       if (cloud && cloud.length > 0 && cloud[0].is_active !== undefined) {
         const val = Boolean(cloud[0].is_active);
         localStorage.setItem('kairoslab_banner_global_enabled', String(val));
         return val;
       }
+      const local = localStorage.getItem('kairoslab_banner_global_enabled');
+      if (local !== null) return local === 'true';
       return true;
     } catch (_) {
+      const local = localStorage.getItem('kairoslab_banner_global_enabled');
+      if (local !== null) return local === 'true';
       return true;
     }
   },

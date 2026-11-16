@@ -178,8 +178,19 @@ button, input, textarea {
   background: none;
 }
 
-/* STRICT RULE 3: ZERO HOVER VERTICAL MOVEMENT */
-*:hover, *:active, *:focus {
+/* STRICT RULE 3: ZERO HOVER VERTICAL MOVEMENT FOR ALL BUTTONS AND INTERACTIVE ELEMENTS */
+button:hover,
+button:active,
+button:focus,
+.btn:hover,
+.btn:active,
+.btn:focus,
+a.btn:hover,
+a.btn:active,
+a.btn:focus,
+.banner-stage-nav:hover,
+.banner-stage-nav:active,
+.banner-stage-nav:focus {
   transform: none !important;
 }
 
@@ -4369,9 +4380,9 @@ input::-webkit-credentials-auto-fill-button {
 body.admin-body .admin-customer-search-icon {
   position: absolute !important;
   left: 14px !important;
-  top: 50% !important;
+  top: calc(50% - 9px) !important;
   bottom: auto !important;
-  transform: translateY(-50%) !important;
+  transform: none !important;
   margin: 0 !important;
   height: 18px !important;
   width: 18px !important;
@@ -4409,9 +4420,9 @@ body.admin-body .admin-customer-search-input:focus {
 body.admin-body .admin-customer-search-clear {
   position: absolute !important;
   right: 10px !important;
-  top: 50% !important;
+  top: calc(50% - 13px) !important;
   bottom: auto !important;
-  transform: translateY(-50%) !important;
+  transform: none !important;
   margin: 0 !important;
   width: 26px !important;
   height: 26px !important;
@@ -4426,6 +4437,11 @@ body.admin-body .admin-customer-search-clear {
   border-radius: 50% !important;
   z-index: 2 !important;
   transition: color 0.15s ease, background-color 0.15s ease !important;
+}
+
+.admin-customer-search-clear:hover,
+.admin-customer-search-clear:active {
+  transform: none !important;
 }
 
 .admin-customer-search-clear:hover,
@@ -5011,9 +5027,10 @@ body:not(.admin-body) .brand-title span {
   transition: transform 0.15s ease, background-color 0.15s ease !important;
 }
 
-.header-whatsapp-pill:hover {
+.header-whatsapp-pill:hover,
+.header-whatsapp-pill:active {
   background-color: #20ba5a !important;
-  transform: scale(1.02);
+  transform: none !important;
 }
 
 .header-whatsapp-pill .svg-icon {
@@ -5293,7 +5310,7 @@ body:not(.admin-body) .brand-title span {
 }
 
 .home-category-card:active {
-  transform: scale(0.97);
+  transform: none !important;
 }
 
 .home-category-img-wrap {
@@ -5321,7 +5338,7 @@ body:not(.admin-body) .brand-title span {
 }
 
 .home-category-card:hover .home-category-img {
-  transform: scale(1.05);
+  transform: none !important;
 }
 
 .home-category-title {
@@ -5360,9 +5377,11 @@ body:not(.admin-body) .brand-title span {
 
 /* Floating Navigation Arrows for Stage */
 .banner-stage-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  position: absolute !important;
+  top: calc(50% - 19px) !important;
+  bottom: auto !important;
+  transform: none !important;
+  margin: 0 !important;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -5375,14 +5394,16 @@ body:not(.admin-body) .brand-title span {
   justify-content: center;
   cursor: pointer;
   z-index: 20;
-  transition: all 0.2s ease;
   padding: 0;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 
-.banner-stage-nav:hover {
-  background: #ffffff;
-  transform: translateY(-50%) scale(1.08);
-  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.28);
+.banner-stage-nav:hover,
+.banner-stage-nav:active,
+.banner-stage-nav:focus {
+  background: #ffffff !important;
+  transform: none !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
 }
 
 .banner-stage-prev {
@@ -6707,7 +6728,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 }
 
 .cart-item-thumb:hover {
-  transform: scale(1.04);
+  transform: none !important;
   border-color: #0284c7;
   opacity: 0.95;
 }

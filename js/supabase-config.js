@@ -241,6 +241,103 @@ window.SupabaseService = {
     } catch (_) {}
   },
 
+  async hideAllProducts(productIds = null) {
+    try {
+      if (Array.isArray(productIds) && productIds.length > 0) {
+        const chunkSize = 50;
+        for (let i = 0; i < productIds.length; i += chunkSize) {
+          const chunk = productIds.slice(i, i + chunkSize);
+          await this.request(`kairoslab_products?id=in.(${chunk.map(encodeURIComponent).join(',')})`, {
+            method: 'PATCH',
+            headers: { 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ is_hidden: true })
+          });
+        }
+        productIds.forEach(id => this.setProductHidden(id, true));
+      } else {
+        await this.request('kairoslab_products?id=not.is.null', {
+          method: 'PATCH',
+          headers: { 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ is_hidden: true })
+        });
+      }
+
+      // Update local storage cache
+      try {
+        const stored = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
+        if (stored) {
+          let list = JSON.parse(stored);
+          if (Array.isArray(list)) {
+            list = list.map(p => {
+              if (!productIds || productIds.includes(p.id)) {
+                p.is_hidden = true;
+                p.hidden = true;
+                this.setProductHidden(p.id, true);
+              }
+              return p;
+            });
+            localStorage.setItem('kairoslab_local_products', JSON.stringify(list));
+          }
+        }
+      } catch (_) {}
+
+      window.dispatchEvent(new CustomEvent('kairoslab_products_updated', { detail: { action: 'hide_all', productIds } }));
+      return true;
+    } catch (e) {
+      console.error('hideAllProducts error:', e);
+      return false;
+    }
+  },
+
+  async unhideAllProducts(productIds = null) {
+    try {
+      if (Array.isArray(productIds) && productIds.length > 0) {
+        const chunkSize = 50;
+        for (let i = 0; i < productIds.length; i += chunkSize) {
+          const chunk = productIds.slice(i, i + chunkSize);
+          await this.request(`kairoslab_products?id=in.(${chunk.map(encodeURIComponent).join(',')})`, {
+            method: 'PATCH',
+            headers: { 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ is_hidden: false })
+          });
+        }
+        productIds.forEach(id => this.setProductHidden(id, false));
+      } else {
+        await this.request('kairoslab_products?id=not.is.null', {
+          method: 'PATCH',
+          headers: { 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ is_hidden: false })
+        });
+        localStorage.setItem('kairoslab_hidden_product_ids', '[]');
+      }
+
+      // Update local storage cache
+      try {
+        const stored = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
+        if (stored) {
+          let list = JSON.parse(stored);
+          if (Array.isArray(list)) {
+            list = list.map(p => {
+              if (!productIds || productIds.includes(p.id)) {
+                p.is_hidden = false;
+                p.hidden = false;
+                this.setProductHidden(p.id, false);
+              }
+              return p;
+            });
+            localStorage.setItem('kairoslab_local_products', JSON.stringify(list));
+          }
+        }
+      } catch (_) {}
+
+      window.dispatchEvent(new CustomEvent('kairoslab_products_updated', { detail: { action: 'unhide_all', productIds } }));
+      return true;
+    } catch (e) {
+      console.error('unhideAllProducts error:', e);
+      return false;
+    }
+  },
+
   getLocalProducts(includeHidden = false) {
     try {
       const raw = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));

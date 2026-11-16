@@ -861,6 +861,8 @@ document.addEventListener('DOMContentLoaded', async () => {
      ========================================================================== */
   const productListContainer = document.getElementById('adminProductList');
   const addProductBtn = document.getElementById('adminAddProductBtn');
+  const hideAllProductsBtn = document.getElementById('adminHideAllProductsBtn');
+  const unhideAllProductsBtn = document.getElementById('adminUnhideAllProductsBtn');
   const productEditModal = document.getElementById('adminProductEditModal');
   const adminSeeMoreContainer = document.getElementById('adminSeeMoreContainer');
   const adminSeeMoreBtn = document.getElementById('adminSeeMoreBtn');
@@ -1411,6 +1413,159 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     updateAdminSeeMoreButton();
+  }
+
+  function getCurrentlyFilteredAdminProducts() {
+    if (!adminState.products || adminState.products.length === 0) return [];
+    let sourceList = (adminState.productSearchQuery && Array.isArray(adminState.searchResults))
+      ? adminState.searchResults
+      : adminState.products;
+
+    let filtered = [...sourceList];
+    if (adminState.productSearchQuery && !Array.isArray(adminState.searchResults)) {
+      const q = adminState.productSearchQuery.toLowerCase();
+      filtered = filtered.filter(p => {
+        const titleMatch = (p.title || '').toLowerCase().includes(q);
+        const descMatch = (p.description || '').toLowerCase().includes(q);
+        const priceMatch = String(p.price || '').includes(q);
+        const cat = adminState.categories.find(c => c.id === p.category_id);
+        const catMatch = cat && (cat.name || '').toLowerCase().includes(q);
+        return titleMatch || descMatch || priceMatch || catMatch;
+      });
+    }
+
+    if (adminState.productFilter === 'stock:in_stock') {
+      filtered = filtered.filter(p => !!p.in_stock);
+    } else if (adminState.productFilter === 'stock:out_of_stock') {
+      filtered = filtered.filter(p => !p.in_stock);
+    } else if (adminState.productFilter === 'visibility:visible') {
+      filtered = filtered.filter(p => !(window.SupabaseService?.isProductHidden?.(p) ?? (p.is_hidden || p.hidden)));
+    } else if (adminState.productFilter === 'visibility:hidden') {
+      filtered = filtered.filter(p => !!(window.SupabaseService?.isProductHidden?.(p) ?? (p.is_hidden || p.hidden)));
+    } else if (adminState.productFilter && adminState.productFilter.startsWith('cat:')) {
+      const catId = adminState.productFilter.replace('cat:', '');
+      filtered = filtered.filter(p => p.category_id === catId);
+    }
+    return filtered;
+  }
+
+  // Hide All Current Products Button
+  if (hideAllProductsBtn) {
+    hideAllProductsBtn.addEventListener('click', async () => {
+      const isFiltered = Boolean(adminState.productSearchQuery || (adminState.productFilter && adminState.productFilter !== 'all'));
+      const currentList = getCurrentlyFilteredAdminProducts();
+      const count = currentList.length;
+
+      if (count === 0) {
+        window.CustomModal.toast({ message: 'No products currently displayed to hide.', type: 'info' });
+        return;
+      }
+
+      const confirmed = await window.CustomModal.confirm({
+        title: 'Hide All Current Products',
+        message: isFiltered
+          ? `Are you sure you want to hide all ${count} currently filtered products from the storefront? Customers will not see them until unhidden.`
+          : `Are you sure you want to hide all current products from the storefront? Customers will not see them until unhidden.`,
+        confirmText: 'Hide Products',
+        isDanger: true
+      });
+
+      if (!confirmed) return;
+
+      hideAllProductsBtn.disabled = true;
+      hideAllProductsBtn.style.opacity = '0.6';
+
+      try {
+        const productIds = isFiltered ? currentList.map(p => p.id) : null;
+
+        currentList.forEach(p => {
+          p.is_hidden = true;
+          p.hidden = true;
+          if (window.SupabaseService?.setProductHidden) {
+            window.SupabaseService.setProductHidden(p.id, true);
+          }
+        });
+        adminState.products.forEach(p => {
+          if (!productIds || productIds.includes(p.id)) {
+            p.is_hidden = true;
+            p.hidden = true;
+          }
+        });
+
+        renderProductsManager();
+
+        await window.SupabaseService.hideAllProducts(productIds);
+        window.CustomModal.toast({
+          message: isFiltered
+            ? `${count} current products hidden from the store.`
+            : 'All products are now hidden from the store.',
+          type: 'info'
+        });
+      } catch (err) {
+        console.error('Error hiding products:', err);
+        window.CustomModal.toast({ message: `Error: ${err.message}`, type: 'danger' });
+      } finally {
+        hideAllProductsBtn.disabled = false;
+        hideAllProductsBtn.style.opacity = '1';
+      }
+    });
+  }
+
+  // Unhide All Products Button
+  if (unhideAllProductsBtn) {
+    unhideAllProductsBtn.addEventListener('click', async () => {
+      const isFiltered = Boolean(adminState.productSearchQuery || (adminState.productFilter && adminState.productFilter !== 'all'));
+      const currentList = getCurrentlyFilteredAdminProducts();
+      const count = isFiltered ? currentList.length : adminState.products.length;
+
+      const confirmed = await window.CustomModal.confirm({
+        title: 'Unhide All Products',
+        message: isFiltered
+          ? `Are you sure you want to unhide all ${count} currently filtered products so they appear in the storefront?`
+          : 'Are you sure you want to unhide all products so they appear in the storefront?',
+        confirmText: 'Unhide Products',
+        isDanger: false
+      });
+
+      if (!confirmed) return;
+
+      unhideAllProductsBtn.disabled = true;
+      unhideAllProductsBtn.style.opacity = '0.6';
+
+      try {
+        const productIds = isFiltered ? currentList.map(p => p.id) : null;
+
+        currentList.forEach(p => {
+          p.is_hidden = false;
+          p.hidden = false;
+          if (window.SupabaseService?.setProductHidden) {
+            window.SupabaseService.setProductHidden(p.id, false);
+          }
+        });
+        adminState.products.forEach(p => {
+          if (!productIds || productIds.includes(p.id)) {
+            p.is_hidden = false;
+            p.hidden = false;
+          }
+        });
+
+        renderProductsManager();
+
+        await window.SupabaseService.unhideAllProducts(productIds);
+        window.CustomModal.toast({
+          message: isFiltered
+            ? `${count} current products are now visible in the store.`
+            : 'All products are now unhidden and visible in the store.',
+          type: 'success'
+        });
+      } catch (err) {
+        console.error('Error unhiding products:', err);
+        window.CustomModal.toast({ message: `Error: ${err.message}`, type: 'danger' });
+      } finally {
+        unhideAllProductsBtn.disabled = false;
+        unhideAllProductsBtn.style.opacity = '1';
+      }
+    });
   }
 
   // Create Product Button

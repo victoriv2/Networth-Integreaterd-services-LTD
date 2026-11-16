@@ -736,6 +736,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (e.key === 'kairoslab_local_banners' || e.key === 'kairoslab_banner_global_enabled') {
       renderProductPageBanner();
     }
+    if (e.key === 'kairoslab_local_products' || e.key === 'kairoslab_hidden_product_ids') {
+      if (typeof reloadAndApplySort === 'function') reloadAndApplySort();
+    }
+  });
+
+  // Reactive listener for product visibility changes from Admin
+  window.addEventListener('kairoslab_products_updated', () => {
+    if (typeof reloadAndApplySort === 'function') reloadAndApplySort();
   });
 
   function renderHomeCategories(queryOverride) {

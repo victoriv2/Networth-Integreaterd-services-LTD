@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, interactive-widget=resizes-content" />
   <title>Admin Dashboard — Kairoslab</title>
-  <link rel="stylesheet" href="css/styles.css?v=20261116_0720" />
+  <link rel="stylesheet" href="css/styles.css?v=20261116_0800" />
 </head>
 <body class="admin-body">
 
@@ -93,6 +93,10 @@
     <button class="admin-tab-btn" type="button" data-tab="tabCategories">
       <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
       <span>Categories</span>
+    </button>
+    <button class="admin-tab-btn" type="button" data-tab="tabBanners">
+      <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <span>Banners</span>
     </button>
     <button class="admin-tab-btn" type="button" data-tab="tabOrders">
       <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
@@ -197,6 +201,40 @@
 
         <div id="adminCategoryList">
           <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         TAB 3: BANNERS MANAGEMENT (16:9 PROMOTIONAL SLIDERS)
+         ========================================================================== -->
+    <section class="admin-tab-pane" id="tabBanners">
+      <div class="admin-panel-card">
+        <div class="admin-panel-header" style="flex-wrap: wrap; gap: 14px;">
+          <div>
+            <h2 class="admin-panel-title">Product Page Banners (16:9)</h2>
+            <p style="font-size: var(--font-xs); color: var(--text-muted); margin-top: 3px;">
+              Manage promotional 16:9 slides on the storefront. Auto-slides every 1.5s when 2+ slides exist. Supports touch swipe.
+            </p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <!-- Turn Off Banner Global Toggle Button -->
+            <div class="admin-banner-global-toggle-wrap">
+              <span style="font-size: 13px; font-weight: 600; color: var(--text-main);" id="bannerGlobalToggleLabel">Storefront Banners: Enabled</span>
+              <label class="admin-switch" title="Toggle storefront banner visibility">
+                <input type="checkbox" id="adminBannerGlobalToggle" checked />
+                <span class="admin-slider"></span>
+              </label>
+            </div>
+            <button class="btn btn-primary btn-sm" type="button" id="adminAddBannerBtn">
+              <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>Add Banner</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="adminBannersList" class="admin-banners-grid" style="margin-top: 14px;">
+          <!-- Rendered dynamically by admin.js -->
         </div>
       </div>
     </section>
@@ -474,6 +512,13 @@
     <!-- Injected by admin.js -->
   </div>
 
+  <!-- ==========================================================================
+       BANNER EDIT / CREATE MODAL
+       ========================================================================== -->
+  <div class="c-modal-overlay" id="adminBannerEditModal" style="display: none;">
+    <!-- Injected by admin.js -->
+  </div>
+
   <!-- Full View Lightbox -->
   <div class="full-view-lightbox" id="fullViewLightbox">
     <!-- Injected dynamically -->
@@ -484,8 +529,8 @@
   <script src="js/image-compressor.js?v=20261110_1200"></script>
   <script src="js/custom-modal.js?v=20261110_1200"></script>
   <script src="js/custom-picker.js?v=20261110_1200"></script>
-  <script src="js/supabase-config.js?v=20261116_0730"></script>
-  <script src="js/receipt-generator.js?v=20261116_0700"></script>
-  <script src="js/admin.js?v=20261116_0740"></script>
+  <script src="js/supabase-config.js?v=20261116_0800"></script>
+  <script src="js/receipt-generator.js?v=20261116_0800"></script>
+  <script src="js/admin.js?v=20261116_0800"></script>
 </body>
 </html>

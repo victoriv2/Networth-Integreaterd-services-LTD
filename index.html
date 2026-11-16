@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, interactive-widget=resizes-content" />
   <title>Kairoslab - Online Store & Direct Orders</title>
-  <link rel="stylesheet" href="css/styles.css?v=20261116_0720" />
+  <link rel="stylesheet" href="css/styles.css?v=20261116_0800" />
 </head>
 <body>
 
@@ -194,6 +194,18 @@
     <div class="app-view" id="viewShop">
       <section class="shop-view-section">
         <div class="container">
+          <!-- 16:9 Product Catalog Banner Slider (Mounted directly above search input card) -->
+          <div id="productBannerSection" class="product-banner-section" style="display: none;">
+            <div class="product-banner-card">
+              <div class="product-banner-slider" id="productBannerSlider">
+                <div class="product-banner-track" id="productBannerTrack">
+                  <!-- Rendered dynamically by app.js -->
+                </div>
+                <div class="product-banner-indicators" id="productBannerIndicators"></div>
+              </div>
+            </div>
+          </div>
+
           <div class="shop-toolbar-card">
             <!-- Search bar -->
             <div class="shop-search-bar" style="position: relative;">
@@ -579,9 +591,9 @@
   <script src="js/nigeria-data.js?v=20261116_0600"></script>
   <script src="js/custom-modal.js?v=20261116_0600"></script>
   <script src="js/custom-picker.js?v=20261116_0600"></script>
-  <script src="js/supabase-config.js?v=20261116_0730"></script>
-  <script src="js/receipt-generator.js?v=20261116_0700"></script>
-  <script src="js/auth-modal.js?v=20261116_0700"></script>
-  <script src="js/app.js?v=20261116_0740"></script>
+  <script src="js/supabase-config.js?v=20261116_0800"></script>
+  <script src="js/receipt-generator.js?v=20261116_0800"></script>
+  <script src="js/auth-modal.js?v=20261116_0800"></script>
+  <script src="js/app.js?v=20261116_0800"></script>
 </body>
 </html>

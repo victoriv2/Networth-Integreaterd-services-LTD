@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     orders: [],
     conversations: [],
     users: [],
+    banners: [],
+    isBannerGlobalEnabled: true,
+    editingBanner: null,
     productPageSize: 40,
     hasMoreProducts: false,
     isLoadingMoreProducts: false,
@@ -59,6 +62,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           loadOrdersAndChats();
         } else if (tabTarget === 'tabUsers') {
           loadUsersManager();
+        } else if (tabTarget === 'tabBanners') {
+          loadAdminBanners();
         }
       }
     });
@@ -120,20 +125,25 @@ document.addEventListener('DOMContentLoaded', async () => {
      ========================================================================== */
   async function loadAdminData() {
     try {
-      const [categories, products, orders, users] = await Promise.all([
+      const [categories, products, orders, users, banners, isBannerGlobalEnabled] = await Promise.all([
         window.SupabaseService.getCategories(),
         window.SupabaseService.getProducts({ limit: adminState.productPageSize, offset: 0, sort: 'newest', includeHidden: true }),
         window.SupabaseService.getOrders(),
-        window.SupabaseService.getUsers()
+        window.SupabaseService.getUsers(),
+        window.SupabaseService.getBanners(true),
+        window.SupabaseService.isBannerGloballyEnabled()
       ]);
 
       adminState.categories = categories || [];
       adminState.products = Array.isArray(products) ? products.sort(compareProductsNewest) : [];
       adminState.orders = orders || [];
       adminState.users = users || [];
+      adminState.banners = banners || [];
+      adminState.isBannerGlobalEnabled = isBannerGlobalEnabled !== false;
       adminState.hasMoreProducts = Array.isArray(products) && products.length === adminState.productPageSize;
 
       renderCategoriesManager();
+      renderBannersManager();
       renderProductsManager();
       renderOrdersManager();
       renderChatManager();
@@ -440,6 +450,409 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (addCategoryBtn) {
     addCategoryBtn.addEventListener('click', () => {
       openCategoryEditDialog(null, true);
+    });
+  }
+
+  /* ==========================================================================
+     3B. BANNERS MANAGEMENT (16:9 Aspect Ratio, Position, Hide/Show, Edit, Delete, Global Toggle)
+     ========================================================================== */
+  const bannersContainer = document.getElementById('adminBannersList');
+  const addBannerBtn = document.getElementById('adminAddBannerBtn');
+  const bannerGlobalToggle = document.getElementById('adminBannerGlobalToggle');
+  const bannerGlobalToggleLabel = document.getElementById('bannerGlobalToggleLabel');
+  const bannerModal = document.getElementById('adminBannerEditModal');
+
+  async function loadAdminBanners() {
+    try {
+      const [banners, isGlobalEnabled] = await Promise.all([
+        window.SupabaseService.getBanners(true),
+        window.SupabaseService.isBannerGloballyEnabled()
+      ]);
+      adminState.banners = Array.isArray(banners) ? banners : [];
+      adminState.isBannerGlobalEnabled = isGlobalEnabled !== false;
+      renderBannersManager();
+    } catch (err) {
+      console.error('Error loading admin banners:', err);
+    }
+  }
+
+  function renderBannersManager() {
+    if (bannerGlobalToggle) {
+      bannerGlobalToggle.checked = adminState.isBannerGlobalEnabled !== false;
+    }
+    if (bannerGlobalToggleLabel) {
+      bannerGlobalToggleLabel.textContent = adminState.isBannerGlobalEnabled !== false
+        ? 'Storefront Banners: Enabled'
+        : 'Storefront Banners: Turned Off';
+    }
+
+    if (!bannersContainer) return;
+
+    if (!adminState.banners || adminState.banners.length === 0) {
+      bannersContainer.innerHTML = `
+        <div style="padding: 32px 16px; text-align: center; color: var(--text-muted); font-size: var(--font-sm); border: 1px dashed var(--border-color); border-radius: 8px;">
+          <p style="margin: 0; font-weight: 600; color: var(--text-main);">No banners configured yet.</p>
+          <p style="margin: 6px 0 0; font-size: var(--font-xs);">Click "Add Banner" above to create your first 16:9 storefront slide.</p>
+        </div>
+      `;
+      return;
+    }
+
+    adminState.banners.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+    bannersContainer.innerHTML = adminState.banners.map((b, idx) => {
+      const isFirst = idx === 0;
+      const isLast = idx === adminState.banners.length - 1;
+      const isVisible = b.is_active !== false;
+
+      return `
+        <div class="admin-item-row" data-id="${b.id}" style="display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 16px; background: var(--bg-surface, #fff); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1;">
+            <!-- 16:9 Thumbnail -->
+            <div style="width: 110px; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: #0c1726; border: 1px solid var(--border-color); flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+              <img src="${b.image_url}" alt="${window.CustomModal.escape(b.title || 'Banner')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.src='assets/images/logo.png';" />
+            </div>
+
+            <div style="min-width: 0; flex: 1;">
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span style="font-size: 14px; font-weight: 700; color: var(--text-main);">${window.CustomModal.escape(b.title || 'Untitled Slide')}</span>
+                <span class="badge ${isVisible ? 'badge-success' : 'badge-neutral'}" style="font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                  ${isVisible ? 'Active' : 'Hidden'}
+                </span>
+              </div>
+              ${b.subtitle ? `<div style="font-size: 12px; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 420px;">${window.CustomModal.escape(b.subtitle)}</div>` : ''}
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span>Position: <strong>#${idx + 1}</strong></span>
+                <span>Ratio: <strong>16:9</strong></span>
+                ${b.link_url ? `<span>Target: <strong style="color: var(--primary);">${window.CustomModal.escape(b.link_url)}</strong></span>` : ''}
+              </div>
+            </div>
+          </div>
+
+          <!-- Action buttons -->
+          <div class="admin-item-actions" style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+            <button class="btn-icon-square" type="button" data-action="banner-up" data-idx="${idx}" title="Move Up (Earlier Slide)" ${isFirst ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>
+              ${window.renderIcon('arrowUp')}
+            </button>
+            <button class="btn-icon-square" type="button" data-action="banner-down" data-idx="${idx}" title="Move Down (Later Slide)" ${isLast ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>
+              ${window.renderIcon('arrowDown')}
+            </button>
+            <button class="btn-icon-square" type="button" data-action="banner-toggle" data-id="${b.id}" title="${isVisible ? 'Hide from storefront' : 'Show on storefront'}">
+              ${isVisible ? window.renderIcon('eye') : window.renderIcon('eyeOff')}
+            </button>
+            <button class="btn-icon-square" type="button" data-action="banner-edit" data-id="${b.id}" title="Edit Banner Details & Image">
+              ${window.renderIcon('edit')}
+            </button>
+            <button class="btn-icon-square danger" type="button" data-action="banner-delete" data-id="${b.id}" title="Delete Banner">
+              ${window.renderIcon('trash')}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Banner Up Action
+    bannersContainer.querySelectorAll('[data-action="banner-up"]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const idx = parseInt(btn.getAttribute('data-idx'), 10);
+        if (idx > 0) {
+          const temp = adminState.banners[idx];
+          adminState.banners[idx] = adminState.banners[idx - 1];
+          adminState.banners[idx - 1] = temp;
+          adminState.banners.forEach((b, i) => { b.sort_order = i + 1; });
+          renderBannersManager();
+          try {
+            await Promise.all(adminState.banners.map(b => window.SupabaseService.saveBanner(b)));
+            window.CustomModal.toast({ message: 'Banner order updated', type: 'success' });
+          } catch (err) {
+            console.error('Failed to sync banner order:', err);
+          }
+        }
+      });
+    });
+
+    // Banner Down Action
+    bannersContainer.querySelectorAll('[data-action="banner-down"]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const idx = parseInt(btn.getAttribute('data-idx'), 10);
+        if (idx < adminState.banners.length - 1) {
+          const temp = adminState.banners[idx];
+          adminState.banners[idx] = adminState.banners[idx + 1];
+          adminState.banners[idx + 1] = temp;
+          adminState.banners.forEach((b, i) => { b.sort_order = i + 1; });
+          renderBannersManager();
+          try {
+            await Promise.all(adminState.banners.map(b => window.SupabaseService.saveBanner(b)));
+            window.CustomModal.toast({ message: 'Banner order updated', type: 'success' });
+          } catch (err) {
+            console.error('Failed to sync banner order:', err);
+          }
+        }
+      });
+    });
+
+    // Banner Toggle Active/Hide Action
+    bannersContainer.querySelectorAll('[data-action="banner-toggle"]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const b = adminState.banners.find(x => x.id === id);
+        if (!b) return;
+        b.is_active = !b.is_active;
+        renderBannersManager();
+        try {
+          await window.SupabaseService.saveBanner(b);
+          window.CustomModal.toast({
+            message: b.is_active ? 'Banner is now active on storefront' : 'Banner hidden from storefront',
+            type: 'info'
+          });
+        } catch (err) {
+          console.error('Failed to toggle banner status:', err);
+        }
+      });
+    });
+
+    // Banner Edit Action
+    bannersContainer.querySelectorAll('[data-action="banner-edit"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        const b = adminState.banners.find(x => x.id === id);
+        if (b) openBannerEditModal(b);
+      });
+    });
+
+    // Banner Delete Action
+    bannersContainer.querySelectorAll('[data-action="banner-delete"]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const confirmed = await window.CustomModal.confirm({
+          title: 'Delete Banner Slide',
+          message: 'Are you sure you want to permanently remove this banner slide?',
+          confirmText: 'Delete Banner',
+          isDanger: true
+        });
+        if (confirmed) {
+          adminState.banners = adminState.banners.filter(x => x.id !== id);
+          renderBannersManager();
+          try {
+            await window.SupabaseService.deleteBanner(id);
+            window.CustomModal.toast({ message: 'Banner deleted successfully', type: 'success' });
+          } catch (err) {
+            window.CustomModal.toast({ message: `Delete failed: ${err.message}`, type: 'danger' });
+          }
+        }
+      });
+    });
+  }
+
+  function openBannerEditModal(banner) {
+    if (!bannerModal) return;
+    const isNew = !banner;
+    const bDraft = banner ? { ...banner } : {
+      id: `banner-${Date.now()}`,
+      title: '',
+      subtitle: '',
+      image_url: '',
+      link_url: '',
+      sort_order: adminState.banners.length + 1,
+      is_active: true
+    };
+    let bannerDraftImage = bDraft.image_url || '';
+
+    bannerModal.innerHTML = `
+      <div class="c-modal-card" style="max-width: 580px; width: 92%; max-height: 90vh; overflow-y: auto;">
+        <div class="c-modal-header" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--border-color);">
+          <h3 class="c-modal-title" style="margin: 0; font-size: 16px; font-weight: 700;">
+            ${isNew ? 'Create New 16:9 Banner Slide' : 'Edit Banner Slide'}
+          </h3>
+          <button class="c-modal-close" type="button" id="closeBannerModalBtn" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted);">&times;</button>
+        </div>
+        <form id="adminBannerForm" style="display: flex; flex-direction: column; gap: 14px; padding: 18px;">
+          <!-- 16:9 Banner Image Preview and Upload -->
+          <div class="form-group">
+            <label class="form-label" style="font-weight: 600; display: block; margin-bottom: 6px; font-size: 13px;">
+              Banner Image (16:9 Aspect Ratio &le; 100KB Auto-compressed) *
+            </label>
+            <div id="bannerImagePreviewBox" style="width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: #0c1726; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; position: relative;">
+              <img id="bannerImagePreviewEl" src="${bannerDraftImage}" style="${bannerDraftImage ? 'width:100%; height:100%; object-fit:cover;' : 'display:none;'}" alt="Preview" />
+              <div id="bannerImagePlaceholderEl" style="${bannerDraftImage ? 'display:none;' : 'display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--text-muted); font-size:12px;'}">
+                <svg class="svg-icon" style="width: 32px; height: 32px; opacity: 0.6;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span>Select or upload an image (16:9 recommended)</span>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 10px; align-items: center; flex-wrap: wrap;">
+              <label class="btn btn-outline btn-sm" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; margin: 0;">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Upload Image File
+                <input type="file" id="bannerFileInputEl" accept="image/*" style="display: none;" />
+              </label>
+              <span id="bannerFileStatusEl" style="font-size: 12px; color: var(--text-muted);">Auto-compressed to &le; 100KB</span>
+            </div>
+
+            <div style="margin-top: 10px;">
+              <label class="form-label" style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Or enter Image URL / Asset Path:</label>
+              <input type="text" id="bannerImageUrlInputEl" class="form-input" placeholder="e.g. assets/banners/mercedes-gle.jpg" value="${window.CustomModal.escape(bannerDraftImage)}" style="font-size: 12px;" />
+            </div>
+          </div>
+
+          <!-- Title -->
+          <div class="form-group">
+            <label class="form-label" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px;">Banner Headline / Title (Optional)</label>
+            <input type="text" id="bannerTitleInputEl" class="form-input" placeholder="e.g. Verified Nigerian Corporate Procurement" value="${window.CustomModal.escape(bDraft.title || '')}" />
+          </div>
+
+          <!-- Subtitle -->
+          <div class="form-group">
+            <label class="form-label" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px;">Subtitle / Caption (Optional)</label>
+            <input type="text" id="bannerSubtitleInputEl" class="form-input" placeholder="e.g. Pre-screened equipment and nationwide direct delivery" value="${window.CustomModal.escape(bDraft.subtitle || '')}" />
+          </div>
+
+          <!-- Link URL -->
+          <div class="form-group">
+            <label class="form-label" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px;">Link URL / Action (Optional)</label>
+            <input type="text" id="bannerLinkInputEl" class="form-input" placeholder="e.g. #viewShop or https://wa.me/..." value="${window.CustomModal.escape(bDraft.link_url || '')}" />
+          </div>
+
+          <!-- Active Checkbox -->
+          <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+            <input type="checkbox" id="bannerActiveInputEl" ${bDraft.is_active ? 'checked' : ''} style="width: 16px; height: 16px; cursor: pointer;" />
+            <label for="bannerActiveInputEl" style="font-size: 13px; font-weight: 600; cursor: pointer;">Show this banner on storefront (Active)</label>
+          </div>
+
+          <!-- Modal Action Buttons -->
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+            <button type="button" class="btn btn-outline" id="cancelBannerModalBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="saveBannerModalBtn">
+              ${isNew ? 'Create Banner' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    bannerModal.style.display = 'flex';
+
+    const closeBtn = bannerModal.querySelector('#closeBannerModalBtn');
+    const cancelBtn = bannerModal.querySelector('#cancelBannerModalBtn');
+    const fileInput = bannerModal.querySelector('#bannerFileInputEl');
+    const fileStatus = bannerModal.querySelector('#bannerFileStatusEl');
+    const urlInput = bannerModal.querySelector('#bannerImageUrlInputEl');
+    const previewEl = bannerModal.querySelector('#bannerImagePreviewEl');
+    const placeholderEl = bannerModal.querySelector('#bannerImagePlaceholderEl');
+    const form = bannerModal.querySelector('#adminBannerForm');
+
+    function updatePreview(url) {
+      if (url) {
+        previewEl.src = url;
+        previewEl.style.display = 'block';
+        placeholderEl.style.display = 'none';
+      } else {
+        previewEl.src = '';
+        previewEl.style.display = 'none';
+        placeholderEl.style.display = 'flex';
+      }
+    }
+
+    const closeModal = () => {
+      bannerModal.style.display = 'none';
+      bannerModal.innerHTML = '';
+    };
+
+    closeBtn?.addEventListener('click', closeModal);
+    cancelBtn?.addEventListener('click', closeModal);
+
+    urlInput?.addEventListener('input', () => {
+      bannerDraftImage = urlInput.value.trim();
+      updatePreview(bannerDraftImage);
+    });
+
+    fileInput?.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      fileStatus.textContent = 'Compressing image (<=100KB)...';
+      try {
+        const compressed = await window.ImageCompressor.compress(file);
+        bannerDraftImage = compressed.dataUrl;
+        updatePreview(bannerDraftImage);
+        if (urlInput) urlInput.value = '';
+        fileStatus.textContent = `Compressed: ${(compressed.sizeKB || 0).toFixed(1)} KB`;
+      } catch (err) {
+        console.error('Banner image compression error:', err);
+        fileStatus.textContent = 'Compression failed, please select another image';
+        window.CustomModal.toast({ message: 'Could not compress image. Please select a valid image file.', type: 'danger' });
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const finalImage = bannerDraftImage || urlInput.value.trim();
+      if (!finalImage) {
+        window.CustomModal.toast({ message: 'Please select or upload a banner image.', type: 'danger' });
+        return;
+      }
+
+      const titleInput = bannerModal.querySelector('#bannerTitleInputEl');
+      const subtitleInput = bannerModal.querySelector('#bannerSubtitleInputEl');
+      const linkInput = bannerModal.querySelector('#bannerLinkInputEl');
+      const activeInput = bannerModal.querySelector('#bannerActiveInputEl');
+
+      bDraft.image_url = finalImage;
+      bDraft.title = titleInput.value.trim();
+      bDraft.subtitle = subtitleInput.value.trim();
+      bDraft.link_url = linkInput.value.trim() || null;
+      bDraft.is_active = activeInput.checked;
+
+      if (isNew) {
+        adminState.banners.push(bDraft);
+      } else {
+        const idx = adminState.banners.findIndex(b => b.id === bDraft.id);
+        if (idx >= 0) adminState.banners[idx] = bDraft;
+      }
+
+      closeModal();
+      renderBannersManager();
+
+      try {
+        await window.SupabaseService.saveBanner(bDraft);
+        window.CustomModal.toast({
+          message: isNew ? 'Banner created and published live' : 'Banner updated successfully',
+          type: 'success'
+        });
+      } catch (err) {
+        window.CustomModal.toast({ message: `Save error: ${err.message}`, type: 'danger' });
+      }
+    });
+  }
+
+  // Wire Global Banner Toggle Switch
+  if (bannerGlobalToggle) {
+    bannerGlobalToggle.addEventListener('change', async (e) => {
+      const isEnabled = e.target.checked;
+      adminState.isBannerGlobalEnabled = isEnabled;
+      if (bannerGlobalToggleLabel) {
+        bannerGlobalToggleLabel.textContent = isEnabled
+          ? 'Storefront Banners: Enabled'
+          : 'Storefront Banners: Turned Off';
+      }
+      try {
+        await window.SupabaseService.setBannerGlobalVisibility(isEnabled);
+        window.CustomModal.toast({
+          message: isEnabled
+            ? 'Storefront banners enabled'
+            : 'Storefront banners turned off (completely hidden from storefront)',
+          type: isEnabled ? 'success' : 'info'
+        });
+      } catch (err) {
+        console.error('Error setting global banner visibility:', err);
+        window.CustomModal.toast({ message: 'Failed to update storefront banner visibility', type: 'danger' });
+      }
+    });
+  }
+
+  // Wire Add Banner Button
+  if (addBannerBtn) {
+    addBannerBtn.addEventListener('click', () => {
+      openBannerEditModal(null);
     });
   }
 

@@ -341,6 +341,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (tabName === 'home') {
       renderHomeCategories();
     } else if (tabName === 'shop') {
+      renderProductPageBanner();
       renderShopCategoryPills();
       applyFiltersAndSort();
     } else if (tabName === 'cart') {
@@ -407,6 +408,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const cachedProducts = window.SupabaseService.getLocalProducts ? window.SupabaseService.getLocalProducts(false) : [];
 
       if (cachedCategories.length > 0) state.categories = cachedCategories;
+      renderProductPageBanner();
       renderHomeCategories();
       renderShopCategoryPills();
       initToolbars();
@@ -487,6 +489,261 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
   }
+
+  /* ==========================================================================
+     16:9 PRODUCT CATALOG BANNER SLIDER (Auto-slides 1.5s, Touch Swipe, Global Toggle)
+     ========================================================================== */
+  let productBannerInterval = null;
+  let currentBannerIndex = 0;
+  let activeBanners = [];
+
+  async function renderProductPageBanner() {
+    const bannerSection = document.getElementById('productBannerSection');
+    const bannerTrack = document.getElementById('productBannerTrack');
+    const bannerIndicators = document.getElementById('productBannerIndicators');
+    if (!bannerSection || !bannerTrack) return;
+
+    // Clear any active auto-slide interval
+    if (productBannerInterval) {
+      clearInterval(productBannerInterval);
+      productBannerInterval = null;
+    }
+
+    try {
+      const isEnabled = await window.SupabaseService.isBannerGloballyEnabled();
+      if (!isEnabled) {
+        bannerSection.style.display = 'none';
+        bannerTrack.innerHTML = '';
+        if (bannerIndicators) bannerIndicators.innerHTML = '';
+        return;
+      }
+
+      activeBanners = await window.SupabaseService.getBanners(false);
+      if (!Array.isArray(activeBanners) || activeBanners.length === 0) {
+        bannerSection.style.display = 'none';
+        bannerTrack.innerHTML = '';
+        if (bannerIndicators) bannerIndicators.innerHTML = '';
+        return;
+      }
+
+      // Display 16:9 banner container
+      bannerSection.style.display = 'block';
+      currentBannerIndex = 0;
+
+      bannerTrack.innerHTML = activeBanners.map((b, idx) => {
+        const img = b.image_url || 'assets/images/logo.png';
+        const hasOverlay = (b.title && b.title.trim()) || (b.subtitle && b.subtitle.trim());
+        const link = b.link_url || '';
+        return `
+          <div class="product-banner-slide" data-index="${idx}" data-link="${link ? (window.CustomModal?.escape ? window.CustomModal.escape(link) : link) : ''}">
+            <img src="${img}" alt="${b.title ? (window.CustomModal?.escape ? window.CustomModal.escape(b.title) : b.title) : 'Kairoslab'}" onerror="this.onerror=null;this.src='assets/images/logo.png';" loading="${idx === 0 ? 'eager' : 'lazy'}" />
+            ${hasOverlay ? `
+              <div class="product-banner-caption-overlay">
+                ${b.title ? `<div class="product-banner-caption-title">${window.CustomModal?.escape ? window.CustomModal.escape(b.title) : b.title}</div>` : ''}
+                ${b.subtitle ? `<div class="product-banner-caption-sub">${window.CustomModal?.escape ? window.CustomModal.escape(b.subtitle) : b.subtitle}</div>` : ''}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+
+      // Render dots if 2 or more slides
+      if (bannerIndicators) {
+        if (activeBanners.length >= 2) {
+          bannerIndicators.innerHTML = activeBanners.map((_, idx) => `
+            <button type="button" class="product-banner-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}" aria-label="Slide ${idx + 1}"></button>
+          `).join('');
+
+          bannerIndicators.querySelectorAll('.product-banner-dot').forEach(dot => {
+            dot.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const idx = parseInt(dot.getAttribute('data-index'), 10);
+              goToBannerSlide(idx);
+              restartBannerAutoSlide();
+            });
+          });
+        } else {
+          bannerIndicators.innerHTML = '';
+        }
+      }
+
+      goToBannerSlide(0);
+
+      // Slide click navigation
+      bannerTrack.querySelectorAll('.product-banner-slide').forEach(slide => {
+        slide.addEventListener('click', () => {
+          if (slide._wasSwiping) {
+            slide._wasSwiping = false;
+            return;
+          }
+          const link = slide.getAttribute('data-link');
+          if (link) {
+            if (link.startsWith('#')) {
+              const targetTab = link.replace('#', '');
+              if (targetTab.startsWith('category:')) {
+                const catId = targetTab.replace('category:', '');
+                window.switchAppTab('shop', catId);
+              } else {
+                window.switchAppTab(targetTab);
+              }
+            } else if (link.startsWith('http')) {
+              window.open(link, '_blank', 'noopener,noreferrer');
+            } else {
+              window.location.href = link;
+            }
+          }
+        });
+      });
+
+      setupBannerGesturesAndAutoSlide();
+    } catch (err) {
+      console.warn('Product banner initialization notice:', err);
+      bannerSection.style.display = 'none';
+    }
+  }
+
+  function goToBannerSlide(index) {
+    const bannerTrack = document.getElementById('productBannerTrack');
+    const bannerIndicators = document.getElementById('productBannerIndicators');
+    if (!bannerTrack || !activeBanners || activeBanners.length === 0) return;
+
+    currentBannerIndex = (index + activeBanners.length) % activeBanners.length;
+    bannerTrack.style.transform = `translateX(-${currentBannerIndex * 100}%)`;
+
+    if (bannerIndicators) {
+      const dots = bannerIndicators.querySelectorAll('.product-banner-dot');
+      dots.forEach((dot, idx) => {
+        if (idx === currentBannerIndex) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    }
+  }
+
+  function setupBannerGesturesAndAutoSlide() {
+    const slider = document.getElementById('productBannerSlider');
+    if (!slider || slider._hasGestureListeners) {
+      if (activeBanners.length >= 2) startBannerAutoSlide();
+      return;
+    }
+    slider._hasGestureListeners = true;
+
+    if (activeBanners.length >= 2) {
+      startBannerAutoSlide();
+    }
+
+    // Touch Swipe Gestures
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchDeltaX = 0;
+    let isHorizontalSwipe = false;
+
+    slider.addEventListener('touchstart', (e) => {
+      if (!e.touches || e.touches.length === 0) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchDeltaX = 0;
+      isHorizontalSwipe = false;
+      stopBannerAutoSlide();
+    }, { passive: true });
+
+    slider.addEventListener('touchmove', (e) => {
+      if (!e.touches || e.touches.length === 0) return;
+      touchDeltaX = e.touches[0].clientX - touchStartX;
+      const deltaY = e.touches[0].clientY - touchStartY;
+
+      if (!isHorizontalSwipe && (Math.abs(touchDeltaX) > 10 || Math.abs(deltaY) > 10)) {
+        isHorizontalSwipe = Math.abs(touchDeltaX) > Math.abs(deltaY);
+      }
+    }, { passive: true });
+
+    slider.addEventListener('touchend', () => {
+      if (activeBanners.length >= 2 && isHorizontalSwipe && Math.abs(touchDeltaX) > 35) {
+        const activeSlide = slider.querySelector(`.product-banner-slide[data-index="${currentBannerIndex}"]`);
+        if (activeSlide) activeSlide._wasSwiping = true;
+
+        if (touchDeltaX < 0) {
+          goToBannerSlide(currentBannerIndex + 1);
+        } else {
+          goToBannerSlide(currentBannerIndex - 1);
+        }
+      }
+      restartBannerAutoSlide();
+    });
+
+    // Mouse drag support for desktop
+    let isMouseDown = false;
+    let mouseStartX = 0;
+    let mouseDeltaX = 0;
+
+    slider.addEventListener('mousedown', (e) => {
+      if (activeBanners.length < 2) return;
+      isMouseDown = true;
+      mouseStartX = e.clientX;
+      mouseDeltaX = 0;
+      stopBannerAutoSlide();
+    });
+
+    slider.addEventListener('mousemove', (e) => {
+      if (!isMouseDown) return;
+      mouseDeltaX = e.clientX - mouseStartX;
+    });
+
+    const finishMouseDrag = () => {
+      if (!isMouseDown) return;
+      isMouseDown = false;
+      if (activeBanners.length >= 2 && Math.abs(mouseDeltaX) > 35) {
+        const activeSlide = slider.querySelector(`.product-banner-slide[data-index="${currentBannerIndex}"]`);
+        if (activeSlide) activeSlide._wasSwiping = true;
+
+        if (mouseDeltaX < 0) {
+          goToBannerSlide(currentBannerIndex + 1);
+        } else {
+          goToBannerSlide(currentBannerIndex - 1);
+        }
+      }
+      restartBannerAutoSlide();
+    };
+
+    slider.addEventListener('mouseup', finishMouseDrag);
+    slider.addEventListener('mouseleave', finishMouseDrag);
+  }
+
+  function startBannerAutoSlide() {
+    stopBannerAutoSlide();
+    // Auto-slide 1.5 seconds (1500ms) when 2 and above
+    productBannerInterval = setInterval(() => {
+      if (activeBanners.length >= 2) {
+        goToBannerSlide(currentBannerIndex + 1);
+      }
+    }, 1500);
+  }
+
+  function stopBannerAutoSlide() {
+    if (productBannerInterval) {
+      clearInterval(productBannerInterval);
+      productBannerInterval = null;
+    }
+  }
+
+  function restartBannerAutoSlide() {
+    stopBannerAutoSlide();
+    if (activeBanners.length >= 2) {
+      startBannerAutoSlide();
+    }
+  }
+
+  // Reactive listener for banner changes from Admin
+  window.addEventListener('kairoslab_banners_updated', () => {
+    renderProductPageBanner();
+  });
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'kairoslab_local_banners' || e.key === 'kairoslab_banner_global_enabled') {
+      renderProductPageBanner();
+    }
+  });
 
   function renderHomeCategories(queryOverride) {
     const grid = document.getElementById('homeCategoriesGrid');

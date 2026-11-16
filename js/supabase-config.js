@@ -627,40 +627,94 @@ window.SupabaseService = {
     ];
   },
 
-  async getBanners() {
-    const cloud = await this.request('kairoslab_banners?select=*&order=sort_order.asc');
-    if (cloud && Array.isArray(cloud) && cloud.length > 0) {
-      localStorage.setItem('kairoslab_local_banners', JSON.stringify(cloud));
-      return cloud;
-    }
-    const local = localStorage.getItem('kairoslab_local_banners');
-    if (local) return JSON.parse(local);
-
-    const defaultBanners = [
-      {
-        id: 'banner-1',
-        image_url: 'assets/images/logo.jpeg',
-        caption: 'Welcome to Kairoslab — Quality Products & Express Nationwide Delivery',
-        sort_order: 1
-      },
-      {
-        id: 'banner-2',
-        image_url: 'assets/images/logo.jpeg',
-        caption: 'Direct Orders & Customer Inquiries via WhatsApp & Online Portal',
-        sort_order: 2
+  // ---------------- BANNERS (16:9 PROMOTIONAL SLIDER) ----------------
+  async isBannerGloballyEnabled() {
+    try {
+      const local = localStorage.getItem('kairoslab_banner_global_enabled');
+      if (local !== null) {
+        return local === 'true';
       }
-    ];
-    localStorage.setItem('kairoslab_local_banners', JSON.stringify(defaultBanners));
-    return defaultBanners;
+      const cloud = await this.request('kairoslab_banners?id=eq.config-banner-global&select=is_active');
+      if (cloud && cloud.length > 0 && cloud[0].is_active !== undefined) {
+        const val = Boolean(cloud[0].is_active);
+        localStorage.setItem('kairoslab_banner_global_enabled', String(val));
+        return val;
+      }
+      return true;
+    } catch (_) {
+      return true;
+    }
+  },
+
+  async setBannerGlobalVisibility(enabled) {
+    const val = Boolean(enabled);
+    localStorage.setItem('kairoslab_banner_global_enabled', String(val));
+    try {
+      await this.request('kairoslab_banners', {
+        method: 'POST',
+        headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
+        body: JSON.stringify({
+          id: 'config-banner-global',
+          title: 'GLOBAL_CONFIG',
+          image_url: 'none',
+          sort_order: -999,
+          is_active: val
+        })
+      });
+    } catch (e) {
+      console.warn('setBannerGlobalVisibility notice:', e);
+    }
+    window.dispatchEvent(new CustomEvent('kairoslab_banners_updated', { detail: { enabled: val } }));
+    return val;
+  },
+
+  async getBanners(includeInactive = false) {
+    let list = [];
+    try {
+      const cloud = await this.request('kairoslab_banners?select=*&order=sort_order.asc');
+      if (cloud && Array.isArray(cloud)) {
+        list = cloud;
+        localStorage.setItem('kairoslab_local_banners', JSON.stringify(cloud));
+      } else {
+        const local = localStorage.getItem('kairoslab_local_banners');
+        list = local ? JSON.parse(local) : [];
+      }
+    } catch (_) {
+      const local = localStorage.getItem('kairoslab_local_banners');
+      list = local ? JSON.parse(local) : [];
+    }
+
+    // Extract config row if present
+    const configRow = list.find(b => b.id === 'config-banner-global');
+    if (configRow) {
+      localStorage.setItem('kairoslab_banner_global_enabled', String(Boolean(configRow.is_active)));
+    }
+
+    let banners = list.filter(b => b.id !== 'config-banner-global');
+    if (!includeInactive) {
+      banners = banners.filter(b => b.is_active !== false);
+    }
+    return banners;
   },
 
   async saveBanner(banner) {
-    let localList = await this.getBanners();
-    const idx = localList.findIndex(b => b.id === banner.id);
+    const cleanBanner = {
+      id: banner.id || `banner-${Date.now()}`,
+      title: banner.title || banner.caption || '',
+      subtitle: banner.subtitle || '',
+      image_url: banner.image_url || 'assets/images/logo.png',
+      link_url: banner.link_url || null,
+      sort_order: typeof banner.sort_order === 'number' ? banner.sort_order : 1,
+      is_active: banner.is_active !== false,
+      created_at: banner.created_at || new Date().toISOString()
+    };
+
+    let localList = await this.getBanners(true);
+    const idx = localList.findIndex(b => b.id === cleanBanner.id);
     if (idx >= 0) {
-      localList[idx] = { ...localList[idx], ...banner };
+      localList[idx] = { ...localList[idx], ...cleanBanner };
     } else {
-      localList.push(banner);
+      localList.push(cleanBanner);
     }
     localStorage.setItem('kairoslab_local_banners', JSON.stringify(localList));
 
@@ -669,17 +723,18 @@ window.SupabaseService = {
       cloudRes = await this.request('kairoslab_banners', {
         method: 'POST',
         headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
-        body: JSON.stringify(banner),
+        body: JSON.stringify(cleanBanner),
         timeoutMs: 30000
       });
     } catch (e) {
       console.warn('saveBanner cloud notice:', e);
     }
-    return { ...banner, _cloudSynced: Boolean(cloudRes) };
+    window.dispatchEvent(new CustomEvent('kairoslab_banners_updated', { detail: { banner: cleanBanner } }));
+    return { ...cleanBanner, _cloudSynced: Boolean(cloudRes) };
   },
 
   async deleteBanner(id) {
-    let localList = await this.getBanners();
+    let localList = await this.getBanners(true);
     localList = localList.filter(b => b.id !== id);
     localStorage.setItem('kairoslab_local_banners', JSON.stringify(localList));
 
@@ -687,6 +742,7 @@ window.SupabaseService = {
       method: 'DELETE',
       timeoutMs: 25000
     });
+    window.dispatchEvent(new CustomEvent('kairoslab_banners_updated', { detail: { deletedId: id } }));
     return Boolean(cloudRes);
   },
 

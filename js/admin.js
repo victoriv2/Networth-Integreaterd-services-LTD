@@ -674,12 +674,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="c-modal-body" style="display: flex; flex-direction: column; gap: 16px;">
           <!-- 16:9 Banner Image Preview & Upload Zone -->
           <div class="form-group">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
               <label class="form-label" style="font-weight: 600; font-size: 13px; margin: 0; color: #0a2540;">
                 Banner Image *
               </label>
               <span class="badge badge-primary" style="font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600;">
-                16:9 Ratio
+                16:9 Aspect Ratio
               </span>
             </div>
 
@@ -690,53 +690,66 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div style="width: 44px; height: 44px; border-radius: 50%; background: #e0f2fe; display: flex; align-items: center; justify-content: center; color: #0284c7;">
                   ${window.renderIcon('upload') || '<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'}
                 </div>
-                <div style="font-size: 13px; font-weight: 600; color: #0a2540;">Click or tap to upload 16:9 banner image</div>
-                <div style="font-size: 11px; color: #64748b;">Supports PNG, JPG, WebP &bull; Auto-compressed to &le; 100KB</div>
+                <div style="font-size: 13.5px; font-weight: 600; color: #0a2540;">Click or tap to upload 16:9 banner image</div>
+                <div style="font-size: 11.5px; color: #64748b;">Supports PNG, JPG, WebP &bull; Auto-compressed to &le; 100KB</div>
               </div>
-              <div id="bannerChangePill" style="${bannerDraftImage ? 'display:inline-flex;' : 'display:none;'} position: absolute; bottom: 10px; right: 10px; background: rgba(15, 23, 42, 0.85); color: #ffffff; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; align-items: center; gap: 6px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">
+              <div id="bannerChangePill" style="${bannerDraftImage ? 'display:inline-flex;' : 'display:none;'} position: absolute; bottom: 10px; right: 10px; background: rgba(15, 23, 42, 0.85); color: #ffffff; padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 600; align-items: center; gap: 6px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.25);">
                 ${window.renderIcon('upload')} Change Image
               </div>
             </div>
 
-            <!-- Upload File Input Button & Status -->
-            <div style="display: flex; gap: 10px; margin-top: 10px; align-items: center; flex-wrap: wrap;">
-              <label class="btn btn-outline btn-sm" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; margin: 0;">
-                ${window.renderIcon('upload')}
-                Upload Image File
-                <input type="file" id="bannerFileInputEl" accept="image/*" style="display: none;" />
-              </label>
-              <span id="bannerFileStatusEl" style="font-size: 12px; color: #64748b;">Auto-compressed to &le; 100KB</span>
-            </div>
-
-            <!-- Optional Image URL Input -->
-            <div style="margin-top: 10px;">
-              <label class="form-label" style="font-size: 11px; color: #64748b; display: block; margin-bottom: 4px;">Or enter Image URL / Asset Path:</label>
-              <input type="text" id="bannerImageUrlInputEl" class="form-input" placeholder="e.g. assets/products/mercedes-benz-gle-coupe-2019.jpg" value="${window.CustomModal.escape(bannerDraftImage)}" style="font-size: 12px;" />
+            <!-- Image Source Controls: File Selector & URL Input Side by Side -->
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label class="btn btn-outline" style="cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 7px; font-size: 13px; font-weight: 600; min-height: 44px; padding: 0 16px; border-radius: 8px; margin: 0; flex-shrink: 0; border: 1.5px solid #cbd5e1; background: #ffffff;">
+                  ${window.renderIcon('upload')}
+                  <span>Browse File</span>
+                  <input type="file" id="bannerFileInputEl" accept="image/*" style="display: none;" />
+                </label>
+                <div style="flex: 1; min-width: 0;">
+                  <input type="text" id="bannerImageUrlInputEl" class="form-input" placeholder="Or enter image URL / asset path..." value="${window.CustomModal.escape(bannerDraftImage)}" />
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; color: #64748b; padding: 0 2px;">
+                <span id="bannerFileStatusEl">Auto-compressed to &le; 100KB</span>
+                <span>Aspect Ratio: 16:9 widescreen</span>
+              </div>
             </div>
           </div>
 
-          <!-- Title -->
+          <!-- Headline / Title -->
           <div class="form-group">
-            <label class="form-label" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px; color: #0a2540;">Banner Headline / Title (Optional)</label>
-            <input type="text" id="bannerTitleInputEl" class="form-input" placeholder="e.g. Verified Nigerian Corporate Procurement" value="${window.CustomModal.escape(bDraft.title || '')}" />
+            <label class="form-label" for="bannerTitleInputEl">
+              <span>Banner Headline / Title</span>
+              <span class="optional-tag">Optional</span>
+            </label>
+            <input type="text" id="bannerTitleInputEl" class="form-input" placeholder="e.g. Luxury & Commercial Vehicles" value="${window.CustomModal.escape(bDraft.title || '')}" />
           </div>
 
-          <!-- Subtitle -->
+          <!-- Subtitle / Caption -->
           <div class="form-group">
-            <label class="form-label" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px; color: #0a2540;">Subtitle / Caption (Optional)</label>
-            <input type="text" id="bannerSubtitleInputEl" class="form-input" placeholder="e.g. Pre-screened equipment and nationwide direct delivery" value="${window.CustomModal.escape(bDraft.subtitle || '')}" />
+            <label class="form-label" for="bannerSubtitleInputEl">
+              <span>Subtitle / Caption</span>
+              <span class="optional-tag">Optional</span>
+            </label>
+            <input type="text" id="bannerSubtitleInputEl" class="form-input" placeholder="e.g. Direct Procurement & Express Nationwide Logistics" value="${window.CustomModal.escape(bDraft.subtitle || '')}" />
           </div>
 
           <!-- Link URL -->
           <div class="form-group">
-            <label class="form-label" style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px; color: #0a2540;">Link URL / Action (Optional)</label>
-            <input type="text" id="bannerLinkInputEl" class="form-input" placeholder="e.g. #viewShop or #category:cat-vehicles or https://wa.me/..." value="${window.CustomModal.escape(bDraft.link_url || '')}" />
+            <label class="form-label" for="bannerLinkInputEl">
+              <span>Link URL / Action Target</span>
+              <span class="optional-tag">Optional</span>
+            </label>
+            <input type="text" id="bannerLinkInputEl" class="form-input" placeholder="e.g. #category:cat-vehicles or https://wa.me/..." value="${window.CustomModal.escape(bDraft.link_url || '')}" />
           </div>
 
-          <!-- Active Checkbox -->
-          <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
-            <input type="checkbox" id="bannerActiveInputEl" ${bDraft.is_active ? 'checked' : ''} style="width: 17px; height: 17px; cursor: pointer; accent-color: #0284c7;" />
-            <label for="bannerActiveInputEl" style="font-size: 13px; font-weight: 600; color: #0a2540; cursor: pointer;">Show this banner on storefront (Active)</label>
+          <!-- Active Checkbox Card -->
+          <div class="banner-active-toggle-card">
+            <input type="checkbox" id="bannerActiveInputEl" ${bDraft.is_active ? 'checked' : ''} style="width: 18px; height: 18px; cursor: pointer; accent-color: #0284c7; margin: 0; flex-shrink: 0;" />
+            <label for="bannerActiveInputEl" style="font-size: 13.5px; font-weight: 600; color: #0a2540; cursor: pointer; margin: 0; flex: 1;">
+              Show this banner on storefront (Active)
+            </label>
           </div>
         </div>
 

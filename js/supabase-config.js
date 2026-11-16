@@ -1564,6 +1564,18 @@ window.SupabaseService = {
       }
     }
 
+    let initialCart = [];
+    try {
+      const rawCart = localStorage.getItem('kairoslab_cart') || localStorage.getItem('nkem_cart');
+      if (rawCart) {
+        const parsed = JSON.parse(rawCart);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          initialCart = parsed;
+        }
+      }
+    } catch (_) {}
+
+    const nowIso = new Date().toISOString();
     const newUser = {
       id: `usr-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
       first_name: (userData.first_name || '').trim(),
@@ -1574,8 +1586,14 @@ window.SupabaseService = {
       lga: (userData.lga || '').trim(),
       address: (userData.address || '').trim(),
       password_hash: userData.password, // Plain text as requested for admin view
-      created_at: new Date().toISOString()
+      cart: initialCart,
+      created_at: nowIso,
+      updated_at: nowIso
     };
+
+    try {
+      localStorage.setItem('kairoslab_cart_timestamp', String(Date.now()));
+    } catch (_) {}
 
     // Save locally
     users.unshift(newUser);
@@ -1718,6 +1736,17 @@ window.SupabaseService = {
       throw new Error('Invalid WhatsApp phone number / email or password. Please check your credentials.');
     }
 
+    // Pre-populate local cart immediately from user's account before UI renders if local is empty
+    try {
+      const rawLocalCart = localStorage.getItem('kairoslab_cart') || localStorage.getItem('nkem_cart');
+      const localCart = rawLocalCart ? JSON.parse(rawLocalCart) : [];
+      if ((!Array.isArray(localCart) || localCart.length === 0) && Array.isArray(user.cart) && user.cart.length > 0) {
+        localStorage.setItem('kairoslab_cart', JSON.stringify(user.cart));
+        const ts = user.updated_at ? new Date(user.updated_at).getTime() : Date.now();
+        localStorage.setItem('kairoslab_cart_timestamp', String(ts));
+      }
+    } catch (_) {}
+
     this.setCurrentUser(user);
     return user;
   },
@@ -1734,11 +1763,14 @@ window.SupabaseService = {
       quantity: Math.max(1, Number(i.quantity) || 1)
     })) : [];
 
+    const nowIso = new Date().toISOString();
+
     // Immediately keep local storage caches synchronized
     try {
       const curr = this.getCurrentUser();
       if (curr && curr.id === userId) {
         curr.cart = cleanCart;
+        curr.updated_at = nowIso;
         localStorage.setItem('kairoslab_current_user', JSON.stringify(curr));
       }
       const localUsers = JSON.parse((localStorage.getItem('kairoslab_local_users') || localStorage.getItem('nkem_local_users')) || '[]');
@@ -1746,6 +1778,7 @@ window.SupabaseService = {
         const idx = localUsers.findIndex(u => u.id === userId);
         if (idx !== -1) {
           localUsers[idx].cart = cleanCart;
+          localUsers[idx].updated_at = nowIso;
           localStorage.setItem('kairoslab_local_users', JSON.stringify(localUsers));
         }
       }
@@ -1759,7 +1792,10 @@ window.SupabaseService = {
           'Prefer': 'return=representation',
           'Cache-Control': 'no-cache, no-store'
         },
-        body: JSON.stringify({ cart: cleanCart })
+        body: JSON.stringify({ 
+          cart: cleanCart,
+          updated_at: nowIso
+        })
       });
       return true;
     } catch (e) {
@@ -1771,7 +1807,7 @@ window.SupabaseService = {
   async getUserCartFromCloud(userId) {
     if (!userId) return null;
     try {
-      const res = await this.request(`kairoslab_users?id=eq.${encodeURIComponent(userId)}&select=cart`, {
+      const res = await this.request(`kairoslab_users?id=eq.${encodeURIComponent(userId)}&select=cart,updated_at`, {
         headers: {
           'Cache-Control': 'no-cache, no-store'
         }
@@ -1782,7 +1818,13 @@ window.SupabaseService = {
         return null;
       }
       if (Array.isArray(res) && res.length > 0) {
-        return Array.isArray(res[0].cart) ? res[0].cart : [];
+        const row = res[0];
+        const cartItems = Array.isArray(row.cart) ? row.cart : [];
+        const updatedAt = row.updated_at ? new Date(row.updated_at).getTime() : 0;
+        return {
+          cart: cartItems,
+          updatedAt: updatedAt
+        };
       }
       return null;
     } catch (e) {

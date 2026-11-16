@@ -509,7 +509,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (filtered.length === 0) {
       grid.innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 36px 16px; background: #ffffff; border-radius: 14px; border: 1.5px dashed #d0e4f7;">
-          <div style="font-size: 1.8rem; margin-bottom: 8px;">🔍</div>
+          <div style="width: 44px; height: 44px; margin: 0 auto 10px auto; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
           <div style="font-weight: 800; color: #0a2540; font-size: 1rem; margin-bottom: 4px;">No categories found</div>
           <div style="font-size: 0.84rem; color: #64748b; margin-bottom: 14px;">No category matches "${window.CustomModal.escape(filterQuery)}"</div>
           <button type="button" id="clearHomeCatSearchBtn" class="btn btn-secondary btn-sm" style="padding: 7px 18px; font-weight: 700; border-color: #0284c7; color: #0284c7; background: #ffffff;">Clear Search</button>

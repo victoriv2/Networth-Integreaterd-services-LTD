@@ -499,6 +499,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   let isBannerTransitioning = false;
   let activeBanners = [];
   let suppressBannerClickUntil = 0;
+  let lastRenderedBannersJson = '';
+
+  function preloadBannerImages(banners) {
+    if (!Array.isArray(banners)) return;
+    banners.forEach(b => {
+      if (b && b.image_url) {
+        const img = new Image();
+        img.decoding = 'async';
+        img.src = b.image_url;
+      }
+    });
+  }
 
   function getTrackTransform(virtualIdx) {
     const isDesktop = window.innerWidth >= 769;
@@ -513,8 +525,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function updateActiveSlideClasses(virtualIdx) {
     const slides = document.querySelectorAll('#productBannerTrack .product-banner-slide');
+    if (!slides || slides.length === 0) return;
+    const N = activeBanners.length;
+
     slides.forEach((s, idx) => {
-      if (idx === virtualIdx) {
+      // If slide is current virtual index OR its twin boundary clone/real counterpart, keep active state in sync
+      const isCurrentVirtual = idx === virtualIdx;
+      const isTwin = N >= 2 && (
+        (virtualIdx === N + 2 && idx === 2) || // Clone 0 at end is identical twin to Real 0
+        (virtualIdx === 2 && idx === N + 2) || // Real 0 is identical twin to Clone 0 at end
+        (virtualIdx === 1 && idx === N + 1) || // Clone N-1 at start is identical twin to Real N-1
+        (virtualIdx === N + 1 && idx === 1)    // Real N-1 is identical twin to Clone N-1 at start
+      );
+
+      if (isCurrentVirtual || isTwin) {
         s.classList.add('is-active-slide');
       } else {
         s.classList.remove('is-active-slide');
@@ -528,7 +552,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const link = b.link_url || '';
     return `
       <div class="product-banner-slide" data-index="${realIdx}" data-link="${link ? (window.CustomModal?.escape ? window.CustomModal.escape(link) : link) : ''}" ${isClone ? 'data-clone="true"' : ''}>
-        <img src="${img}" alt="${b.title ? (window.CustomModal?.escape ? window.CustomModal.escape(b.title) : b.title) : 'Kairoslab'}" onerror="this.onerror=null;this.src='assets/images/logo.png';" loading="${realIdx === 0 && !isClone ? 'eager' : 'lazy'}" />
+        <img src="${img}" alt="${b.title ? (window.CustomModal?.escape ? window.CustomModal.escape(b.title) : b.title) : 'Kairoslab'}" onerror="this.onerror=null;this.src='assets/images/logo.png';" loading="eager" decoding="async" fetchpriority="high" />
         ${hasOverlay ? `
           <div class="product-banner-caption-overlay">
             ${b.title ? `<div class="product-banner-caption-title">${window.CustomModal?.escape ? window.CustomModal.escape(b.title) : b.title}</div>` : ''}
@@ -539,7 +563,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     `;
   }
 
-  async function renderProductPageBanner() {
+  async function renderProductPageBanner(forceRerender = false) {
     const bannerSection = document.getElementById('productBannerSection');
     const bannerTrack = document.getElementById('productBannerTrack');
     const bannerIndicators = document.getElementById('productBannerIndicators');
@@ -547,20 +571,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nextBtn = document.getElementById('bannerStageNextBtn');
     if (!bannerSection || !bannerTrack) return;
 
-    // Clear any active auto-slide interval
-    if (productBannerInterval) {
-      clearInterval(productBannerInterval);
-      productBannerInterval = null;
-    }
-
     try {
       activeBanners = await window.SupabaseService.getBanners(false);
+      preloadBannerImages(activeBanners);
+
       const isEnabled = await window.SupabaseService.isBannerGloballyEnabled();
       if (!isEnabled || !Array.isArray(activeBanners) || activeBanners.length === 0) {
+        if (productBannerInterval) {
+          clearInterval(productBannerInterval);
+          productBannerInterval = null;
+        }
         bannerSection.style.display = 'none';
         bannerTrack.innerHTML = '';
         if (bannerIndicators) bannerIndicators.innerHTML = '';
+        lastRenderedBannersJson = '';
         return;
+      }
+
+      const bannersJson = JSON.stringify(activeBanners) + '_' + isEnabled;
+      // Prevent destroying already loaded DOM images if banners have not changed (stops tab-switch blinking)
+      if (!forceRerender && bannersJson === lastRenderedBannersJson && bannerTrack.children.length > 0) {
+        if (!productBannerInterval && activeBanners.length >= 2) {
+          startBannerAutoSlide();
+        }
+        return;
+      }
+      lastRenderedBannersJson = bannersJson;
+
+      // Clear any active auto-slide interval while setting up
+      if (productBannerInterval) {
+        clearInterval(productBannerInterval);
+        productBannerInterval = null;
       }
 
       // Display 16:9 banner container
@@ -576,22 +617,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         const c3 = buildSlideHtml(activeBanners[0], 0, true);
         const c4 = buildSlideHtml(activeBanners[1 % N], 1 % N, true);
 
+        bannerTrack.classList.add('is-snapping');
         bannerTrack.innerHTML = c1 + c2 + realSlides + c3 + c4;
         currentBannerIndex = 0;
         currentTrackVirtualIndex = 2; // Real B0 is at index 2
         bannerTrack.style.transition = 'none';
         bannerTrack.style.transform = getTrackTransform(2);
 
+        void bannerTrack.offsetHeight;
+        requestAnimationFrame(() => {
+          bannerTrack.classList.remove('is-snapping');
+        });
+
         if (prevBtn) prevBtn.style.display = '';
         if (nextBtn) nextBtn.style.display = '';
       } else {
         // N === 1: [Clone 0, Real 0, Clone 0] so peeking wings carry the same banner seamlessly
         const b0 = activeBanners[0];
+        bannerTrack.classList.add('is-snapping');
         bannerTrack.innerHTML = buildSlideHtml(b0, 0, true) + buildSlideHtml(b0, 0, false) + buildSlideHtml(b0, 0, true);
         currentBannerIndex = 0;
         currentTrackVirtualIndex = 1; // Real B0 is at index 1
         bannerTrack.style.transition = 'none';
         bannerTrack.style.transform = getTrackTransform(1);
+
+        void bannerTrack.offsetHeight;
+        requestAnimationFrame(() => {
+          bannerTrack.classList.remove('is-snapping');
+        });
 
         if (prevBtn) prevBtn.style.display = 'none';
         if (nextBtn) nextBtn.style.display = 'none';
@@ -694,6 +747,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const N = activeBanners.length;
     currentTrackVirtualIndex++;
 
+    bannerTrack.classList.remove('is-snapping');
     bannerTrack.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
     bannerTrack.style.transform = getTrackTransform(currentTrackVirtualIndex);
 
@@ -704,13 +758,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => {
       if (currentTrackVirtualIndex >= N + 2) {
         // Reached clone of slide 0 at end: snap silently without transition to real slide 0 at index 2
+        bannerTrack.classList.add('is-snapping');
         bannerTrack.style.transition = 'none';
         currentTrackVirtualIndex = 2;
         bannerTrack.style.transform = getTrackTransform(2);
         updateActiveSlideClasses(2);
-        void bannerTrack.offsetHeight; // Force reflow
+        void bannerTrack.offsetHeight; // Force reflow while is-snapping is active
+
+        requestAnimationFrame(() => {
+          bannerTrack.classList.remove('is-snapping');
+          isBannerTransitioning = false;
+        });
+      } else {
+        isBannerTransitioning = false;
       }
-      isBannerTransitioning = false;
     }, 420);
   }
 
@@ -724,6 +785,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const N = activeBanners.length;
     currentTrackVirtualIndex--;
 
+    bannerTrack.classList.remove('is-snapping');
     bannerTrack.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
     bannerTrack.style.transform = getTrackTransform(currentTrackVirtualIndex);
 
@@ -734,13 +796,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => {
       if (currentTrackVirtualIndex <= 1) {
         // Reached clone of last slide at start: snap silently without transition to real last slide at N+1
+        bannerTrack.classList.add('is-snapping');
         bannerTrack.style.transition = 'none';
         currentTrackVirtualIndex = N + 1;
         bannerTrack.style.transform = getTrackTransform(N + 1);
         updateActiveSlideClasses(N + 1);
-        void bannerTrack.offsetHeight; // Force reflow
+        void bannerTrack.offsetHeight; // Force reflow while is-snapping is active
+
+        requestAnimationFrame(() => {
+          bannerTrack.classList.remove('is-snapping');
+          isBannerTransitioning = false;
+        });
+      } else {
+        isBannerTransitioning = false;
       }
-      isBannerTransitioning = false;
     }, 420);
   }
 
@@ -931,11 +1000,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Reactive listener for banner changes from Admin
   window.addEventListener('kairoslab_banners_updated', () => {
-    renderProductPageBanner();
+    lastRenderedBannersJson = '';
+    renderProductPageBanner(true);
   });
   window.addEventListener('storage', (e) => {
     if (e.key === 'kairoslab_local_banners' || e.key === 'kairoslab_banner_global_enabled') {
-      renderProductPageBanner();
+      lastRenderedBannersJson = '';
+      renderProductPageBanner(true);
     }
     if (e.key === 'kairoslab_local_products' || e.key === 'kairoslab_hidden_product_ids') {
       if (typeof reloadAndApplySort === 'function') reloadAndApplySort();

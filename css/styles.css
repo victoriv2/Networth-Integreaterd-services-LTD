@@ -5401,6 +5401,10 @@ body:not(.admin-body) .brand-title span {
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
 }
 
 .product-banner-track {
@@ -5409,6 +5413,18 @@ body:not(.admin-body) .brand-title span {
   align-items: center;
   transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Snapping state: completely silences any transform/opacity transition during silent infinite loop jump */
+.product-banner-track.is-snapping,
+.product-banner-track.is-snapping .product-banner-slide,
+.product-banner-track.is-snapping .product-banner-slide img {
+  transition: none !important;
+  animation: none !important;
 }
 
 .product-banner-slide {
@@ -5422,7 +5438,10 @@ body:not(.admin-body) .brand-title span {
   border: 1px solid rgba(2, 132, 199, 0.16);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   cursor: pointer;
-  transition: transform 0.35s ease, opacity 0.35s ease, box-shadow 0.35s ease;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .product-banner-slide img {
@@ -5501,12 +5520,13 @@ body:not(.admin-body) .brand-title span {
     width: 70% !important;
     margin-right: 2% !important;
     opacity: 0.55 !important;
-    transform: scale(0.92) !important;
+    transform: scale(0.92) translateZ(0) !important;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease !important;
   }
 
   .product-banner-slide.is-active-slide {
     opacity: 1 !important;
-    transform: scale(1) !important;
+    transform: scale(1) translateZ(0) !important;
     box-shadow: 0 12px 30px rgba(11, 25, 44, 0.28) !important;
     border: 1px solid rgba(2, 132, 199, 0.28) !important;
     z-index: 3 !important;
@@ -5514,7 +5534,7 @@ body:not(.admin-body) .brand-title span {
 
   .product-banner-slide:not(.is-active-slide):hover {
     opacity: 0.82 !important;
-    transform: scale(0.94) !important;
+    transform: scale(0.94) translateZ(0) !important;
   }
 }
 

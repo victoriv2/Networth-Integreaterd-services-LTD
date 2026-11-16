@@ -196,9 +196,12 @@
         <div class="container">
           <div class="shop-toolbar-card">
             <!-- Search bar -->
-            <div class="shop-search-bar">
-              <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 12px; top: 11px; width: 17px; height: 17px; color: #6b7280;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="shopSearchInput" class="shop-search-input" placeholder="Search catalog items, electronics, groceries..." />
+            <div class="shop-search-bar" style="position: relative;">
+              <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 12px; top: 11px; width: 17px; height: 17px; color: #0284c7;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="shopSearchInput" class="shop-search-input" placeholder="Search products by title, category, description, price..." autocomplete="off" />
+              <button type="button" id="shopSearchClearBtn" class="category-search-clear" style="display: none;" aria-label="Clear search">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
             </div>
 
             <!-- Horizontal Category Filter Pills -->
@@ -576,9 +579,9 @@
   <script src="js/nigeria-data.js?v=20261116_0600"></script>
   <script src="js/custom-modal.js?v=20261116_0600"></script>
   <script src="js/custom-picker.js?v=20261116_0600"></script>
-  <script src="js/supabase-config.js?v=20261116_0600"></script>
+  <script src="js/supabase-config.js?v=20261116_0645"></script>
   <script src="js/receipt-generator.js?v=20261116_0600"></script>
   <script src="js/auth-modal.js?v=20261116_0600"></script>
-  <script src="js/app.js?v=20261116_0630"></script>
+  <script src="js/app.js?v=20261116_0645"></script>
 </body>
 </html>

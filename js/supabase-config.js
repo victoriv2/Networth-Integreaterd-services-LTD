@@ -411,6 +411,118 @@ window.SupabaseService = {
     }
   },
 
+  async searchProducts(query, options = {}) {
+    const q = (query || '').trim();
+    if (!q) return [];
+
+    const limit = typeof options.limit === 'number' ? options.limit : 150;
+    const includeHidden = !!options.includeHidden;
+    const sort = options.sort || 'newest';
+
+    // Parse words from search query for multi-word partial matching
+    const words = q.split(/\s+/).filter(Boolean);
+    const wildcardTerm = '%' + words.join('%') + '%';
+    const encodedTerm = encodeURIComponent(wildcardTerm);
+
+    const orClauses = [
+      `title.ilike.${encodedTerm}`,
+      `description.ilike.${encodedTerm}`
+    ];
+
+    // Check if query matches any category name/id
+    try {
+      const cats = this.getLocalCategories ? this.getLocalCategories() : [];
+      const qLower = q.toLowerCase();
+      const matchedCatIds = [];
+      cats.forEach(c => {
+        const cName = (c.name || '').toLowerCase();
+        const cId = (c.id || '').toLowerCase();
+        if (cName.includes(qLower) || qLower.includes(cName) || cId.includes(qLower)) {
+          matchedCatIds.push(c.id);
+        }
+      });
+      if (matchedCatIds.length > 0) {
+        orClauses.push(`category_id.in.(${matchedCatIds.map(encodeURIComponent).join(',')})`);
+      }
+    } catch (_) {}
+
+    // Check if query contains numeric price (e.g. 30k -> 30000, 15000)
+    try {
+      let numStr = q.replace(/,/g, '').trim().toLowerCase();
+      if (numStr.endsWith('k')) {
+        const kVal = parseFloat(numStr.replace('k', ''));
+        if (!isNaN(kVal)) numStr = String(kVal * 1000);
+      }
+      const numVal = parseFloat(numStr);
+      if (!isNaN(numVal) && numVal > 0) {
+        orClauses.push(`price.eq.${numVal}`);
+      }
+    } catch (_) {}
+
+    let queryParts = [
+      'select=*',
+      `or=(${orClauses.join(',')})`
+    ];
+
+    if (!includeHidden) {
+      queryParts.push('or=(is_hidden.is.null,is_hidden.eq.false)');
+    }
+
+    const normSort = String(sort).toLowerCase().trim();
+    if (normSort === 'oldest') {
+      queryParts.push('order=created_at.asc,sort_order.asc,id.asc');
+    } else if (normSort === 'price_low' || normSort === 'price_asc' || normSort === 'price-asc') {
+      queryParts.push('order=price.asc,created_at.desc');
+    } else if (normSort === 'price_high' || normSort === 'price_desc' || normSort === 'price-desc') {
+      queryParts.push('order=price.desc,created_at.desc');
+    } else if (normSort === 'name_asc' || normSort === 'title_asc' || normSort === 'title-asc') {
+      queryParts.push('order=title.asc');
+    } else if (normSort === 'title_desc' || normSort === 'title-desc') {
+      queryParts.push('order=title.desc');
+    } else {
+      queryParts.push('order=created_at.desc,sort_order.desc,id.desc');
+    }
+
+    queryParts.push(`limit=${limit}`);
+
+    const endpoint = `nkem_products?${queryParts.join('&')}`;
+    const cloud = await this.request(endpoint);
+
+    if (cloud && Array.isArray(cloud)) {
+      try {
+        const raw = localStorage.getItem('nkem_local_products');
+        let local = raw ? JSON.parse(raw) : [];
+        cloud.forEach(p => {
+          if (this.isProductHidden(p)) {
+            p.is_hidden = true;
+            p.hidden = true;
+          }
+          const idx = local.findIndex(x => x.id === p.id);
+          if (idx >= 0) local[idx] = { ...local[idx], ...p };
+          else local.push(p);
+        });
+        localStorage.setItem('nkem_local_products', JSON.stringify(local));
+      } catch (_) {}
+      return includeHidden ? cloud : cloud.filter(p => !this.isProductHidden(p));
+    }
+
+    // Fallback: search across all cached products
+    try {
+      const raw = localStorage.getItem('nkem_local_products');
+      const local = raw ? JSON.parse(raw) : [];
+      const qLower = q.toLowerCase();
+      return local.filter(p => {
+        if (!includeHidden && this.isProductHidden(p)) return false;
+        const title = (p.title || '').toLowerCase();
+        const desc = (p.description || '').toLowerCase();
+        const cat = (p.category_name || p.category_id || '').toLowerCase();
+        return title.includes(qLower) || desc.includes(qLower) || cat.includes(qLower);
+      });
+    } catch (_) {
+      return [];
+    }
+  },
+
   async saveProduct(prod) {
     const isHidden = Boolean(prod.is_hidden || prod.hidden);
     this.setProductHidden(prod.id, isHidden);

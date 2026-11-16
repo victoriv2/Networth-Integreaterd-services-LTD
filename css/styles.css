@@ -5276,18 +5276,20 @@ body:not(.admin-body) .brand-title span {
 
 .shop-search-input {
   width: 100%;
-  padding: 10px 14px 10px 38px;
+  padding: 10px 42px 10px 38px;
   background: #f7fbf9;
   border: 1px solid #d0e4f7;
   border-radius: 8px;
   font-size: 0.9rem;
   color: #111827;
   outline: none;
+  transition: all 0.15s ease;
 }
 
 .shop-search-input:focus {
   border-color: #0284c7;
   background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
 }
 
 /* Horizontal Scrollable Category Filter Pills */

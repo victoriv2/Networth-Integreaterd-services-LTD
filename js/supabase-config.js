@@ -892,16 +892,15 @@ window.SupabaseService = {
   },
 
   // Factory reset clean slate initialization:
-  // Purges all legacy customer accounts, cart, test orders, and chat records from client localStorage
-  // Leaves the master admin credentials and catalog products completely intact.
+  // Purges all previous user activities (cart, test orders, and chat records) from client localStorage
+  // Leaves user accounts, master admin credentials, and catalog products completely intact.
   initCleanSlateOnce() {
-    const RESET_FLAG = 'kairoslab_fresh_start_2026_11_16';
+    const RESET_FLAG = 'kairoslab_activity_reset_2026_11_16_b';
     if (!localStorage.getItem(RESET_FLAG)) {
       try {
-        localStorage.removeItem('kairoslab_current_user');
-        localStorage.removeItem('kairoslab_user');
-        localStorage.removeItem('kairoslab_local_users');
         localStorage.removeItem('kairoslab_cart');
+        localStorage.removeItem('nkem_cart');
+        localStorage.removeItem('kairoslab_cart_timestamp');
         localStorage.removeItem('kairoslab_local_orders');
         localStorage.removeItem('kairoslab_order_statuses');
         localStorage.removeItem('kairoslab_active_chat_user');
@@ -913,7 +912,7 @@ window.SupabaseService = {
           }
         }
         localStorage.setItem(RESET_FLAG, 'true');
-        console.log('Kairoslab: Fresh start completed. Demo/test activities cleared.');
+        console.log('Kairoslab: User activity clean-slate completed.');
       } catch (e) {}
     }
   },

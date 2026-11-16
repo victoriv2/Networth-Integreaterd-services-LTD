@@ -2591,7 +2591,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
       }
 
-      if (msg.deleted_for_admin && msg.sender === 'admin') {
+      if (msg.deleted_for_admin) {
         return '';
       }
 
@@ -2790,7 +2790,11 @@ document.addEventListener('DOMContentLoaded', async () => {
               <button class="chat-msg-actions-btn" type="button" data-action="admin-delete" data-id="${msg.id}" title="Delete">
                 ${window.renderIcon('trash')}
               </button>
-            ` : ''}
+            ` : `
+              <button class="chat-msg-actions-btn" type="button" data-action="admin-delete" data-id="${msg.id}" title="Delete">
+                ${window.renderIcon('trash')}
+              </button>
+            `}
           </div>
         </div>
       `;
@@ -2849,7 +2853,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     });
 
-    // Attach Admin Edit & Delete
+    // Attach Admin Edit
     chatMessagesList.querySelectorAll('[data-action="admin-edit"]').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
@@ -2858,42 +2862,101 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const newText = await window.CustomModal.prompt({
           title: 'Edit Admin Message',
+          message: 'Update message content:',
           defaultValue: msg.message || ''
         });
 
-        if (newText !== null && newText.trim() !== '') {
-          await window.SupabaseService.updateChatMessage(id, { message: newText.trim(), is_edited: true });
+        if (newText !== null && newText.trim() !== '' && newText.trim() !== msg.message) {
+          msg.message = newText.trim();
+          msg.is_edited = true;
           loadAdminChatMessages();
-          window.CustomModal.toast({ message: 'Message updated.', type: 'info' });
+          await window.SupabaseService.updateChatMessage(id, { message: newText.trim(), is_edited: true });
+          window.CustomModal.toast({ message: 'Message updated.', type: 'success' });
         }
       });
     });
 
+    // Attach Admin Delete with clear Action Modal
     chatMessagesList.querySelectorAll('[data-action="admin-delete"]').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
-        const choice = await window.CustomModal.confirm({
-          title: 'Delete Message',
-          message: 'Delete for everyone or for yourself only?',
-          confirmText: 'Delete for Everyone',
-          cancelText: 'Delete for Me',
-          isDanger: true
+        const msg = msgs.find(m => m.id === id);
+        if (!msg) return;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'c-modal-overlay active';
+        overlay.id = 'adminMsgDeleteModal';
+
+        overlay.innerHTML = `
+          <div class="c-modal-box" style="max-width: 360px; padding: 20px;">
+            <div class="c-modal-header" style="padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+              <h3 class="c-modal-title" style="font-size: 1.05rem; font-weight: 800; color: #0a2540;">Delete Message</h3>
+              <button class="c-modal-close-btn" type="button" aria-label="Close" id="adminDelCloseBtn">
+                ${window.renderIcon('close')}
+              </button>
+            </div>
+            <div class="c-modal-body" style="display: flex; flex-direction: column; gap: 10px; padding: 0;">
+              <button type="button" class="btn btn-secondary" id="adminDelEveryoneBtn" style="width: 100%; justify-content: flex-start; padding: 12px 14px; font-weight: 700; gap: 10px; color: #dc2626; border-color: #fecaca; background: #fff5f5;">
+                ${window.renderIcon('trash')}
+                <span>Delete for Everyone</span>
+              </button>
+              <button type="button" class="btn btn-secondary" id="adminDelMeBtn" style="width: 100%; justify-content: flex-start; padding: 12px 14px; font-weight: 700; gap: 10px; color: #475569;">
+                <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <span>Delete for Me</span>
+              </button>
+              <button type="button" class="btn btn-secondary" id="adminDelCancelBtn" style="width: 100%; justify-content: center; padding: 10px; font-weight: 600; margin-top: 4px;">
+                <span>Cancel</span>
+              </button>
+            </div>
+          </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        const closeModal = () => {
+          overlay.classList.remove('active');
+          setTimeout(() => overlay.remove(), 120);
+        };
+
+        overlay.querySelector('#adminDelCloseBtn').addEventListener('click', closeModal);
+        overlay.querySelector('#adminDelCancelBtn').addEventListener('click', closeModal);
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) closeModal();
         });
 
-        if (choice === null) {
-          // User clicked [X] or clicked backdrop -> abort without deleting!
-          return;
-        }
+        overlay.querySelector('#adminDelEveryoneBtn').addEventListener('click', () => {
+          closeModal();
+          window.CustomModal.confirm({
+            title: 'Delete for Everyone',
+            message: 'This message will be deleted for both you and the customer. This cannot be undone.',
+            confirmText: 'Delete for Everyone',
+            cancelText: 'Cancel',
+            isDanger: true,
+            onConfirm: async () => {
+              msg.deleted_for_everyone = true;
+              loadAdminChatMessages();
+              await window.SupabaseService.updateChatMessage(id, { deleted_for_everyone: true });
+              window.CustomModal.toast({ message: 'Message deleted for everyone.', type: 'info' });
+            }
+          });
+        });
 
-        if (choice === true) {
-          await window.SupabaseService.updateChatMessage(id, { deleted_for_everyone: true });
-          loadAdminChatMessages();
-          window.CustomModal.toast({ message: 'Message deleted for everyone.', type: 'info' });
-        } else if (choice === false) {
-          await window.SupabaseService.updateChatMessage(id, { deleted_for_admin: true });
-          loadAdminChatMessages();
-          window.CustomModal.toast({ message: 'Message deleted for you.', type: 'info' });
-        }
+        overlay.querySelector('#adminDelMeBtn').addEventListener('click', () => {
+          closeModal();
+          window.CustomModal.confirm({
+            title: 'Delete for Me',
+            message: 'This message will be removed from your admin console only.',
+            confirmText: 'Delete for Me',
+            cancelText: 'Cancel',
+            isDanger: true,
+            onConfirm: async () => {
+              msg.deleted_for_admin = true;
+              loadAdminChatMessages();
+              await window.SupabaseService.updateChatMessage(id, { deleted_for_admin: true });
+              window.CustomModal.toast({ message: 'Message deleted for you.', type: 'info' });
+            }
+          });
+        });
       });
     });
   }

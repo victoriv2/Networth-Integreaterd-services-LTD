@@ -1460,6 +1460,7 @@ window.SupabaseService = {
   },
 
   async updateChatMessage(id, fields) {
+    if (!id) return false;
     const validCols = [
       'message',
       'is_edited',
@@ -1467,35 +1468,58 @@ window.SupabaseService = {
       'deleted_for_user',
       'deleted_for_admin',
       'is_read_by_admin',
-      'is_read_by_user'
+      'is_read_by_user',
+      'updated_at'
     ];
-    const patchBody = { updated_at: new Date().toISOString() };
+    const nowIso = new Date().toISOString();
+    const patchBody = { updated_at: nowIso };
     for (const key of Object.keys(fields || {})) {
       if (validCols.includes(key)) {
         patchBody[key] = fields[key];
       }
     }
 
-    // Update local caches across both user chat and legacy keys
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && (key.startsWith('kairoslab_chats_') || key.startsWith('kairoslab_user_chats_'))) {
-        try {
-          let list = JSON.parse(localStorage.getItem(key) || '[]');
-          const idx = list.findIndex(m => m.id === id);
-          if (idx >= 0) {
-            list[idx] = { ...list[idx], ...fields, updated_at: patchBody.updated_at };
-            localStorage.setItem(key, JSON.stringify(list));
-          }
-        } catch (e) {}
+    // Update local caches across all chat storage keys immediately
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('kairoslab_chats_') || key.startsWith('kairoslab_user_chats_'))) {
+          try {
+            let list = JSON.parse(localStorage.getItem(key) || '[]');
+            if (Array.isArray(list)) {
+              const idx = list.findIndex(m => m.id === id);
+              if (idx >= 0) {
+                list[idx] = { ...list[idx], ...fields, updated_at: nowIso };
+                localStorage.setItem(key, JSON.stringify(list));
+              }
+            }
+          } catch (_) {}
+        }
       }
-    }
+    } catch (_) {}
 
-    await this.request(`kairoslab_chats?id=eq.${encodeURIComponent(id)}`, {
-      method: 'PATCH',
-      body: JSON.stringify(patchBody)
-    });
-    return true;
+    try {
+      const res = await this.request(`kairoslab_chats?id=eq.${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: {
+          'Prefer': 'return=representation',
+          'Cache-Control': 'no-cache, no-store'
+        },
+        body: JSON.stringify(patchBody)
+      });
+      return res;
+    } catch (e) {
+      console.warn('Update chat message with updated_at notice, retrying fallback:', e);
+      delete patchBody.updated_at;
+      return await this.request(`kairoslab_chats?id=eq.${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: {
+          'Prefer': 'return=representation',
+          'Cache-Control': 'no-cache, no-store'
+        },
+        body: JSON.stringify(patchBody)
+      });
+    }
   },
 
   // ---------------- USER AUTHENTICATION & MANAGEMENT ----------------

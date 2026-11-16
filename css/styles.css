@@ -2491,7 +2491,7 @@ body.admin-body .btn-icon-square.danger {
 body.admin-body .form-input,
 body.admin-body .c-input,
 body.admin-body .input-field,
-body.admin-body input[type="text"],
+body.admin-body input[type="text"]:not(.admin-customer-search-input):not(.category-search-input):not(.c-picker-search-input):not([class*="search"]),
 body.admin-body input[type="number"],
 body.admin-body input[type="password"],
 body.admin-body textarea {
@@ -4365,71 +4365,77 @@ input::-webkit-credentials-auto-fill-button {
   align-items: center;
 }
 
-.admin-customer-search-icon {
-  position: absolute;
-  left: 14px;
-  top: 0 !important;
-  bottom: 0 !important;
-  margin-top: auto !important;
-  margin-bottom: auto !important;
-  height: 18px;
-  transform: none !important;
-  color: var(--accent-gold);
-  pointer-events: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.admin-customer-search-icon,
+body.admin-body .admin-customer-search-icon {
+  position: absolute !important;
+  left: 14px !important;
+  top: 50% !important;
+  bottom: auto !important;
+  transform: translateY(-50%) !important;
+  margin: 0 !important;
+  height: 18px !important;
+  width: 18px !important;
+  color: #64748b !important;
+  pointer-events: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 2 !important;
 }
 
-.admin-customer-search-input {
-  width: 100%;
-  padding: 10px 38px 10px 40px;
-  background-color: var(--bg-main);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  color: var(--text-main);
-  font-size: var(--font-sm);
-  font-family: inherit;
-  outline: none;
-  transition: var(--transition-fast);
+.admin-customer-search-input,
+body.admin-body .admin-customer-search-input {
+  width: 100% !important;
+  min-height: 44px !important;
+  box-sizing: border-box !important;
+  padding: 10px 38px 10px 44px !important;
+  background-color: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  color: #0f172a !important;
+  font-size: 13.5px !important;
+  font-family: inherit !important;
+  outline: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 
-.admin-customer-search-input:focus {
-  border-color: var(--accent-gold);
+.admin-customer-search-input:focus,
+body.admin-body .admin-customer-search-input:focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
 }
 
-.admin-customer-search-clear {
-  position: absolute;
-  right: 10px;
-  top: 0 !important;
-  bottom: 0 !important;
-  margin-top: auto !important;
-  margin-bottom: auto !important;
-  width: 26px;
-  height: 26px;
-  transform: none !important;
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border-radius: var(--radius-full);
-  transition: color var(--transition-fast), background-color var(--transition-fast) !important;
+.admin-customer-search-clear,
+body.admin-body .admin-customer-search-clear {
+  position: absolute !important;
+  right: 10px !important;
+  top: 50% !important;
+  bottom: auto !important;
+  transform: translateY(-50%) !important;
+  margin: 0 !important;
+  width: 26px !important;
+  height: 26px !important;
+  background: none !important;
+  border: none !important;
+  color: #64748b !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  z-index: 2 !important;
+  transition: color 0.15s ease, background-color 0.15s ease !important;
 }
 
 .admin-customer-search-clear:hover,
 .admin-customer-search-clear:focus,
-.admin-customer-search-clear:active {
-  top: 0 !important;
-  bottom: 0 !important;
-  margin-top: auto !important;
-  margin-bottom: auto !important;
-  transform: none !important;
-  color: var(--text-main);
-  background-color: var(--bg-surface-elevated);
+.admin-customer-search-clear:active,
+body.admin-body .admin-customer-search-clear:hover,
+body.admin-body .admin-customer-search-clear:focus,
+body.admin-body .admin-customer-search-clear:active {
+  color: #0f172a !important;
+  background-color: #f1f5f9 !important;
 }
 
 .admin-customer-count-pill {

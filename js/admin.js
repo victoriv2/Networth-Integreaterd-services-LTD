@@ -1393,7 +1393,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <button class="btn-icon-square" type="button" data-action="toggle-visibility" data-id="${p.id}" 
               title="${(window.SupabaseService?.isProductHidden?.(p) ?? (p.is_hidden || p.hidden)) ? 'Hidden from Store (Click to Show)' : 'Visible in Store (Click to Hide)'}" 
               aria-label="${(window.SupabaseService?.isProductHidden?.(p) ?? (p.is_hidden || p.hidden)) ? 'Show product in store' : 'Hide product from store'}" 
-              style="${(window.SupabaseService?.isProductHidden?.(p) ?? (p.is_hidden || p.hidden)) ? 'border-color: rgba(220,38,38,0.4); color: #dc2626; background: rgba(220,38,38,0.08);' : 'color: #c59b27; background: rgba(2, 132, 199,0.06); border-color: rgba(2, 132, 199,0.25);'}">
+              style="${(window.SupabaseService?.isProductHidden?.(p) ?? (p.is_hidden || p.hidden)) ? 'border-color: rgba(220,38,38,0.4); color: #dc2626; background: rgba(220,38,38,0.08);' : 'color: #c59b27; background: rgba(212, 175, 55, 0.12); border-color: rgba(212, 175, 55, 0.4);'}">
               ${window.renderIcon((window.SupabaseService?.isProductHidden?.(p) ?? (p.is_hidden || p.hidden)) ? 'eyeOff' : 'eye')}
             </button>
             <button class="btn-icon-square" type="button" data-action="prod-edit" data-id="${p.id}" title="Edit Product">

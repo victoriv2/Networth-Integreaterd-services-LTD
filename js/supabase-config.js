@@ -2,7 +2,7 @@
 window.SupabaseService = {
   URL: 'https://jyxkrpqhzoxxgitmdcxc.supabase.co',
   ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5eGtycHFoem94eGdpdG1kY3hjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwMzA4MTgsImV4cCI6MjExMDYwNjgxOH0.7uLJuCsmBZ2H6RWmeos8L9iTZfrQfQODCxtYVwx7Xfc',
-  CATALOG_VERSION: 'v2026_networth_integrated_2',
+  CATALOG_VERSION: 'v2026_networth_empty_fresh_v3',
   CACHE_TTL_MS: 12 * 60 * 60 * 1000, // 12-hour Cache TTL
 
   initCacheCheck() {
@@ -16,8 +16,13 @@ window.SupabaseService = {
       if (isOutdated || isExpired) {
         console.log(`[Cache Invalidation] Purging stale local cache (Outdated: ${isOutdated}, Expired: ${isExpired})`);
         localStorage.removeItem('networth_local_products');
+        localStorage.removeItem('networth_local_categories');
         localStorage.removeItem('networth_local_banners');
         localStorage.removeItem('networth_banners_cache');
+        localStorage.removeItem('networth_current_user');
+        localStorage.removeItem('networth_user');
+        localStorage.removeItem('networth_cart');
+        localStorage.removeItem('networth_local_orders');
         localStorage.setItem('networth_catalog_version', this.CATALOG_VERSION);
         localStorage.setItem('networth_catalog_timestamp', String(now));
       }
@@ -862,7 +867,7 @@ window.SupabaseService = {
   // Purges all previous user activities, demo products, categories, banners, carts, orders, and chats from client localStorage
   // Preserves master admin credentials
   initCleanSlateOnce() {
-    const RESET_FLAG = 'networth_factory_reset_2026_11_18_v2';
+    const RESET_FLAG = 'networth_factory_reset_clean_slate_fresh_v3';
     if (!localStorage.getItem(RESET_FLAG)) {
       try {
         localStorage.removeItem('networth_cart');
@@ -875,6 +880,12 @@ window.SupabaseService = {
         localStorage.removeItem('networth_local_products');
         localStorage.removeItem('networth_local_categories');
         localStorage.removeItem('networth_local_banners');
+        localStorage.removeItem('networth_banners_cache');
+        localStorage.removeItem('networth_current_user');
+        localStorage.removeItem('networth_user');
+        localStorage.removeItem('networth_local_users');
+        localStorage.removeItem('networth_catalog_version');
+        localStorage.removeItem('networth_catalog_timestamp');
         localStorage.removeItem('networth_catalog_ver');
         localStorage.removeItem('networth_catalog_cache_timestamp');
         localStorage.removeItem('networth_hidden_product_ids');

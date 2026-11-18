@@ -13,17 +13,17 @@
    ========================================================================== */
 
 :root {
-  /* Networth Integreaterd services LTD - White, Black & Gold Luxury Palette */
+  /* Networth Integreaterd services LTD - White, Sky Blue, Black & Blue Palette */
   --bg-main: #ffffff;
   --bg-surface: #ffffff;
   --bg-surface-elevated: #ffffff;
   --bg-subtle: #fcfbf9;
-  --bg-active: #f7f2e4;
+  --bg-active: #e0f2fe;
 
   /* Refined Gold & Hairline Borders */
   --border-color: #e5e5e5;
-  --border-strong: #d4af37;
-  --border-focus: #c59b27;
+  --border-strong: #0284c7;
+  --border-focus: #0ea5e9;
 
   /* Typography: Rich Jet Black & Neutral Grays */
   --text-main: #111111;
@@ -33,25 +33,25 @@
   --text-inverted: #ffffff;
 
   /* Brand Primary Gold & Black Palette */
-  --primary-green: #d4af37;
-  --primary-green-dark: #b8860b;
-  --primary-green-light: #fdf9ef;
+  --primary-green: #0284c7;
+  --primary-green-dark: #0369a1;
+  --primary-green-light: #f0f9ff;
   --accent-whatsapp: #25D366;
   --accent-whatsapp-hover: #20ba5a;
 
   /* Luxury Gold Accents */
-  --accent-gold: #c59b27;
-  --accent-gold-hover: #b8860b;
-  --accent-gold-active: #996515;
-  --accent-gold-subtle: #fdf8ee;
-  --accent-gold-border: #dfc15d;
+  --accent-gold: #0284c7;
+  --accent-gold-hover: #0369a1;
+  --accent-gold-active: #1e40af;
+  --accent-gold-subtle: #f0f9ff;
+  --accent-gold-border: #38bdf8;
 
   /* Functional Status Colors */
   --status-success: #059669;
   --status-danger: #dc2626;
   --status-danger-hover: #b91c1c;
   --status-warning: #d97706;
-  --status-info: #c59b27;
+  --status-info: #0ea5e9;
 
   /* Soft Luxury Shadows (Neutral Black Tints) */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -1216,16 +1216,16 @@ body {
 }
 
 .btn-primary {
-  background-color: #d4af37;
-  color: #000000;
-  border-color: #c59b27;
+  background-color: #0284c7;
+  color: #ffffff;
+  border-color: #0369a1;
   font-weight: 700;
 }
 
 .btn-primary:hover {
-  background-color: #b8860b;
-  color: #000000;
-  border-color: #996515;
+  background-color: #0369a1;
+  color: #ffffff;
+  border-color: #1e40af;
 }
 
 .btn-secondary {
@@ -1731,8 +1731,8 @@ body {
   height: 44px !important;
   min-width: 44px !important;
   min-height: 44px !important;
-  background-color: #d4af37 !important;
-  border: 1.5px solid #c59b27 !important;
+  background-color: #0284c7 !important;
+  border: 1.5px solid #0284c7 !important;
   color: #000000 !important;
   color: #fff !important;
   border-radius: var(--radius-full) !important;
@@ -1747,8 +1747,8 @@ body {
 }
 
 .full-view-close-under:hover {
-  background-color: #b8860b !important;
-  border-color: #d4af37 !important;
+  background-color: #0369a1 !important;
+  border-color: #0284c7 !important;
   color: #fff !important;
 }
 
@@ -1953,8 +1953,8 @@ body {
   width: clamp(34px, 5vw, 42px);
   height: clamp(34px, 5vw, 42px);
   border-radius: var(--radius-sm);
-  border: 1px solid #b8860b;
-  background-color: #d4af37;
+  border: 1px solid #0369a1;
+  background-color: #0284c7;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2062,7 +2062,7 @@ body {
 
 .chat-msg-row.outgoing .chat-bubble {
   background-color: #111111 !important;
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
   color: #ffffff !important;
   border-bottom-right-radius: 2px;
 }
@@ -2114,7 +2114,7 @@ body {
 }
 
 .chat-msg-actions-btn:hover {
-  color: #d4af37;
+  color: #0284c7;
   background-color: #fdf9ee;
 }
 
@@ -2146,7 +2146,7 @@ body {
 }
 
 .chat-upload-btn:hover {
-  color: #d4af37;
+  color: #0284c7;
   background-color: #eaf7f0;
   border-color: #e5e5e5;
 }
@@ -2185,7 +2185,7 @@ textarea.chat-text-input {
 }
 
 .chat-text-input:focus {
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12) !important;
 }
 
@@ -2193,7 +2193,7 @@ textarea.chat-text-input {
   height: 42px;
   min-height: 42px;
   padding: 0 14px;
-  background-color: #d4af37 !important;
+  background-color: #0284c7 !important;
   color: #ffffff !important;
   border: none;
   border-radius: 8px;
@@ -2210,7 +2210,7 @@ textarea.chat-text-input {
 }
 
 .chat-send-btn:hover {
-  background-color: #b8860b !important;
+  background-color: #0369a1 !important;
 }
 
 /* ---------------- TOAST NOTIFICATIONS (FLAT, HIGH Z-INDEX) ---------------- */
@@ -2287,18 +2287,18 @@ body.admin-body {
   --bg-subtle: #f8fbfe;
   --bg-active: #fdf9ee;
   --border-color: #e5e5e5;
-  --border-strong: #dfc15d;
-  --border-focus: #d4af37;
+  --border-strong: #38bdf8;
+  --border-focus: #0284c7;
   --text-main: #111111;
   --text-body: #27272a;
   --text-muted: #5a6e62;
   --text-subtle: #7d9285;
   --text-inverted: #ffffff;
-  --accent-gold: #d4af37;
-  --accent-gold-hover: #b8860b;
-  --accent-gold-active: #996515;
+  --accent-gold: #0284c7;
+  --accent-gold-hover: #0369a1;
+  --accent-gold-active: #1e40af;
   --accent-gold-subtle: #fdf9ee;
-  --accent-gold-border: #dfc15d;
+  --accent-gold-border: #38bdf8;
   background-color: #ffffff !important;
   color: #111111 !important;
   padding-top: calc(var(--admin-header-h) + var(--admin-tabs-h)) !important;
@@ -2315,7 +2315,7 @@ body.admin-body .header-bar {
   min-height: var(--admin-header-h) !important;
   max-height: var(--admin-header-h) !important;
   background-color: #0a0a0a !important;
-  border-bottom: 2px solid #d4af37 !important;
+  border-bottom: 2px solid #0ea5e9 !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.15) !important;
   box-sizing: border-box !important;
   z-index: 99999 !important;
@@ -2344,7 +2344,7 @@ body.admin-body .brand-title {
 }
 
 body.admin-body .brand-title span {
-  color: #dfc15d !important;
+  color: #38bdf8 !important;
 }
 
 body.admin-body .brand-tagline {
@@ -2424,8 +2424,8 @@ body.admin-body .admin-tab-btn:hover {
 }
 
 body.admin-body .admin-tab-btn.active {
-  color: #d4af37 !important;
-  border-bottom-color: #d4af37 !important;
+  color: #0284c7 !important;
+  border-bottom-color: #0284c7 !important;
   font-weight: 800 !important;
 }
 
@@ -2451,7 +2451,7 @@ body.admin-body .admin-item-row {
 
 body.admin-body .admin-item-row:hover {
   background-color: #f7fbf8 !important;
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
 }
 
 body.admin-body .admin-item-title {
@@ -2463,38 +2463,38 @@ body.admin-body .admin-item-sub {
 }
 
 body.admin-body .btn-primary {
-  background-color: #d4af37 !important;
-  border-color: #c59b27 !important;
+  background-color: #0284c7 !important;
+  border-color: #0284c7 !important;
   color: #000000 !important;
   font-weight: 700 !important;
 }
 
 body.admin-body .btn-primary:hover {
-  background-color: #b8860b !important;
-  border-color: #996515 !important;
+  background-color: #0369a1 !important;
+  border-color: #1e40af !important;
   color: #000000 !important;
 }
 
 body.admin-body .btn-secondary {
   background-color: #f0f7f3 !important;
   border-color: #e5e5e5 !important;
-  color: #b8860b !important;
+  color: #0369a1 !important;
 }
 
 body.admin-body .btn-secondary:hover {
   background-color: #fdf9ee !important;
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
 }
 
 body.admin-body .btn-icon-square {
   background-color: #f0f7f3 !important;
   border: 1px solid #e5e5e5 !important;
-  color: #b8860b !important;
+  color: #0369a1 !important;
 }
 
 body.admin-body .btn-icon-square:hover {
   background-color: #fdf9ee !important;
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
 }
 
 body.admin-body .btn-icon-square.danger {
@@ -2545,7 +2545,7 @@ body.admin-body input[type="text"]:focus,
 body.admin-body input[type="number"]:focus,
 body.admin-body input[type="password"]:focus,
 body.admin-body textarea:focus {
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
   background-color: #ffffff !important;
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15) !important;
 }
@@ -2573,7 +2573,7 @@ body.admin-body .admin-login-title {
 }
 
 body.admin-body .admin-login-title span {
-  color: #d4af37 !important;
+  color: #0284c7 !important;
 }
 
 body.admin-body .c-modal-box {
@@ -3423,8 +3423,8 @@ body.admin-body .c-modal-footer {
   font-size: 11px;
   font-weight: 700;
   color: #ffffff;
-  background-color: #d4af37;
-  border: 1px solid #b8860b;
+  background-color: #0284c7;
+  border: 1px solid #0369a1;
   border-radius: var(--radius-full);
   margin-left: 6px;
   line-height: 1;
@@ -3518,7 +3518,7 @@ body.chat-body .header-bar {
   display: flex !important;
   align-items: center !important;
   background-color: #0a0a0a !important;
-  border-bottom: 2px solid #d4af37 !important;
+  border-bottom: 2px solid #0ea5e9 !important;
 }
 
 body.chat-body .header-bar .header-container {
@@ -3558,7 +3558,7 @@ body.chat-body .header-bar #chatBackToStoreMobileBtn:hover,
 body.chat-body .header-bar .chat-back-store-btn-mobile:hover {
   background-color: #f1f5f9 !important;
   border-color: #f1f5f9 !important;
-  color: #d4af37 !important;
+  color: #0284c7 !important;
   transform: none !important;
 }
 
@@ -3593,8 +3593,8 @@ body.chat-body .header-bar .chat-back-store-btn-mobile .svg-icon {
 
 body.chat-body .header-bar #headerSignInBtn {
   color: #ffffff !important;
-  background-color: #d4af37 !important;
-  border: 1.5px solid #c59b27 !important;
+  background-color: #0284c7 !important;
+  border: 1.5px solid #0284c7 !important;
   color: #000000 !important;
   border-radius: 9999px !important;
   padding: 6px 14px !important;
@@ -3824,7 +3824,7 @@ body.chat-body .chat-page-card.hidden {
 
 .btn-see-more {
   background-color: #ffffff;
-  color: #d4af37;
+  color: #0284c7;
   border: 1px solid #e5e5e5;
   font-weight: 700;
   font-size: var(--font-sm);
@@ -3842,8 +3842,8 @@ body.chat-body .chat-page-card.hidden {
 
 .btn-see-more:hover:not(:disabled) {
   background-color: #fdf9ee;
-  border-color: #d4af37;
-  color: #b8860b;
+  border-color: #0284c7;
+  color: #0369a1;
   transform: none !important;
   box-shadow: none !important;
 }
@@ -3877,12 +3877,12 @@ body.chat-body .chat-page-card.hidden {
 }
 
 .chat-order-card-bubble:hover {
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
   background-color: #f8fbfe !important;
 }
 
 .chat-order-card-bubble:hover .chat-order-card-footer {
-  color: #b8860b !important;
+  color: #0369a1 !important;
 }
 
 .chat-order-card-header {
@@ -3938,8 +3938,8 @@ body.chat-body .chat-page-card.hidden {
 
 .order-card-status-approved {
   background-color: #fdf9ee;
-  color: #b8860b;
-  border: 1px solid #dfc15d;
+  color: #0369a1;
+  border: 1px solid #38bdf8;
 }
 
 .order-card-status-shipping {
@@ -3950,8 +3950,8 @@ body.chat-body .chat-page-card.hidden {
 
 .order-card-status-delivered {
   background-color: #fdf9ee;
-  color: #b8860b;
-  border: 1px solid #dfc15d;
+  color: #0369a1;
+  border: 1px solid #38bdf8;
 }
 
 .order-card-status-declined {
@@ -4126,8 +4126,8 @@ body.chat-body .chat-page-card.hidden {
 
 .order-status-badge.status-approved {
   background-color: #fdf9ee;
-  color: #b8860b;
-  border: 1px solid #dfc15d;
+  color: #0369a1;
+  border: 1px solid #38bdf8;
 }
 
 .order-status-badge.status-shipping {
@@ -4138,8 +4138,8 @@ body.chat-body .chat-page-card.hidden {
 
 .order-status-badge.status-delivered {
   background-color: #fdf9ee;
-  color: #b8860b;
-  border: 1px solid #dfc15d;
+  color: #0369a1;
+  border: 1px solid #38bdf8;
 }
 
 .order-status-badge.status-declined {
@@ -4371,7 +4371,7 @@ body.chat-body .chat-page-card.hidden {
 .btn-toggle-password:focus,
 .btn-toggle-password:active {
   transform: none !important;
-  color: #d4af37 !important;
+  color: #0284c7 !important;
   background: rgba(212, 175, 55, 0.08) !important;
   border-radius: 50% !important;
 }
@@ -4409,7 +4409,7 @@ select:autofill:active {
   -webkit-text-fill-color: #111111 !important;
   color: #111111 !important;
   caret-color: #111111 !important;
-  border-color: #dfc15d !important;
+  border-color: #38bdf8 !important;
   font-family: inherit !important;
   transition: background-color 5000s ease-in-out 0s;
 }
@@ -4425,7 +4425,7 @@ select:autofill:focus {
   -webkit-text-fill-color: #111111 !important;
   color: #111111 !important;
   caret-color: #111111 !important;
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -4501,7 +4501,7 @@ body.admin-body .admin-customer-search-input {
 
 .admin-customer-search-input:focus,
 body.admin-body .admin-customer-search-input:focus {
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15) !important;
 }
 
@@ -5044,7 +5044,7 @@ body.admin-body .admin-customer-search-clear:active {
 /* ---------------- 1. STOREFRONT HEADER BAR (DARK EMERALD GREEN) ---------------- */
 body:not(.admin-body) .header-bar {
   background-color: #0a0a0a !important;
-  border-bottom: 2px solid #d4af37 !important;
+  border-bottom: 2px solid #0ea5e9 !important;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12) !important;
   height: clamp(62px, 9vw, 72px) !important;
 }
@@ -5284,7 +5284,7 @@ body:not(.admin-body) .brand-title span {
   left: 14px;
   width: 19px;
   height: 19px;
-  color: #d4af37;
+  color: #0284c7;
   pointer-events: none;
 }
 
@@ -5307,7 +5307,7 @@ body:not(.admin-body) .brand-title span {
 }
 
 .category-search-input:focus {
-  border-color: #d4af37;
+  border-color: #0284c7;
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
 }
 
@@ -5352,7 +5352,7 @@ body:not(.admin-body) .brand-title span {
 }
 
 .home-cat-heading {
-  color: #b8860b;
+  color: #0369a1;
   font-size: clamp(1.2rem, 3.2vw, 1.55rem);
   font-weight: 900;
   letter-spacing: -0.01em;
@@ -5394,7 +5394,7 @@ body:not(.admin-body) .brand-title span {
 }
 
 .home-category-card:hover {
-  border-color: #d4af37;
+  border-color: #0284c7;
   background-color: #f7fbf8;
 }
 
@@ -5431,7 +5431,7 @@ body:not(.admin-body) .brand-title span {
 }
 
 .home-category-title {
-  color: #b8860b;
+  color: #0369a1;
   font-size: clamp(0.72rem, 1.8vw, 0.82rem);
   font-weight: 800;
   line-height: 1.25;
@@ -5616,7 +5616,7 @@ body:not(.admin-body) .brand-title span {
 .product-banner-dot.active {
   width: 20px;
   border-radius: 4px;
-  background: #d4af37;
+  background: #0284c7;
 }
 
 /* Desktop (>= 769px): Controlled 16:9 Width with Peeking Side Cards */
@@ -5677,7 +5677,7 @@ body:not(.admin-body) .brand-title span {
 }
 
 .admin-banner-row:hover {
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
   box-shadow: 0 4px 14px rgba(212, 175, 55, 0.08) !important;
 }
 
@@ -5966,7 +5966,7 @@ body:not(.admin-body) .brand-title span {
   border-radius: 50%;
 }
 .admin-switch input:checked + .admin-slider {
-  background-color: #d4af37;
+  background-color: #0284c7;
 }
 .admin-switch input:checked + .admin-slider:before {
   transform: translateX(20px);
@@ -6000,7 +6000,7 @@ body:not(.admin-body) .brand-title span {
 }
 
 .shop-search-input:focus {
-  border-color: #d4af37;
+  border-color: #0284c7;
   background: #ffffff;
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
 }
@@ -6036,14 +6036,14 @@ body:not(.admin-body) .brand-title span {
 
 .shop-cat-pill:hover {
   background: #fdf9ee;
-  border-color: #d4af37;
-  color: #b8860b;
+  border-color: #0284c7;
+  color: #0369a1;
 }
 
 .shop-cat-pill.active {
   background: #111111;
-  color: #d4af37;
-  border-color: #d4af37;
+  color: #0284c7;
+  border-color: #0284c7;
   font-weight: 800;
   box-shadow: none !important;
 }
@@ -6060,7 +6060,7 @@ body:not(.admin-body) .product-card {
 
 body:not(.admin-body) .product-card:hover {
   transform: none !important;
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
   box-shadow: none !important;
 }
 
@@ -6074,7 +6074,7 @@ body:not(.admin-body) .product-card-title {
 }
 
 body:not(.admin-body) .product-card-price {
-  color: #c59b27 !important;
+  color: #0284c7 !important;
   font-weight: 900 !important;
   font-size: clamp(1.05rem, 2.6vw, 1.25rem) !important;
 }
@@ -6082,9 +6082,9 @@ body:not(.admin-body) .product-card-price {
 /* "Add to Cart" Button */
 .btn-add-to-cart {
   width: 100%;
-  background-color: #d4af37;
+  background-color: #0284c7;
   color: #000000 !important;
-  border: 1px solid #c59b27;
+  border: 1px solid #0284c7;
   border: none;
   border-radius: 8px;
   padding: 10px 14px;
@@ -6100,7 +6100,7 @@ body:not(.admin-body) .product-card-price {
 }
 
 .btn-add-to-cart:hover {
-  background-color: #b8860b;
+  background-color: #0369a1;
   color: #000000 !important;
   transform: none !important;
 }
@@ -6187,7 +6187,7 @@ body:not(.admin-body) .product-card-price {
   padding: 9px 14px !important;
   font-size: var(--font-xs) !important;
   font-weight: 700 !important;
-  color: #b8860b !important;
+  color: #0369a1 !important;
   background-color: #f7fbf8 !important;
   border: 1px solid #25D366 !important;
   border-radius: 8px !important;
@@ -6199,7 +6199,7 @@ body:not(.admin-body) .product-card-price {
 
 .btn-whatsapp-order:hover {
   background-color: #fdf9ee !important;
-  border-color: #b8860b !important;
+  border-color: #0369a1 !important;
   color: #0d4a22 !important;
 }
 
@@ -6279,7 +6279,7 @@ body:not(.admin-body) .product-card-price {
 .product-grid.list-view .product-card-list-price .product-card-price {
   font-size: clamp(0.95rem, 2.8vw, 1.15rem) !important;
   font-weight: 800 !important;
-  color: #d4af37 !important;
+  color: #0284c7 !important;
 }
 
 .product-grid.list-view .product-card-footer {
@@ -6438,7 +6438,7 @@ body:not(.admin-body) .product-card-price {
 }
 
 .view-toggle-btn.active {
-  color: #d4af37 !important;
+  color: #0284c7 !important;
   background-color: #fdf9ee !important;
 }
 
@@ -6496,7 +6496,7 @@ body:not(.admin-body) .details-product-title {
 }
 
 body:not(.admin-body) .details-product-price {
-  color: #d4af37 !important;
+  color: #0284c7 !important;
 }
 
 body:not(.admin-body) .details-sub-thumb {
@@ -6505,27 +6505,27 @@ body:not(.admin-body) .details-sub-thumb {
 }
 
 body:not(.admin-body) .details-sub-thumb.active {
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
   border-width: 2px !important;
 }
 
 body:not(.admin-body) .details-thumb-nav-btn {
   background-color: #f7fbf8 !important;
   border: 1px solid #e5e5e5 !important;
-  color: #d4af37 !important;
+  color: #0284c7 !important;
 }
 
 body:not(.admin-body) .details-thumb-nav-btn:hover {
   background-color: #fdf9ee !important;
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
 }
 
 body:not(.admin-body) .details-sub-images-track {
-  scrollbar-color: #d4af37 #ffffff !important;
+  scrollbar-color: #0284c7 #ffffff !important;
 }
 
 body:not(.admin-body) .details-sub-images-track::-webkit-scrollbar-thumb {
-  background: #d4af37 !important;
+  background: #0284c7 !important;
 }
 
 body:not(.admin-body) .details-sub-images-track::-webkit-scrollbar-track {
@@ -6550,8 +6550,8 @@ body:not(.admin-body) .details-modal-footer .btn-primary {
   padding: 12px 16px !important;
   font-weight: 800 !important;
   font-size: clamp(0.88rem, 2.2vw, 1rem) !important;
-  background-color: #d4af37 !important;
-  border: 1px solid #c59b27 !important;
+  background-color: #0284c7 !important;
+  border: 1px solid #0284c7 !important;
   color: #000000 !important;
   border-radius: 8px !important;
   box-shadow: none !important;
@@ -6562,8 +6562,8 @@ body:not(.admin-body) .details-modal-footer .btn-primary {
 }
 
 body:not(.admin-body) .details-modal-footer .btn-primary:hover:not(:disabled) {
-  background-color: #b8860b !important;
-  border-color: #996515 !important;
+  background-color: #0369a1 !important;
+  border-color: #1e40af !important;
   color: #000000 !important;
 }
 
@@ -6578,7 +6578,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn {
   padding: 11px 16px !important;
   font-weight: 700 !important;
   font-size: clamp(0.84rem, 2vw, 0.94rem) !important;
-  color: #b8860b !important;
+  color: #0369a1 !important;
   background-color: #f7fbf8 !important;
   border: 1px solid #25D366 !important;
   border-radius: 8px !important;
@@ -6592,7 +6592,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn {
 
 body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
   background-color: #fdf9ee !important;
-  border-color: #b8860b !important;
+  border-color: #0369a1 !important;
 }
 
 @media (min-width: 680px) {
@@ -6737,7 +6737,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 }
 
 .cart-heading {
-  color: #b8860b;
+  color: #0369a1;
   font-size: clamp(1.3rem, 3.5vw, 1.65rem);
   font-weight: 900;
 }
@@ -6767,7 +6767,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
   height: 68px;
   border-radius: 50%;
   background: #fdf9ee;
-  color: #d4af37;
+  color: #0284c7;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6825,7 +6825,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 
 .cart-item-thumb:hover {
   transform: none !important;
-  border-color: #d4af37;
+  border-color: #0284c7;
   opacity: 0.95;
 }
 
@@ -6847,12 +6847,12 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 }
 
 .cart-item-title:hover {
-  color: #d4af37;
+  color: #0284c7;
   text-decoration: underline;
 }
 
 .cart-item-unit-price {
-  color: #d4af37;
+  color: #0284c7;
   font-size: 0.84rem;
   font-weight: 700;
 }
@@ -6939,7 +6939,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 .cart-summary-line.cart-total-line {
   font-size: 1.05rem;
   font-weight: 900;
-  color: #b8860b;
+  color: #0369a1;
   border-top: 1.5px dashed #e5e5e5;
   padding-top: 10px;
   margin-top: 10px;
@@ -6963,9 +6963,9 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
   max-width: 100% !important;
   padding: 11px 14px;
   min-height: 48px;
-  background-color: #d4af37;
+  background-color: #0284c7;
   color: #000000;
-  border: 1px solid #c59b27;
+  border: 1px solid #0284c7;
   font-weight: 800;
   border-radius: 10px;
   cursor: pointer;
@@ -6981,7 +6981,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 }
 
 .btn-cart-checkout:hover {
-  background-color: #b8860b;
+  background-color: #0369a1;
   color: #000000;
 }
 
@@ -7035,7 +7035,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
   margin-top: 10px;
   padding: 10px 14px;
   background-color: #f7fbf8;
-  color: #b8860b;
+  color: #0369a1;
   border: 1.5px solid #25D366;
   border-radius: 10px;
   cursor: pointer;
@@ -7054,7 +7054,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 
 .btn-cart-whatsapp:hover {
   background-color: #fdf9ee;
-  border-color: #b8860b;
+  border-color: #0369a1;
   color: #0d4a22;
 }
 
@@ -7079,14 +7079,14 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 .btn-cart-whatsapp-action {
   font-size: clamp(0.86rem, 2.6vw, 0.94rem);
   font-weight: 800;
-  color: #b8860b;
+  color: #0369a1;
   white-space: nowrap;
 }
 
 .btn-cart-whatsapp-price {
   font-size: clamp(0.78rem, 2.3vw, 0.85rem);
   font-weight: 700;
-  color: #d4af37;
+  color: #0284c7;
   white-space: nowrap;
   margin-top: 1px;
 }
@@ -7121,7 +7121,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 }
 
 .requests-card:hover {
-  border-color: #d4af37;
+  border-color: #0284c7;
 }
 
 .request-card-top {
@@ -7159,8 +7159,8 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 .request-status-pill.approved,
 .request-status-pill.delivered {
   background: #fdf9ee;
-  color: #b8860b;
-  border: 1px solid #dfc15d;
+  color: #0369a1;
+  border: 1px solid #38bdf8;
 }
 
 .request-status-pill.shipping,
@@ -7193,7 +7193,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 }
 
 .chat-order-request-card:hover {
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
 }
 
 .chat-msg-row.outgoing .chat-order-request-card,
@@ -7213,7 +7213,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 
 .chat-msg-row.outgoing .chat-order-request-card .request-code-badge,
 .chat-msg-row.incoming .chat-order-request-card .request-code-badge {
-  color: #b8860b !important;
+  color: #0369a1 !important;
   background: #f0f7f3 !important;
 }
 
@@ -7230,7 +7230,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
   max-width: min(92vw, 440px);
   background: #f2faf5 !important;
   border-radius: 14px !important;
-  border: 2px solid #d4af37 !important;
+  border: 2px solid #0284c7 !important;
   box-shadow: none !important;
   padding: 14px 16px !important;
   box-sizing: border-box !important;
@@ -7263,7 +7263,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background-color: #d4af37 !important;
+  background-color: #0284c7 !important;
   color: #ffffff !important;
   font-size: 0.69rem;
   font-weight: 800;
@@ -7314,7 +7314,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 }
 
 .sourcing-details-pill strong {
-  color: #d4af37 !important;
+  color: #0284c7 !important;
   font-weight: 800;
 }
 
@@ -7328,7 +7328,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 }
 
 .sourcing-status-dot {
-  color: #d4af37 !important;
+  color: #0284c7 !important;
   font-weight: 700;
 }
 
@@ -7353,7 +7353,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
   justify-content: center !important;
   padding: 9px 12px !important;
   font-weight: 700 !important;
-  color: #b8860b !important;
+  color: #0369a1 !important;
   border-color: #25D366 !important;
   background-color: #ffffff !important;
   text-decoration: none !important;
@@ -7401,7 +7401,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
   font-family: monospace;
   font-weight: 700;
   background: #f0f7f3;
-  color: #b8860b;
+  color: #0369a1;
   padding: 2px 6px;
   border-radius: 4px;
   border: 1px solid #e5e5e5;
@@ -7447,7 +7447,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  background: #d4af37;
+  background: #0284c7;
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -7482,7 +7482,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
   border-radius: 10px;
   border: 1px solid #e5e5e5;
   background: #f7fbf8;
-  color: #b8860b;
+  color: #0369a1;
   text-decoration: none;
   font-weight: 700;
   font-size: 0.88rem;
@@ -7492,7 +7492,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 
 .account-support-btn:hover {
   background: #eaf7f0;
-  border-color: #d4af37;
+  border-color: #0284c7;
 }
 
 .account-support-btn .support-left {
@@ -7636,11 +7636,11 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 }
 
 .bottom-nav-item:hover {
-  color: #b8860b;
+  color: #0369a1;
 }
 
 .bottom-nav-item.active {
-  color: #c59b27 !important;
+  color: #0284c7 !important;
 }
 
 .bottom-nav-item.active .svg-icon {
@@ -7683,7 +7683,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 
 #accountDirectChatBtn:hover {
   background-color: #def2e6 !important;
-  border-color: #b8860b !important;
+  border-color: #0369a1 !important;
 }
 
 /* ---------------- 10. FLOATING WHATSAPP BUTTON (MOCKUP RIGHT CIRCLE) ---------------- */
@@ -7784,7 +7784,7 @@ body:not(.admin-body) .details-modal-footer .details-whatsapp-btn:hover {
 }
 
 #orderSuccessModal .success-order-item-card:hover {
-  border-color: #d4af37 !important;
+  border-color: #0284c7 !important;
 }
 
 @media (max-width: 480px) {

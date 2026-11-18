@@ -1,4 +1,4 @@
-// Admin Control Center - MIMI LUX WIGS
+// Admin Control Center - Networth Integreaterd services LTD
 // Enforces Zero Emojis, Zero Shadows/Glows/Gradients, Zero Hover Lifts, Custom Pickers & Modals, <=100KB Image Compression
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -1878,7 +1878,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
       } else {
         window.CustomModal.toast({
-          message: `Product ${isNew ? 'created and published' : 'updated'} live on MIMI LUX WIGS!`,
+          message: `Product ${isNew ? 'created and published' : 'updated'} live on Networth Integreaterd services LTD!`,
           type: 'success',
           duration: 5000
         });
@@ -2090,13 +2090,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Purge any legacy sourcing orders from cloud and local storage so they never linger in Orders table
       try {
         if (window.SupabaseService && window.SupabaseService.request) {
-          window.SupabaseService.request('mimiluxwigs_orders?product_id=eq.custom-sourcing', { method: 'DELETE' }).catch(() => {});
-          window.SupabaseService.request('mimiluxwigs_orders?id=like.req-*', { method: 'DELETE' }).catch(() => {});
+          window.SupabaseService.request('networth_orders?product_id=eq.custom-sourcing', { method: 'DELETE' }).catch(() => {});
+          window.SupabaseService.request('networth_orders?id=like.req-*', { method: 'DELETE' }).catch(() => {});
         }
-        const local = JSON.parse(localStorage.getItem('mimiluxwigs_local_orders') || localStorage.getItem('nkem_local_orders') || '[]');
+        const local = JSON.parse(localStorage.getItem('networth_local_orders') || localStorage.getItem('nkem_local_orders') || '[]');
         if (Array.isArray(local) && local.length > 0) {
           const cleaned = local.filter(o => !isSourcingRequestOrder(o));
-          localStorage.setItem('mimiluxwigs_local_orders', JSON.stringify(cleaned));
+          localStorage.setItem('networth_local_orders', JSON.stringify(cleaned));
         }
       } catch (_) {}
 
@@ -2393,7 +2393,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         pending: 'under review',
         approved: 'APPROVED! Let\'s arrange delivery details and confirm dispatch.',
         shipping: 'IN TRANSIT / SHIPPING. Your order is on the way!',
-        delivered: 'DELIVERED. Thank you for choosing MIMI LUX WIGS!',
+        delivered: 'DELIVERED. Thank you for choosing Networth Integreaterd services LTD!',
         declined: 'DECLINED by store admin.',
         cancelled: 'CANCELLED.'
       };
@@ -2404,7 +2404,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           id: `msg-status-${orderId}-${Date.now()}`,
           order_code: orderId,
           user_id: ord.user_id,
-          user_name: 'MIMI LUX WIGS Support',
+          user_name: 'Networth Support',
           user_whatsapp: '09164504134',
           sender: 'admin',
           message: `Order #${orderId.toUpperCase()} status update: Your order request for "${ord.product_title}" is now ${statusLabels[newStatus] || newStatus}`,
@@ -2541,7 +2541,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (customer) {
         chatInput.placeholder = `Type message to ${customer.userName}...`;
       } else {
-        chatInput.placeholder = 'Type message as MIMI LUX WIGS Support...';
+        chatInput.placeholder = 'Type message as Networth Integreaterd services LTD Support...';
       }
       setTimeout(() => chatInput.focus(), 150);
     }
@@ -2781,7 +2781,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="chat-msg-row ${isOutgoing ? 'outgoing' : 'incoming'}" data-msg-id="${msg.id}">
           <div class="chat-bubble">
             <div style="font-size: 0.68rem; font-weight: 700; color: ${isOutgoing ? '#ffffff' : '#111111'}; margin-bottom: 2px;">
-              ${isOutgoing ? 'MIMI LUX WIGS Support (You)' : (adminState.activeChatCustomer ? window.CustomModal.escape(adminState.activeChatCustomer.userName) : 'Customer')}
+              ${isOutgoing ? 'Networth Support (You)' : (adminState.activeChatCustomer ? window.CustomModal.escape(adminState.activeChatCustomer.userName) : 'Customer')}
             </div>
             ${msg.message ? `<div class="chat-text-content">${window.CustomModal.escape(msg.message)}</div>` : ''}
             ${msg.image_url ? `
@@ -3279,7 +3279,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function loadUsersManager() {
     try {
       const users = await window.SupabaseService.getUsers();
-      adminState.users = (users || []).filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@mimiluxwigs.com' && u.email !== 'admin@mimiluxwigs.com' && u.whatsapp_number !== 'admin');
+      adminState.users = (users || []).filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@networthintegrated.com' && u.whatsapp_number !== 'admin');
       updateAdminUsersBadge();
       renderUsersManager(adminUserSearchInput ? adminUserSearchInput.value : '');
     } catch (err) {
@@ -3428,8 +3428,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* ==========================================================================
      ADMIN AUTHENTICATION & SECURITY CONTROLLER
      ========================================================================== */
-  const ADMIN_CRED_KEY = 'mimiluxwigs_admin_credentials';
-  const ADMIN_AUTH_KEY = 'mimiluxwigs_admin_session_auth';
+  const ADMIN_CRED_KEY = 'networth_admin_credentials';
+  const ADMIN_AUTH_KEY = 'networth_admin_session_auth';
 
   function getAdminCredentials() {
     try {
@@ -3734,8 +3734,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const isMatchUser = (
         rawUser === 'admin' ||
-        rawUser === 'admin@mimiluxwigs.com' ||
-        rawUser === 'admin@mimiluxwigs.com' ||
+        rawUser === 'admin@networthintegrated.com' ||
         rawUser === creds.username.toLowerCase() ||
         cleanPhone === '09164504134' ||
         cleanPhone === '08142414888'

@@ -1,4 +1,4 @@
-// Public Storefront Engine - MIMI LUX WIGS
+// Public Storefront Engine - Networth Integreaterd services LTD
 // Complete 5-Tab Architecture: Home (Categories & Brand Intro), Shop (Catalog & Add to Cart),
 // Requests (Tracking Orders & Sourcing Inquiries), Cart (Quantity Steppers, State/LGA Pickers, Checkout), Account (Profile, Live Chat, WhatsApp)
 
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     hasMoreProducts: false,
     isLoadingMore: false,
     productCardTimers: {},
-    currentView: localStorage.getItem('mimiluxwigs_product_view') || localStorage.getItem('nkem_product_view') || 'grid',
+    currentView: localStorage.getItem('networth_product_view') || 'grid',
     cart: [],
     catalogLoaded: false
   };
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
     try {
-      const raw = localStorage.getItem('mimiluxwigs_current_user') || localStorage.getItem('mimiluxwigs_user') || localStorage.getItem('nkem_current_user') || localStorage.getItem('nkem_user');
+      const raw = localStorage.getItem('networth_current_user') || localStorage.getItem('networth_user');
       return raw ? JSON.parse(raw) : null;
     } catch (_) {
       return null;
@@ -57,8 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.warn('Auth reactive notice:', e);
     }
   };
-  window.addEventListener('mimiluxwigs_auth_changed', onAuthChangeHandler);
-  window.addEventListener('nkem_auth_changed', onAuthChangeHandler);
+  window.addEventListener('networth_auth_changed', onAuthChangeHandler);
 
   // DOM Elements
   const productGrid = document.getElementById('productGrid');
@@ -79,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
      ========================================================================== */
   function getCart() {
     try {
-      const stored = localStorage.getItem('mimiluxwigs_cart') || localStorage.getItem('nkem_cart');
+      const stored = localStorage.getItem('networth_cart');
       return stored ? JSON.parse(stored) : [];
     } catch (e) {
       return [];
@@ -88,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function getLocalCartTimestamp() {
     try {
-      return Number(localStorage.getItem('mimiluxwigs_cart_timestamp')) || 0;
+      return Number(localStorage.getItem('networth_cart_timestamp')) || 0;
     } catch (_) {
       return 0;
     }
@@ -96,7 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function setLocalCartTimestamp(ts) {
     try {
-      localStorage.setItem('mimiluxwigs_cart_timestamp', String(ts || Date.now()));
+      localStorage.setItem('networth_cart_timestamp', String(ts || Date.now()));
     } catch (_) {}
   }
 
@@ -108,10 +107,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const safeCart = Array.isArray(cart) ? cart : [];
     try {
       if (safeCart.length === 0) {
-        localStorage.removeItem('mimiluxwigs_cart');
-        localStorage.removeItem('nkem_cart');
+        localStorage.removeItem('networth_cart');
       } else {
-        localStorage.setItem('mimiluxwigs_cart', JSON.stringify(safeCart));
+        localStorage.setItem('networth_cart', JSON.stringify(safeCart));
       }
     } catch (e) {}
     state.cart = safeCart;
@@ -427,9 +425,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
       history.replaceState(null, '', '#' + tabName);
-      sessionStorage.setItem('mimi_current_tab', tabName);
-      sessionStorage.setItem('mimiluxwigs_current_tab', tabName);
-      sessionStorage.setItem('nkem_current_tab', tabName);
+      sessionStorage.setItem('networth_current_tab', tabName);
     } catch (e) {}
   };
 
@@ -625,7 +621,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const link = b.link_url || '';
     return `
       <div class="product-banner-slide" data-index="${realIdx}" data-link="${link ? (window.CustomModal?.escape ? window.CustomModal.escape(link) : link) : ''}" ${isClone ? 'data-clone="true"' : ''}>
-        <img src="${img}" alt="${b.title ? (window.CustomModal?.escape ? window.CustomModal.escape(b.title) : b.title) : 'MIMI LUX WIGS'}" onerror="this.onerror=null;this.src='assets/images/logo.png';" loading="eager" decoding="async" fetchpriority="high" />
+        <img src="${img}" alt="${b.title ? (window.CustomModal?.escape ? window.CustomModal.escape(b.title) : b.title) : 'Networth Integreaterd services LTD'}" onerror="this.onerror=null;this.src='assets/images/logo.png';" loading="eager" decoding="async" fetchpriority="high" />
         ${hasOverlay ? `
           <div class="product-banner-caption-overlay">
             ${b.title ? `<div class="product-banner-caption-title">${window.CustomModal?.escape ? window.CustomModal.escape(b.title) : b.title}</div>` : ''}
@@ -1066,22 +1062,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Reactive listener for banner changes from Admin
-  window.addEventListener('mimiluxwigs_banners_updated', () => {
+  window.addEventListener('networth_banners_updated', () => {
     lastRenderedBannersJson = '';
     renderProductPageBanner(true);
   });
   window.addEventListener('storage', (e) => {
-    if (e.key === 'mimiluxwigs_local_banners' || e.key === 'mimiluxwigs_banner_global_enabled') {
+    if (e.key === 'networth_local_banners' || e.key === 'networth_banner_global_enabled') {
       lastRenderedBannersJson = '';
       renderProductPageBanner(true);
     }
-    if (e.key === 'mimiluxwigs_local_products' || e.key === 'mimiluxwigs_hidden_product_ids') {
+    if (e.key === 'networth_local_products' || e.key === 'networth_hidden_product_ids') {
       if (typeof reloadAndApplySort === 'function') reloadAndApplySort();
     }
   });
 
   // Reactive listener for product visibility changes from Admin
-  window.addEventListener('mimiluxwigs_products_updated', () => {
+  window.addEventListener('networth_products_updated', () => {
     if (typeof reloadAndApplySort === 'function') reloadAndApplySort();
   });
 
@@ -1399,8 +1395,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function applyProductView(view) {
     state.currentView = view || 'grid';
     try {
-      localStorage.setItem('mimiluxwigs_product_view', state.currentView);
-      localStorage.setItem('nkem_product_view', state.currentView);
+      localStorage.setItem('networth_product_view', state.currentView);
     } catch (e) {}
 
     const pGrid = document.getElementById('productGrid');
@@ -1802,7 +1797,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ? rawDesc.trim()
         : ((prod.title && /suit/i.test(prod.title))
             ? suitFallbackDesc
-            : 'Authentic premium quality product curated and verified by MIMI LUX WIGS.');
+            : 'Authentic premium quality product curated and verified by Networth Integreaterd services LTD.');
 
       return `
         <article class="product-card" data-prod-id="${prod.id}" tabindex="0">
@@ -1842,7 +1837,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ${window.renderIcon('cart')}
                 <span>Add to Cart</span>
               </button>
-              <a href="https://wa.me/2349164504134?text=${encodeURIComponent(`Hello MIMI LUX WIGS, I would like to order: ${prod.title} (${window.formatNaira(prod.price)}). Is this available?`)}" target="_blank" rel="noopener" class="btn btn-whatsapp-order" title="Order on WhatsApp" onclick="event.stopPropagation();">
+              <a href="https://wa.me/2349164504134?text=${encodeURIComponent(`Hello Networth Integreaterd services LTD, I would like to order: ${prod.title} (${window.formatNaira(prod.price)}). Is this available?`)}" target="_blank" rel="noopener" class="btn btn-whatsapp-order" title="Order on WhatsApp" onclick="event.stopPropagation();">
                 ${window.renderIcon('whatsapp')}
                 <span>Order on WhatsApp</span>
               </a>
@@ -2011,7 +2006,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           id: cartItem.id || prodId,
           title: cartItem.title,
           price: cartItem.price,
-          description: cartItem.description || 'Authentic quality product available for nationwide delivery from MIMI LUX WIGS.',
+          description: cartItem.description || 'Authentic quality product available for nationwide delivery from Networth Integreaterd services LTD.',
           images: cartItem.images || (cartItem.image ? [cartItem.image] : ['assets/images/logo.png']),
           category: cartItem.category || 'General',
           in_stock: true
@@ -2090,7 +2085,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <span>Add to Cart - ${window.formatNaira(prod.price)}</span>
         </button>
 
-        <a href="https://wa.me/2349164504134?text=${encodeURIComponent(`Hello MIMI LUX WIGS, I would like to order: ${prod.title} (${window.formatNaira(prod.price)}). Is this available?`)}" target="_blank" rel="noopener" class="btn btn-secondary details-whatsapp-btn">
+        <a href="https://wa.me/2349164504134?text=${encodeURIComponent(`Hello Networth Integreaterd services LTD, I would like to order: ${prod.title} (${window.formatNaira(prod.price)}). Is this available?`)}" target="_blank" rel="noopener" class="btn btn-secondary details-whatsapp-btn">
           <span style="color: #25D366; display: inline-flex; align-items: center; font-size: 16px; line-height: 1;">${window.renderIcon('whatsapp')}</span>
           <span>Order on WhatsApp</span>
         </a>
@@ -2427,7 +2422,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         customerDetailsText = `\n\n*Customer Information:*\n- Guest Order (I will provide delivery address via this chat)`;
       }
 
-      const orderMessage = `Hello MIMI LUX WIGS, I would like to order the following items from my cart:\n\n${itemLines.join('\n')}\n\n*Total Items:* ${totalQty}\n*Grand Total:* *${window.formatNaira(grandTotal)}*${customerDetailsText}\n\nPlease confirm availability and payment details. Thank you!`;
+      const orderMessage = `Hello Networth Integreaterd services LTD, I would like to order the following items from my cart:\n\n${itemLines.join('\n')}\n\n*Total Items:* ${totalQty}\n*Grand Total:* *${window.formatNaira(grandTotal)}*${customerDetailsText}\n\nPlease confirm availability and payment details. Thank you!`;
 
       const whatsappUrl = `https://wa.me/2349164504134?text=${encodeURIComponent(orderMessage)}`;
       window.open(whatsappUrl, '_blank');
@@ -2816,7 +2811,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   <span>Download Receipt</span>
                 </button>
               ` : ''}
-              <a href="https://wa.me/2349164504134?text=${encodeURIComponent(`Hello MIMI LUX WIGS, I am inquiring about my request (${code}): ${productTitle}`)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.78rem; color: #b8860b; border-color: #25D366; text-decoration: none;">
+              <a href="https://wa.me/2349164504134?text=${encodeURIComponent(`Hello Networth Integreaterd services LTD, I am inquiring about my request (${code}): ${productTitle}`)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.78rem; color: #b8860b; border-color: #25D366; text-decoration: none;">
                 ${window.renderIcon('whatsapp')}
                 <span>WhatsApp Support</span>
               </a>
@@ -2881,7 +2876,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const activeUser = getActiveUser();
     const isLoggedIn = !!(activeUser && (activeUser.id || activeUser.whatsapp_number));
-    const fullName = isLoggedIn ? [activeUser.first_name, activeUser.last_name].filter(Boolean).join(' ') || activeUser.name || 'Valued Customer' : 'Welcome to MIMI LUX WIGS';
+    const fullName = isLoggedIn ? [activeUser.first_name, activeUser.last_name].filter(Boolean).join(' ') || activeUser.name || 'Valued Customer' : 'Welcome to Networth Integrated';
     const avatarInitial = isLoggedIn ? (activeUser.first_name ? activeUser.first_name.charAt(0).toUpperCase() : (activeUser.name ? activeUser.name.charAt(0).toUpperCase() : 'U')) : '';
     const phone = isLoggedIn ? (activeUser.whatsapp_number || activeUser.phone || '') : '';
     const email = isLoggedIn ? (activeUser.email || '') : '';
@@ -2998,7 +2993,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </span>
         </a>
 
-        <a href="https://wa.me/2349164504134?text=Hello%20MIMI%20LUX%20WIGS%2C%20I%20am%20inquiring%20about%20my%20account" target="_blank" rel="noopener" class="account-support-btn">
+        <a href="https://wa.me/2349164504134?text=Hello%20Networth%20Integreaterd%20services%20LTD%2C%20I%20am%20inquiring%20about%20my%20account" target="_blank" rel="noopener" class="account-support-btn">
           <div class="support-left">
             <span style="color: #25D366;">${window.renderIcon('whatsapp')}</span>
             <span>WhatsApp Business Desk (+234 916 450 4134)</span>
@@ -3034,7 +3029,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         <p style="font-size: 0.82rem; color: #4b5563; line-height: 1.5; margin-bottom: 12px;">
-          <strong>MIMI LUX WIGS</strong> is an indigenous Nigerian enterprise fully registered under the Corporate Affairs Commission (CAC).
+          <strong>Networth Integreaterd services LTD</strong> is an indigenous Nigerian enterprise fully registered under the Corporate Affairs Commission (CAC).
         </p>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-bottom: 14px;">
@@ -3046,8 +3041,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           <div style="background: #f9fbf9; border: 1px solid #e2ece5; border-radius: 8px; padding: 10px 12px; font-size: 0.8rem;">
             <div style="color: #6b7280; font-size: 0.72rem; text-transform: uppercase; font-weight: 700;">Executive Leadership</div>
-            <strong style="color: #111111;">Shodimu Mariam</strong>
-            <div style="color: #4b5563; margin-top: 2px;">Managing Director</div>
+            <strong style="color: #111111;">Networth Integrated Services LTD</strong>
+            <div style="color: #4b5563; margin-top: 2px;">Corporate Desk</div>
           </div>
 
           <div style="background: #f9fbf9; border: 1px solid #e2ece5; border-radius: 8px; padding: 10px 12px; font-size: 0.8rem;">
@@ -3064,11 +3059,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         <div class="account-corp-actions">
-          <a href="https://victoriv2.github.io/mimi-lux-wig/" target="_blank" rel="noopener" class="btn btn-secondary btn-sm account-corp-btn">
+          <a href="https://victoriv2.github.io/Networth-Integreaterd-services-LTD/" target="_blank" rel="noopener" class="btn btn-secondary btn-sm account-corp-btn">
             <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px; flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             <span>Visit Corporate Website</span>
           </a>
-          <a href="https://wa.me/2349164504134?text=Hello%20MIMI%20LUX%20WIGS%2C%20I%20would%20like%20to%20submit%20a%20formal%20corporate%20RFQ%20%2F%20Inquiry" target="_blank" rel="noopener" class="btn btn-secondary btn-sm account-corp-btn">
+          <a href="https://wa.me/2349164504134?text=Hello%20Networth%20Integreaterd%20services%20LTD%2C%20I%20would%20like%20to%20submit%20a%20formal%20corporate%20RFQ%20%2F%20Inquiry" target="_blank" rel="noopener" class="btn btn-secondary btn-sm account-corp-btn">
             <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px; flex-shrink: 0;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             <span>Send Formal RFQ / Inquiry</span>
           </a>
@@ -3116,7 +3111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     container.querySelector('#accountLogoutBtn')?.addEventListener('click', () => {
       window.CustomModal.confirm({
         title: 'Confirm Logout',
-        message: 'Are you sure you want to log out of your MIMI LUX WIGS account?',
+        message: 'Are you sure you want to log out of your Networth Integreaterd services LTD account?',
         confirmText: 'Log Out',
         onConfirm: () => {
           window.SupabaseService.logoutUser();
@@ -3186,7 +3181,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
 
           <p style="font-size: 0.78rem; color: #5a6e62; margin: 0; flex-shrink: 0; line-height: 1.4;">
-            Official receipts carry MIMI LUX WIGS brand details, shop contact info, and retrieval codes for instant tracking.
+            Official receipts carry Networth Integreaterd services LTD brand details, shop contact info, and retrieval codes for instant tracking.
           </p>
 
           <div style="padding-top: 10px; border-top: 1px solid #e5e5e5; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
@@ -3390,7 +3385,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Instantly activate target tab (from hash or saved session) before data fetching
   const validTabs = ['shop', 'home', 'requests', 'cart', 'account'];
   const hash = (window.location.hash || '').replace('#', '').toLowerCase();
-  const savedTab = sessionStorage.getItem('mimi_current_tab') || sessionStorage.getItem('mimiluxwigs_current_tab') || sessionStorage.getItem('nkem_current_tab');
+  const savedTab = sessionStorage.getItem('networth_current_tab');
   const initialTab = validTabs.includes(hash) ? hash : (validTabs.includes(savedTab) ? savedTab : 'shop');
   window.switchAppTab(initialTab);
 

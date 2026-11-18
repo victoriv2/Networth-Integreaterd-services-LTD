@@ -40,7 +40,7 @@ window.ReceiptGenerator = {
       ctx.fillRect(46, 59, 160, 80);
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 24px sans-serif';
-      ctx.fillText('MIMI LUX WIGS', 52, 108);
+      ctx.fillText('Networth Integrated', 52, 108);
     }
 
     // Shop Title & Subtitle
@@ -64,7 +64,7 @@ window.ReceiptGenerator = {
 
     ctx.fillStyle = '#111111';
     ctx.font = 'bold 30px sans-serif';
-    ctx.fillText('MIMI LUX WIGS', 230, 68);
+    ctx.fillText('Networth Integreaterd services LTD', 230, 68);
 
     ctx.fillStyle = '#c59b27';
     ctx.font = 'bold 14px sans-serif';
@@ -76,7 +76,7 @@ window.ReceiptGenerator = {
 
     ctx.fillStyle = '#5a6e62';
     ctx.font = '12px sans-serif';
-    ctx.fillText('Base: Felele, Lagos, Nigeria', 230, 134);
+    ctx.fillText('Base: Lagos, Nigeria', 230, 134);
 
     ctx.fillStyle = '#5a6e62';
     ctx.font = '12px sans-serif';
@@ -136,12 +136,12 @@ window.ReceiptGenerator = {
     ctx.fillStyle = '#7d9285';
     ctx.font = '12px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('(C) 2026 MIMI LUX WIGS - Luxury Hair - Premium Quality - For You - CAC Registered', w / 2, 735);
+    ctx.fillText('(C) 2026 Networth Integreaterd services LTD - Multi-Category Services - Premium Quality - For You - CAC Registered', w / 2, 735);
 
     // Trigger download
     const dataUrl = canvas.toDataURL('image/png');
     const link = document.createElement('a');
-    link.download = `mimi-lux-wigs-order-${order.id || Date.now()}.png`;
+    link.download = `networth-order-${order.id || Date.now()}.png`;
     link.href = dataUrl;
     link.click();
   },
@@ -199,7 +199,7 @@ window.handleOrderBubbleClick = function(cardOrTarget, orderId, msgId, isAdmin =
       try {
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
-          if (key && (key.startsWith('mimiluxwigs_user_chats_') || key.startsWith('nkem_user_chats_'))) {
+          if (key && (key.startsWith('networth_user_chats_') || key.startsWith('nkem_user_chats_'))) {
             const raw = localStorage.getItem(key);
             if (raw && (raw.toLowerCase().includes(cleanId) || raw.includes('[ORDER_CARD]:::'))) {
               const list = JSON.parse(raw);
@@ -439,12 +439,10 @@ window.openChatOrderDetailsModal = function(orderData, isAdmin = false) {
       }
     }
   };
-  window.addEventListener('mimiluxwigs_order_status_updated', statusListener);
-  window.addEventListener('nkem_order_status_updated', statusListener);
+  window.addEventListener('networth_order_status_updated', statusListener);
 
   const closeModal = () => {
-    window.removeEventListener('mimiluxwigs_order_status_updated', statusListener);
-    window.removeEventListener('nkem_order_status_updated', statusListener);
+    window.removeEventListener('networth_order_status_updated', statusListener);
     if (modalOverlay.parentNode) modalOverlay.parentNode.removeChild(modalOverlay);
   };
 

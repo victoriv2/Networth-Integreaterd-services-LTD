@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIMI LUX WIGS - CORE DESIGN SYSTEM
+   Networth Integreaterd services LTD - CORE DESIGN SYSTEM
    STRICT RULES:
    1. Zero Emojis (SVG icons only)
    2. Zero Shadows (box-shadow: none !important, text-shadow: none !important)
@@ -13,7 +13,7 @@
    ========================================================================== */
 
 :root {
-  /* MIMI LUX WIGS - White, Black & Gold Luxury Palette */
+  /* Networth Integreaterd services LTD - White, Black & Gold Luxury Palette */
   --bg-main: #ffffff;
   --bg-surface: #ffffff;
   --bg-surface-elevated: #ffffff;
@@ -3502,7 +3502,7 @@ body.chat-body {
   touch-action: pan-y !important;
 }
 
-/* 1. Original Top Header Bar (Emerald Green with MIMI LUX WIGS Logo & Store Button) */
+/* 1. Original Top Header Bar (Emerald Green with Networth Integreaterd services LTD Logo & Store Button) */
 body.chat-body .header-bar {
   position: fixed !important;
   top: 0 !important;
@@ -5038,7 +5038,7 @@ body.admin-body .admin-customer-search-clear:active {
 }
 
 /* ==========================================================================
-   NEW MIMI LUX WIGS UI - EMERALD & MINT MOCKUP DESIGN SYSTEM
+   NEW Networth Integreaterd services LTD UI - EMERALD & MINT MOCKUP DESIGN SYSTEM
    ========================================================================== */
 
 /* ---------------- 1. STOREFRONT HEADER BAR (DARK EMERALD GREEN) ---------------- */

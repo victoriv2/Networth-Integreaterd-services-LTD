@@ -1,6 +1,6 @@
-# MIMI LUX WIGS
+# Networth Integreaterd services LTD
 
-A luxury multi-category e-commerce and retail platform featuring real-time Supabase cloud synchronization, interactive customer live chat, admin dashboard with product and order management, dynamic receipts, and high-performance search and filtering.
+An enterprise multi-category e-commerce and retail platform featuring real-time Supabase cloud synchronization, interactive customer live chat, admin dashboard with product and order management, dynamic receipts, and high-performance search and filtering.
 
 ## Features
 - **Public Storefront (`index.html`)**: Product catalog, multi-category browsing, real-time search, cart management, instant checkout, and customer order tracking.

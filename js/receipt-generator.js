@@ -76,11 +76,11 @@ window.ReceiptGenerator = {
 
     ctx.fillStyle = '#5a6e62';
     ctx.font = '12px sans-serif';
-    ctx.fillText('Base: Lagos, Nigeria', 230, 134);
+    ctx.fillText('Base: #18 geodetic road rummumasi, Port Harcourt, Rivers State', 230, 134);
 
     ctx.fillStyle = '#5a6e62';
     ctx.font = '12px sans-serif';
-    ctx.fillText('WhatsApp: +234 916 450 4134  |  Tel: +234 916 450 4134', 230, 154);
+    ctx.fillText('WhatsApp & Tel: +234 802 210 8780  |  Anthony Ikechukwu Okafor', 230, 154);
 
     // Order Details Section
     let curY = 216;

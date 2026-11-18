@@ -2225,13 +2225,13 @@ window.SupabaseService = {
         // Master admin record doesn't exist yet, seed it directly in Supabase
         const defaultAdmin = {
           id: 'usr-admin-master',
-          first_name: 'Networth',
-          last_name: 'Integrated Services LTD',
-          whatsapp_number: 'admin',
+          first_name: 'Anthony',
+          last_name: 'Ikechukwu Okafor',
+          whatsapp_number: '08022108780',
           email: 'admin@networthintegrated.com',
-          state: 'Lagos',
-          lga: 'Felele',
-          address: 'Lagos, Nigeria',
+          state: 'Rivers State',
+          lga: 'Port Harcourt',
+          address: '#18 geodetic road rummumasi, Port Harcourt, Rivers State, Nigeria',
           password_hash: 'admin123',
           created_at: new Date().toISOString()
         };

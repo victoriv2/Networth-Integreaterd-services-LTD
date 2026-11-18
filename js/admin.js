@@ -2405,7 +2405,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           order_code: orderId,
           user_id: ord.user_id,
           user_name: 'Networth Support',
-          user_whatsapp: '09164504134',
+          user_whatsapp: '08022108780',
           sender: 'admin',
           message: `Order #${orderId.toUpperCase()} status update: Your order request for "${ord.product_title}" is now ${statusLabels[newStatus] || newStatus}`,
           image_url: null,
@@ -2703,7 +2703,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <span>Download Receipt</span>
                   </button>
                 ` : ''}
-                <a href="https://wa.me/${custPhone || '2349164504134'}?text=${encodeURIComponent(`Hello, regarding order (${code}): ${productTitle}`)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.78rem; color: #b8860b; border-color: #25D366; text-decoration: none;">
+                <a href="https://wa.me/${custPhone || '2348022108780'}?text=${encodeURIComponent(`Hello, regarding order (${code}): ${productTitle}`)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.78rem; color: #b8860b; border-color: #25D366; text-decoration: none;">
                   ${window.renderIcon ? window.renderIcon('whatsapp') : '<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>'}
                   <span>WhatsApp ${custPhone ? 'Customer' : 'Support'}</span>
                 </a>
@@ -3736,8 +3736,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         rawUser === 'admin' ||
         rawUser === 'admin@networthintegrated.com' ||
         rawUser === creds.username.toLowerCase() ||
-        cleanPhone === '09164504134' ||
-        cleanPhone === '08142414888'
+        cleanPhone === '08022108780' || cleanPhone === '2348022108780' || cleanPhone === '8022108780' ||
+        cleanPhone === '08022108780'
       );
       const isMatchPass = (pass === creds.password || pass === 'admin123');
 

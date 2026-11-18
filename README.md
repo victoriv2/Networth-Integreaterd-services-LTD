@@ -27,3 +27,10 @@ Then navigate to:
 - Storefront: `http://localhost:8080/index.html`
 - Admin Console: `http://localhost:8080/admin.html`
 - Live Chat: `http://localhost:8080/chat.html`
+
+## Corporate Information & Contact
+- **Company Name**: Networth Integreaterd services LTD
+- **Executive Leadership**: Anthony Ikechukwu Okafor
+- **Direct Phone & WhatsApp**: [+2348022108780](tel:+2348022108780) / [WhatsApp](https://wa.me/2348022108780)
+- **Corporate Address**: #18 geodetic road rummumasi, Port Harcourt, Rivers State, Nigeria
+- **Statutory Authority**: Corporate Affairs Commission (CAC) Registered

@@ -76,11 +76,11 @@ window.ReceiptGenerator = {
 
     ctx.fillStyle = '#5a6e62';
     ctx.font = '12px sans-serif';
-    ctx.fillText('Base: No. 29, Nkemba St, Off Abak Road, Uyo, Akwa Ibom State, Nigeria', 230, 134);
+    ctx.fillText('Base: Felele, Lagos, Nigeria', 230, 134);
 
     ctx.fillStyle = '#5a6e62';
     ctx.font = '12px sans-serif';
-    ctx.fillText('WhatsApp: +234 903 193 2413  |  Tel: +234 903 193 2413', 230, 154);
+    ctx.fillText('WhatsApp: +234 916 450 4134  |  Tel: +234 916 450 4134', 230, 154);
 
     // Order Details Section
     let curY = 216;

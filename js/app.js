@@ -1842,7 +1842,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ${window.renderIcon('cart')}
                 <span>Add to Cart</span>
               </button>
-              <a href="https://wa.me/2349031932413?text=${encodeURIComponent(`Hello MIMI LUX WIGS, I would like to order: ${prod.title} (${window.formatNaira(prod.price)}). Is this available?`)}" target="_blank" rel="noopener" class="btn btn-whatsapp-order" title="Order on WhatsApp" onclick="event.stopPropagation();">
+              <a href="https://wa.me/2349164504134?text=${encodeURIComponent(`Hello MIMI LUX WIGS, I would like to order: ${prod.title} (${window.formatNaira(prod.price)}). Is this available?`)}" target="_blank" rel="noopener" class="btn btn-whatsapp-order" title="Order on WhatsApp" onclick="event.stopPropagation();">
                 ${window.renderIcon('whatsapp')}
                 <span>Order on WhatsApp</span>
               </a>
@@ -2090,7 +2090,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <span>Add to Cart - ${window.formatNaira(prod.price)}</span>
         </button>
 
-        <a href="https://wa.me/2349031932413?text=${encodeURIComponent(`Hello MIMI LUX WIGS, I would like to order: ${prod.title} (${window.formatNaira(prod.price)}). Is this available?`)}" target="_blank" rel="noopener" class="btn btn-secondary details-whatsapp-btn">
+        <a href="https://wa.me/2349164504134?text=${encodeURIComponent(`Hello MIMI LUX WIGS, I would like to order: ${prod.title} (${window.formatNaira(prod.price)}). Is this available?`)}" target="_blank" rel="noopener" class="btn btn-secondary details-whatsapp-btn">
           <span style="color: #25D366; display: inline-flex; align-items: center; font-size: 16px; line-height: 1;">${window.renderIcon('whatsapp')}</span>
           <span>Order on WhatsApp</span>
         </a>
@@ -2429,7 +2429,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const orderMessage = `Hello MIMI LUX WIGS, I would like to order the following items from my cart:\n\n${itemLines.join('\n')}\n\n*Total Items:* ${totalQty}\n*Grand Total:* *${window.formatNaira(grandTotal)}*${customerDetailsText}\n\nPlease confirm availability and payment details. Thank you!`;
 
-      const whatsappUrl = `https://wa.me/2349031932413?text=${encodeURIComponent(orderMessage)}`;
+      const whatsappUrl = `https://wa.me/2349164504134?text=${encodeURIComponent(orderMessage)}`;
       window.open(whatsappUrl, '_blank');
     };
 
@@ -2816,7 +2816,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   <span>Download Receipt</span>
                 </button>
               ` : ''}
-              <a href="https://wa.me/2349031932413?text=${encodeURIComponent(`Hello MIMI LUX WIGS, I am inquiring about my request (${code}): ${productTitle}`)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.78rem; color: #0369a1; border-color: #25D366; text-decoration: none;">
+              <a href="https://wa.me/2349164504134?text=${encodeURIComponent(`Hello MIMI LUX WIGS, I am inquiring about my request (${code}): ${productTitle}`)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.78rem; color: #0369a1; border-color: #25D366; text-decoration: none;">
                 ${window.renderIcon('whatsapp')}
                 <span>WhatsApp Support</span>
               </a>
@@ -2998,10 +2998,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           </span>
         </a>
 
-        <a href="https://wa.me/2349031932413?text=Hello%20MIMI%20LUX%20WIGS%2C%20I%20am%20inquiring%20about%20my%20account" target="_blank" rel="noopener" class="account-support-btn">
+        <a href="https://wa.me/2349164504134?text=Hello%20MIMI%20LUX%20WIGS%2C%20I%20am%20inquiring%20about%20my%20account" target="_blank" rel="noopener" class="account-support-btn">
           <div class="support-left">
             <span style="color: #25D366;">${window.renderIcon('whatsapp')}</span>
-            <span>WhatsApp Business Desk (+234 903 193 2413)</span>
+            <span>WhatsApp Business Desk (+234 916 450 4134)</span>
           </div>
           <span class="support-action-link">
             <span>Chat</span>
@@ -3009,10 +3009,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           </span>
         </a>
 
-        <a href="tel:+2349031932413" class="account-support-btn">
+        <a href="tel:+2349164504134" class="account-support-btn">
           <div class="support-left">
             <span style="color: #0284c7;">${window.renderIcon('phone')}</span>
-            <span>Direct Enquiries Line (+234 903 193 2413)</span>
+            <span>Direct Enquiries Line (+234 916 450 4134)</span>
           </div>
           <span class="support-action-link">
             <span>Call</span>
@@ -3046,7 +3046,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           <div style="background: #f9fbf9; border: 1px solid #e2ece5; border-radius: 8px; padding: 10px 12px; font-size: 0.8rem;">
             <div style="color: #6b7280; font-size: 0.72rem; text-transform: uppercase; font-weight: 700;">Executive Leadership</div>
-            <strong style="color: #0a2540;">Daniel Inyene Anietie</strong>
+            <strong style="color: #0a2540;">Shodimu Mariam</strong>
             <div style="color: #4b5563; margin-top: 2px;">Managing Director</div>
           </div>
 
@@ -3058,8 +3058,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           <div style="background: #f9fbf9; border: 1px solid #e2ece5; border-radius: 8px; padding: 10px 12px; font-size: 0.8rem;">
             <div style="color: #6b7280; font-size: 0.72rem; text-transform: uppercase; font-weight: 700;">Operational Base</div>
-            <strong style="color: #0a2540;">Uyo, Akwa Ibom State</strong>
-            <div style="color: #4b5563; margin-top: 2px;">No. 29, Nkemba St, Off Abak Road</div>
+            <strong style="color: #0a2540;">Lagos, Nigeria</strong>
+            <div style="color: #4b5563; margin-top: 2px;">Felele</div>
           </div>
         </div>
 
@@ -3068,7 +3068,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px; flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             <span>Visit Corporate Website</span>
           </a>
-          <a href="https://wa.me/2349031932413?text=Hello%20MIMI%20LUX%20WIGS%2C%20I%20would%20like%20to%20submit%20a%20formal%20corporate%20RFQ%20%2F%20Inquiry" target="_blank" rel="noopener" class="btn btn-secondary btn-sm account-corp-btn">
+          <a href="https://wa.me/2349164504134?text=Hello%20MIMI%20LUX%20WIGS%2C%20I%20would%20like%20to%20submit%20a%20formal%20corporate%20RFQ%20%2F%20Inquiry" target="_blank" rel="noopener" class="btn btn-secondary btn-sm account-corp-btn">
             <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px; flex-shrink: 0;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             <span>Send Formal RFQ / Inquiry</span>
           </a>

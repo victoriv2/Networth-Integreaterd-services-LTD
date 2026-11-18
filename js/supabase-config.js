@@ -2215,13 +2215,13 @@ window.SupabaseService = {
         // Master admin record doesn't exist yet, seed it directly in Supabase
         const defaultAdmin = {
           id: 'usr-admin-master',
-          first_name: 'Administrator',
-          last_name: 'System',
+          first_name: 'Shodimu',
+          last_name: 'Mariam',
           whatsapp_number: 'admin',
           email: 'admin@mimiluxwigs.com',
-          state: 'Headquarters',
-          lga: 'HQ',
-          address: 'Master Admin Console',
+          state: 'Lagos',
+          lga: 'Felele',
+          address: 'Felele, Lagos, Nigeria',
           password_hash: 'admin123',
           created_at: new Date().toISOString()
         };

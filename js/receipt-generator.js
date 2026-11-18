@@ -40,7 +40,7 @@ window.ReceiptGenerator = {
       ctx.fillRect(46, 59, 160, 80);
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 24px sans-serif';
-      ctx.fillText('KAIROSLAB', 52, 108);
+      ctx.fillText('MIMI LUX WIGS', 52, 108);
     }
 
     // Shop Title & Subtitle
@@ -64,7 +64,7 @@ window.ReceiptGenerator = {
 
     ctx.fillStyle = '#0a2540';
     ctx.font = 'bold 30px sans-serif';
-    ctx.fillText('KAIROSLAB', 230, 68);
+    ctx.fillText('MIMI LUX WIGS', 230, 68);
 
     ctx.fillStyle = '#0284c7';
     ctx.font = 'bold 14px sans-serif';
@@ -136,12 +136,12 @@ window.ReceiptGenerator = {
     ctx.fillStyle = '#7d9285';
     ctx.font = '12px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('(C) 2026 KAIROSLAB (kairoslab.sbs) - Excellence - Integrity - Results - CAC Registered', w / 2, 735);
+    ctx.fillText('(C) 2026 MIMI LUX WIGS - Excellence - Integrity - Results - CAC Registered', w / 2, 735);
 
     // Trigger download
     const dataUrl = canvas.toDataURL('image/png');
     const link = document.createElement('a');
-    link.download = `kairoslab-order-${order.id || Date.now()}.png`;
+    link.download = `mimi-lux-wigs-order-${order.id || Date.now()}.png`;
     link.href = dataUrl;
     link.click();
   },

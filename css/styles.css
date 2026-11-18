@@ -1,5 +1,5 @@
 /* ==========================================================================
-   KAIROSLAB - CORE DESIGN SYSTEM
+   MIMI LUX WIGS - CORE DESIGN SYSTEM
    STRICT RULES:
    1. Zero Emojis (SVG icons only)
    2. Zero Shadows (box-shadow: none !important, text-shadow: none !important)
@@ -13,7 +13,7 @@
    ========================================================================== */
 
 :root {
-  /* Kairoslab Corporate Blue & Azure Palette (Exact Match to Logo) */
+  /* MIMI LUX WIGS Corporate Blue & Azure Palette (Exact Match to Logo) */
   --bg-main: #f0f6fc;
   --bg-surface: #ffffff;
   --bg-surface-elevated: #ffffff;
@@ -3498,7 +3498,7 @@ body.chat-body {
   touch-action: pan-y !important;
 }
 
-/* 1. Original Top Header Bar (Emerald Green with KAIROSLAB Logo & Store Button) */
+/* 1. Original Top Header Bar (Emerald Green with MIMI LUX WIGS Logo & Store Button) */
 body.chat-body .header-bar {
   position: fixed !important;
   top: 0 !important;
@@ -5032,7 +5032,7 @@ body.admin-body .admin-customer-search-clear:active {
 }
 
 /* ==========================================================================
-   NEW KAIROSLAB UI - EMERALD & MINT MOCKUP DESIGN SYSTEM
+   NEW MIMI LUX WIGS UI - EMERALD & MINT MOCKUP DESIGN SYSTEM
    ========================================================================== */
 
 /* ---------------- 1. STOREFRONT HEADER BAR (DARK EMERALD GREEN) ---------------- */

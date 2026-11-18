@@ -726,7 +726,7 @@ window.SupabaseService = {
       {
         id: 'banner-1',
         image_url: 'assets/images/logo.jpeg',
-        caption: 'Welcome to Kairoslab — Quality Products & Express Nationwide Delivery',
+        caption: 'Welcome to MIMI LUX WIGS — Quality Products & Express Nationwide Delivery',
         sort_order: 1
       },
       {
@@ -926,7 +926,7 @@ window.SupabaseService = {
           }
         }
         localStorage.setItem(RESET_FLAG, 'true');
-        console.log('Kairoslab: User activity clean-slate completed.');
+        console.log('MIMI LUX WIGS: User activity clean-slate completed.');
       } catch (e) {}
     }
   },

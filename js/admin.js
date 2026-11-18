@@ -1,4 +1,4 @@
-// Admin Control Center - Kairoslab
+// Admin Control Center - MIMI LUX WIGS
 // Enforces Zero Emojis, Zero Shadows/Glows/Gradients, Zero Hover Lifts, Custom Pickers & Modals, <=100KB Image Compression
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -1878,7 +1878,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
       } else {
         window.CustomModal.toast({
-          message: `Product ${isNew ? 'created and published' : 'updated'} live on kairoslab.sbs!`,
+          message: `Product ${isNew ? 'created and published' : 'updated'} live on MIMI LUX WIGS!`,
           type: 'success',
           duration: 5000
         });
@@ -2393,7 +2393,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         pending: 'under review',
         approved: 'APPROVED! Let\'s arrange delivery details and confirm dispatch.',
         shipping: 'IN TRANSIT / SHIPPING. Your order is on the way!',
-        delivered: 'DELIVERED. Thank you for choosing Kairoslab!',
+        delivered: 'DELIVERED. Thank you for choosing MIMI LUX WIGS!',
         declined: 'DECLINED by store admin.',
         cancelled: 'CANCELLED.'
       };
@@ -2404,7 +2404,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           id: `msg-status-${orderId}-${Date.now()}`,
           order_code: orderId,
           user_id: ord.user_id,
-          user_name: 'Kairoslab Support',
+          user_name: 'MIMI LUX WIGS Support',
           user_whatsapp: '09031932413',
           sender: 'admin',
           message: `Order #${orderId.toUpperCase()} status update: Your order request for "${ord.product_title}" is now ${statusLabels[newStatus] || newStatus}`,
@@ -2541,7 +2541,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (customer) {
         chatInput.placeholder = `Type message to ${customer.userName}...`;
       } else {
-        chatInput.placeholder = 'Type message as Kairoslab Support...';
+        chatInput.placeholder = 'Type message as MIMI LUX WIGS Support...';
       }
       setTimeout(() => chatInput.focus(), 150);
     }
@@ -2781,7 +2781,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="chat-msg-row ${isOutgoing ? 'outgoing' : 'incoming'}" data-msg-id="${msg.id}">
           <div class="chat-bubble">
             <div style="font-size: 0.68rem; font-weight: 700; color: ${isOutgoing ? '#ffffff' : '#0a2540'}; margin-bottom: 2px;">
-              ${isOutgoing ? 'Kairoslab Support (You)' : (adminState.activeChatCustomer ? window.CustomModal.escape(adminState.activeChatCustomer.userName) : 'Customer')}
+              ${isOutgoing ? 'MIMI LUX WIGS Support (You)' : (adminState.activeChatCustomer ? window.CustomModal.escape(adminState.activeChatCustomer.userName) : 'Customer')}
             </div>
             ${msg.message ? `<div class="chat-text-content">${window.CustomModal.escape(msg.message)}</div>` : ''}
             ${msg.image_url ? `
@@ -3279,7 +3279,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function loadUsersManager() {
     try {
       const users = await window.SupabaseService.getUsers();
-      adminState.users = (users || []).filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@kairoslab.sbs' && u.whatsapp_number !== 'admin');
+      adminState.users = (users || []).filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@kairoslab.sbs' && u.email !== 'admin@mimiluxwigs.com' && u.whatsapp_number !== 'admin');
       updateAdminUsersBadge();
       renderUsersManager(adminUserSearchInput ? adminUserSearchInput.value : '');
     } catch (err) {
@@ -3735,6 +3735,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isMatchUser = (
         rawUser === 'admin' ||
         rawUser === 'admin@kairoslab.sbs' ||
+        rawUser === 'admin@mimiluxwigs.com' ||
         rawUser === creds.username.toLowerCase() ||
         cleanPhone === '09031932413' ||
         cleanPhone === '08142414888'

@@ -19,14 +19,14 @@ window.ReceiptGenerator = {
     ctx.fillRect(0, 0, w, h);
 
     // Outer Crisp Green Border
-    ctx.strokeStyle = '#0284c7';
+    ctx.strokeStyle = '#d4af37';
     ctx.lineWidth = 3;
     ctx.strokeRect(16, 16, w - 32, h - 32);
 
     // Inner Header Card (Mint Tint)
     ctx.fillStyle = '#f8fbfe';
     ctx.fillRect(24, 24, w - 48, 150);
-    ctx.strokeStyle = '#d0e4f7';
+    ctx.strokeStyle = '#ebd8af';
     ctx.lineWidth = 1;
     ctx.strokeRect(24, 24, w - 48, 150);
 
@@ -36,7 +36,7 @@ window.ReceiptGenerator = {
       ctx.drawImage(logoImg, 46, 59, 160, 80);
     } catch (e) {
       // Fallback logo box
-      ctx.fillStyle = '#0284c7';
+      ctx.fillStyle = '#c59b27';
       ctx.fillRect(46, 59, 160, 80);
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 24px sans-serif';
@@ -62,15 +62,15 @@ window.ReceiptGenerator = {
     const productTitle = order.product_title || 'Italian Bespoke Wool Tailored Suit';
     const placedDate = order.created_at ? new Date(order.created_at).toLocaleString() : new Date().toLocaleString();
 
-    ctx.fillStyle = '#0a2540';
+    ctx.fillStyle = '#111111';
     ctx.font = 'bold 30px sans-serif';
     ctx.fillText('MIMI LUX WIGS', 230, 68);
 
-    ctx.fillStyle = '#0284c7';
+    ctx.fillStyle = '#c59b27';
     ctx.font = 'bold 14px sans-serif';
     ctx.fillText(`OFFICIAL ORDER RECEIPT - #${ordRef}`, 230, 94);
 
-    ctx.fillStyle = '#2d5a3f';
+    ctx.fillStyle = '#b8860b';
     ctx.font = 'bold 12px sans-serif';
     ctx.fillText('RC: Fully Registered Indigenous Nigerian Enterprise (CAC)', 230, 114);
 
@@ -84,12 +84,12 @@ window.ReceiptGenerator = {
 
     // Order Details Section
     let curY = 216;
-    ctx.fillStyle = '#0a2540';
+    ctx.fillStyle = '#111111';
     ctx.font = 'bold 20px sans-serif';
     ctx.fillText('ORDER SPECIFICATIONS', 40, curY);
 
     curY += 15;
-    ctx.strokeStyle = '#d0e4f7';
+    ctx.strokeStyle = '#ebd8af';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(40, curY);
@@ -119,7 +119,7 @@ window.ReceiptGenerator = {
     drawRow('Order Placed At:', placedDate);
 
     // Subtle divider above footer
-    ctx.strokeStyle = '#d0e4f7';
+    ctx.strokeStyle = '#ebd8af';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(40, 670);
@@ -127,7 +127,7 @@ window.ReceiptGenerator = {
     ctx.stroke();
 
     // Verification Note
-    ctx.fillStyle = '#0284c7';
+    ctx.fillStyle = '#c59b27';
     ctx.font = '600 13px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('Verified Order - Track order status directly via customer account or live chat.', w / 2, 700);
@@ -372,7 +372,7 @@ window.openChatOrderDetailsModal = function(orderData, isAdmin = false) {
           <img src="${coverImg}" alt="${window.CustomModal ? window.CustomModal.escape(fullOrder.product_title || 'Product') : 'Product'}" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-color); flex-shrink: 0; cursor: pointer;" id="chatOrderModalThumb" title="Click to view full image" />
           <div style="flex: 1; min-width: 0;">
             <h4 style="margin: 0 0 4px 0; font-size: var(--font-sm); color: var(--text-main); font-weight: 700;">${window.CustomModal ? window.CustomModal.escape(fullOrder.product_title || 'Product Item') : fullOrder.product_title}</h4>
-            <div style="font-size: var(--font-md); font-weight: 700; color: #0284c7;">${window.formatNaira ? window.formatNaira(fullOrder.product_price || 0) : '?' + (fullOrder.product_price || 0)}</div>
+            <div style="font-size: var(--font-md); font-weight: 700; color: #c59b27;">${window.formatNaira ? window.formatNaira(fullOrder.product_price || 0) : '?' + (fullOrder.product_price || 0)}</div>
             <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; font-family: monospace;">Order ID: <strong>${String(orderId || '').toUpperCase()}</strong></div>
           </div>
         </div>

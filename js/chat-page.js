@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!chatUserBadge || !currentUser) return;
     chatUserBadge.innerHTML = `
       <span style="font-size: var(--font-xs); color: #5a6e62;">Signed in as:</span>
-      <span style="font-size: var(--font-xs); font-weight: 700; color: #0a2540; background: #e0f0fd; padding: 3px 8px; border: 1px solid #c2e8d0; border-radius: 999px;">
+      <span style="font-size: var(--font-xs); font-weight: 700; color: #111111; background: #fdf8ee; padding: 3px 8px; border: 1px solid #ebd8af; border-radius: 999px;">
         ${window.CustomModal.escape(currentUser.first_name)} (${window.CustomModal.escape(currentUser.whatsapp_number)})
       </span>
     `;
@@ -281,10 +281,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               </div>
 
               <div style="display: flex; gap: 12px; align-items: flex-start; margin: 10px 0;">
-                <img src="${prodImg}" alt="${window.CustomModal.escape(productTitle)}" class="request-card-thumb" style="width: 72px; height: 72px; min-width: 72px; border-radius: 8px; object-fit: cover; border: 1.5px solid #d0e4f7; background: #ffffff;" onerror="this.src='assets/images/logo.png';" />
+                <img src="${prodImg}" alt="${window.CustomModal.escape(productTitle)}" class="request-card-thumb" style="width: 72px; height: 72px; min-width: 72px; border-radius: 8px; object-fit: cover; border: 1.5px solid #e5e5e5; background: #ffffff;" onerror="this.src='assets/images/logo.png';" />
                 <div class="request-card-info" style="flex: 1; min-width: 0; margin: 0; padding: 0; border: none;">
                   <div><strong>Code:</strong> <span class="request-code-badge">${code}</span></div>
-                  <div><strong>Amount:</strong> <span style="color: #0284c7; font-weight: 800;">${amountDisplay}</span></div>
+                  <div><strong>Amount:</strong> <span style="color: #c59b27; font-weight: 800;">${amountDisplay}</span></div>
                   ${cleanAddr ? `<div><strong>Destination:</strong> ${window.CustomModal.escape(cleanAddr)}</div>` : ''}
                 </div>
               </div>
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <span>Download Receipt</span>
                   </button>
                 ` : ''}
-                <a href="https://wa.me/2349164504134?text=${encodeURIComponent(`Hello MIMI LUX WIGS, I am inquiring about my request (${code}): ${productTitle}`)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.78rem; color: #0369a1; border-color: #25D366; text-decoration: none;">
+                <a href="https://wa.me/2349164504134?text=${encodeURIComponent(`Hello MIMI LUX WIGS, I am inquiring about my request (${code}): ${productTitle}`)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.78rem; color: #b8860b; border-color: #25D366; text-decoration: none;">
                   ${window.renderIcon ? window.renderIcon('whatsapp') : '<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>'}
                   <span>WhatsApp Support</span>
                 </a>
@@ -566,7 +566,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     overlay.innerHTML = `
       <div class="c-modal-box" style="max-width: 360px; padding: 20px;">
         <div class="c-modal-header" style="padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
-          <h3 class="c-modal-title" style="font-size: 1.05rem; font-weight: 800; color: #0a2540;">Message Options</h3>
+          <h3 class="c-modal-title" style="font-size: 1.05rem; font-weight: 800; color: #111111;">Message Options</h3>
           <button class="c-modal-close-btn" type="button" aria-label="Close" id="msgActionsCloseBtn">
             ${window.renderIcon('close')}
           </button>

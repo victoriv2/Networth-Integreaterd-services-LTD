@@ -2,7 +2,7 @@
 window.SupabaseService = {
   URL: 'https://uecbkutbefqmicgyqtro.supabase.co',
   ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlY2JrdXRiZWZxbWljZ3lxdHJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ5Njc1MjEsImV4cCI6MjExMDU0MzUyMX0.seAwgJ9DIcHthrnPK0xisnxMark6nIfQfKPR8V5d8pg',
-  CATALOG_VERSION: 'v2026_mimilux_swap_2',
+  CATALOG_VERSION: 'v2026_mimilux_factory_reset_3',
   CACHE_TTL_MS: 12 * 60 * 60 * 1000, // 12-hour Cache TTL
 
   initCacheCheck() {
@@ -91,53 +91,15 @@ window.SupabaseService = {
 
   // ---------------- CATEGORIES ----------------
   _getDefaultCategories() {
-    return [
-      { id: "cat-groceries",   name: "Groceries & Provisions",       sort_order: 1,  image_url: "assets/categories/cat-groceries.png" },
-      { id: "cat-phones",      name: "Phones",                       sort_order: 2,  image_url: "assets/categories/cat-phones.png" },
-      { id: "cat-computers",   name: "Computers",                    sort_order: 3,  image_url: "assets/categories/cat-computers.png" },
-      { id: "cat-electronics", name: "Electronics",                  sort_order: 4,  image_url: "assets/categories/cat-electronics.png" },
-      { id: "cat-properties",  name: "Properties",                   sort_order: 5,  image_url: "assets/categories/cat-properties.png" },
-      { id: "cat-land",        name: "Land",                         sort_order: 6,  image_url: "assets/categories/cat-land.png" },
-      { id: "cat-vehicles",    name: "Vehicles",                     sort_order: 7,  image_url: "assets/categories/cat-vehicles.png" },
-      { id: "cat-tricycles",   name: "Tricycles & Transportation",   sort_order: 8,  image_url: "assets/categories/cat-tricycles.png" },
-      { id: "cat-inverters",   name: "Solar & Inverters",            sort_order: 9,  image_url: "assets/categories/cat-inverters.png" },
-      { id: "cat-building",    name: "Building Materials",           sort_order: 10, image_url: "assets/categories/cat-building.png" },
-      { id: "cat-services",    name: "Services & Cleaning",          sort_order: 11, image_url: "assets/categories/cat-services.png" },
-      { id: "cat-clothes",     name: "Fashion (Clothes & Shoes)",    sort_order: 12, image_url: "assets/categories/cat-clothes.png" },
-      { id: "cat-beauty",      name: "Beauty & Ladies Attire",       sort_order: 13, image_url: "assets/categories/cat-beauty.png" },
-      { id: "cat-babies",      name: "Babies & Kids",                sort_order: 14, image_url: "assets/categories/cat-babies.png" },
-      { id: "cat-agriculture", name: "Agricultural & Farming",       sort_order: 15, image_url: "assets/categories/cat-agriculture.png" },
-      { id: "cat-animals",     name: "Animals & Pets",               sort_order: 16, image_url: "assets/categories/cat-animals.png" },
-      { id: "cat-jobs",        name: "Jobs",                         sort_order: 17, image_url: "assets/categories/cat-jobs.png" },
-      { id: "cat-handbags",    name: "Hand Bags & Luggage",          sort_order: 18, image_url: "assets/categories/cat-handbags.png" },
-      { id: "cat-baggage",     name: "Equipment & Oil Tools",        sort_order: 19, image_url: "assets/categories/cat-equipment.png" }
-    ];
+    return [];
   },
 
   getLocalCategories() {
     try {
-      const local = (localStorage.getItem('mimiluxwigs_local_categories') || localStorage.getItem('nkem_local_categories'));
-      let list = local ? JSON.parse(local) : this._getDefaultCategories();
-      if (Array.isArray(list)) {
-        list = list.filter(c => c && c.id !== 'cat-suits');
-        const clothes = list.find(c => c && c.id === 'cat-clothes');
-        if (clothes && clothes.name !== 'Fashion (Clothes & Shoes)') {
-          clothes.name = 'Fashion (Clothes & Shoes)';
-        }
-        const inverters = list.find(c => c && c.id === 'cat-inverters');
-        if (inverters && inverters.name !== 'Solar & Inverters') {
-          inverters.name = 'Solar & Inverters';
-        }
-        const equipment = list.find(c => c && c.id === 'cat-baggage');
-        if (equipment && equipment.name !== 'Equipment & Oil Tools') {
-          equipment.name = 'Equipment & Oil Tools';
-          equipment.image_url = 'assets/categories/cat-equipment.png';
-        }
-      }
-      return list;
-    } catch (e) {
-      return this._getDefaultCategories();
-    }
+      const local = localStorage.getItem('mimiluxwigs_local_categories');
+      if (local) return JSON.parse(local);
+    } catch (e) {}
+    return [];
   },
 
   async getCategories() {
@@ -720,22 +682,14 @@ window.SupabaseService = {
   getLocalBanners() {
     try {
       const local = localStorage.getItem('mimiluxwigs_local_banners');
-      if (local) return JSON.parse(local);
-    } catch (e) {}
-    return [
-      {
-        id: 'banner-1',
-        image_url: 'assets/images/logo.jpeg',
-        caption: 'Welcome to MIMI LUX WIGS — Quality Products & Express Nationwide Delivery',
-        sort_order: 1
-      },
-      {
-        id: 'banner-2',
-        image_url: 'assets/images/logo.jpeg',
-        caption: 'Direct Orders & Customer Inquiries via WhatsApp & Online Portal',
-        sort_order: 2
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed)) {
+          return parsed.filter(b => b.id !== 'config-banner-global');
+        }
       }
-    ];
+    } catch (e) {}
+    return [];
   },
 
   // ---------------- BANNERS (16:9 PROMOTIONAL SLIDER) ----------------
@@ -906,10 +860,10 @@ window.SupabaseService = {
   },
 
   // Factory reset clean slate initialization:
-  // Purges all previous user activities (cart, test orders, and chat records) from client localStorage
-  // Leaves user accounts, master admin credentials, and catalog products completely intact.
+  // Purges all previous user activities, demo products, categories, banners, carts, orders, and chats from client localStorage
+  // Preserves master admin credentials
   initCleanSlateOnce() {
-    const RESET_FLAG = 'mimiluxwigs_activity_reset_2026_11_16_b';
+    const RESET_FLAG = 'mimiluxwigs_factory_reset_2026_11_18_v3';
     if (!localStorage.getItem(RESET_FLAG)) {
       try {
         localStorage.removeItem('mimiluxwigs_cart');
@@ -919,14 +873,39 @@ window.SupabaseService = {
         localStorage.removeItem('mimiluxwigs_order_statuses');
         localStorage.removeItem('mimiluxwigs_active_chat_user');
         localStorage.removeItem('mimiluxwigs_sourcing_requests');
+        localStorage.removeItem('mimiluxwigs_local_products');
+        localStorage.removeItem('mimiluxwigs_local_categories');
+        localStorage.removeItem('mimiluxwigs_local_banners');
+        localStorage.removeItem('mimiluxwigs_catalog_ver');
+        localStorage.removeItem('mimiluxwigs_catalog_cache_timestamp');
+        localStorage.removeItem('mimiluxwigs_hidden_product_ids');
+
+        // Retain only admin in local users
+        const storedUsers = localStorage.getItem('mimiluxwigs_users');
+        if (storedUsers) {
+          try {
+            const users = JSON.parse(storedUsers);
+            if (Array.isArray(users)) {
+              const masterOnly = users.filter(u => u.role === 'admin' || u.id === 'usr-admin-master');
+              localStorage.setItem('mimiluxwigs_users', JSON.stringify(masterOnly));
+            }
+          } catch (_) {}
+        }
+
         for (let i = localStorage.length - 1; i >= 0; i--) {
           const k = localStorage.key(i);
-          if (k && (k.startsWith('mimiluxwigs_user_chats_') || k.startsWith('mimiluxwigs_chats_') || k.startsWith('mimiluxwigs_cached_') || k.startsWith('mimiluxwigs_request_'))) {
+          if (k && (
+            k.startsWith('mimiluxwigs_user_chats_') ||
+            k.startsWith('mimiluxwigs_chats_') ||
+            k.startsWith('mimiluxwigs_cached_') ||
+            k.startsWith('mimiluxwigs_request_') ||
+            k.startsWith('nkem_')
+          )) {
             localStorage.removeItem(k);
           }
         }
         localStorage.setItem(RESET_FLAG, 'true');
-        console.log('MIMI LUX WIGS: User activity clean-slate completed.');
+        console.log('MIMI LUX WIGS: Factory reset clean-slate completed.');
       } catch (e) {}
     }
   },

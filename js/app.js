@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     isLoadingMore: false,
     productCardTimers: {},
     currentView: localStorage.getItem('mimiluxwigs_product_view') || localStorage.getItem('nkem_product_view') || 'grid',
-    cart: []
+    cart: [],
+    catalogLoaded: false
   };
 
   // Helper to get active authenticated user across all storage/service keys
@@ -514,13 +515,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         })
       ]);
 
-      if (categories && categories.length > 0) state.categories = categories;
-
-      if (Array.isArray(products) && products.length > 0) {
+      if (Array.isArray(categories)) {
+        state.categories = categories;
+      }
+      if (Array.isArray(products)) {
         state.products = products
           .filter(p => !window.SupabaseService?.isProductHidden?.(p))
           .sort(compareProductsNewest);
       }
+      state.catalogLoaded = true;
       state.hasMoreProducts = Array.isArray(products) && products.length === state.pageSize;
 
       renderHomeCategories();
@@ -1088,7 +1091,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const categories = state.categories || [];
     if (categories.length === 0) {
-      grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #5a6e62;">Loading categories...</div>';
+      if (!state.catalogLoaded) {
+        grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #5a6e62;">Loading categories...</div>';
+      } else {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 36px 16px; background: #ffffff; border-radius: 14px; border: 1.5px dashed #d0e4f7;">
+            <div style="font-weight: 800; color: #0a2540; font-size: 1rem; margin-bottom: 4px;">No categories available</div>
+            <div style="font-size: 0.84rem; color: #64748b;">Categories added in the Admin Portal will appear here.</div>
+          </div>`;
+      }
       return;
     }
 

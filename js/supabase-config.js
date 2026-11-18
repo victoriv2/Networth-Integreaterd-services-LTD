@@ -7,20 +7,20 @@ window.SupabaseService = {
 
   initCacheCheck() {
     try {
-      const storedVer = localStorage.getItem('kairoslab_catalog_version') || localStorage.getItem('kairoslab_catalog_version');
-      const storedTime = parseInt(localStorage.getItem('kairoslab_catalog_timestamp') || localStorage.getItem('kairoslab_catalog_timestamp') || '0', 10);
+      const storedVer = localStorage.getItem('mimiluxwigs_catalog_version') || localStorage.getItem('mimiluxwigs_catalog_version');
+      const storedTime = parseInt(localStorage.getItem('mimiluxwigs_catalog_timestamp') || localStorage.getItem('mimiluxwigs_catalog_timestamp') || '0', 10);
       const now = Date.now();
       const isExpired = !storedTime || (now - storedTime > this.CACHE_TTL_MS);
       const isOutdated = storedVer !== this.CATALOG_VERSION;
 
       if (isOutdated || isExpired) {
         console.log(`[Cache Invalidation] Purging stale local cache (Outdated: ${isOutdated}, Expired: ${isExpired})`);
-        localStorage.removeItem('kairoslab_local_products');
-        localStorage.removeItem('kairoslab_local_products');
-        localStorage.setItem('kairoslab_catalog_version', this.CATALOG_VERSION);
-        localStorage.setItem('kairoslab_catalog_version', this.CATALOG_VERSION);
-        localStorage.setItem('kairoslab_catalog_timestamp', String(now));
-        localStorage.setItem('kairoslab_catalog_timestamp', String(now));
+        localStorage.removeItem('mimiluxwigs_local_products');
+        localStorage.removeItem('mimiluxwigs_local_products');
+        localStorage.setItem('mimiluxwigs_catalog_version', this.CATALOG_VERSION);
+        localStorage.setItem('mimiluxwigs_catalog_version', this.CATALOG_VERSION);
+        localStorage.setItem('mimiluxwigs_catalog_timestamp', String(now));
+        localStorage.setItem('mimiluxwigs_catalog_timestamp', String(now));
       }
     } catch (e) {
       console.warn('Cache check notice:', e);
@@ -116,7 +116,7 @@ window.SupabaseService = {
 
   getLocalCategories() {
     try {
-      const local = (localStorage.getItem('kairoslab_local_categories') || localStorage.getItem('nkem_local_categories'));
+      const local = (localStorage.getItem('mimiluxwigs_local_categories') || localStorage.getItem('nkem_local_categories'));
       let list = local ? JSON.parse(local) : this._getDefaultCategories();
       if (Array.isArray(list)) {
         list = list.filter(c => c && c.id !== 'cat-suits');
@@ -141,7 +141,7 @@ window.SupabaseService = {
   },
 
   async getCategories() {
-    const cloud = await this.request('kairoslab_categories?select=*&order=sort_order.asc');
+    const cloud = await this.request('mimiluxwigs_categories?select=*&order=sort_order.asc');
     if (cloud && Array.isArray(cloud) && cloud.length > 0) {
       const filtered = cloud.filter(c => c && c.id !== 'cat-suits');
       const clothes = filtered.find(c => c && c.id === 'cat-clothes');
@@ -157,10 +157,10 @@ window.SupabaseService = {
         equipment.name = 'Equipment & Oil Tools';
         equipment.image_url = 'assets/categories/cat-equipment.png';
       }
-      localStorage.setItem('kairoslab_local_categories', JSON.stringify(filtered));
+      localStorage.setItem('mimiluxwigs_local_categories', JSON.stringify(filtered));
       return filtered;
     }
-    const local = (localStorage.getItem('kairoslab_local_categories') || localStorage.getItem('nkem_local_categories'));
+    const local = (localStorage.getItem('mimiluxwigs_local_categories') || localStorage.getItem('nkem_local_categories'));
     return this.getLocalCategories();
   },
 
@@ -172,7 +172,7 @@ window.SupabaseService = {
     } else {
       localList.push(cat);
     }
-    localStorage.setItem('kairoslab_local_categories', JSON.stringify(localList));
+    localStorage.setItem('mimiluxwigs_local_categories', JSON.stringify(localList));
 
     // Sync to Supabase with generous 30s mobile timeout
     let cloudRes = null;
@@ -183,7 +183,7 @@ window.SupabaseService = {
         image_url: cat.image_url || cat.image || null,
         sort_order: typeof cat.sort_order === 'number' ? cat.sort_order : 0
       };
-      cloudRes = await this.request('kairoslab_categories', {
+      cloudRes = await this.request('mimiluxwigs_categories', {
         method: 'POST',
         headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify(payload),
@@ -198,9 +198,9 @@ window.SupabaseService = {
   async deleteCategory(id) {
     let localList = await this.getCategories();
     localList = localList.filter(c => c.id !== id);
-    localStorage.setItem('kairoslab_local_categories', JSON.stringify(localList));
+    localStorage.setItem('mimiluxwigs_local_categories', JSON.stringify(localList));
 
-    await this.request(`kairoslab_categories?id=eq.${encodeURIComponent(id)}`, {
+    await this.request(`mimiluxwigs_categories?id=eq.${encodeURIComponent(id)}`, {
       method: 'DELETE'
     });
     return true;
@@ -216,7 +216,7 @@ window.SupabaseService = {
     if (p.is_hidden === true || p.is_hidden === 'true') return true;
     if (p.hidden === true || p.hidden === 'true') return true;
     try {
-      const raw = localStorage.getItem('kairoslab_hidden_product_ids');
+      const raw = localStorage.getItem('mimiluxwigs_hidden_product_ids');
       if (raw) {
         const arr = JSON.parse(raw);
         if (Array.isArray(arr) && arr.includes(p.id)) return true;
@@ -229,7 +229,7 @@ window.SupabaseService = {
     if (!productId) return;
     try {
       let arr = [];
-      const raw = localStorage.getItem('kairoslab_hidden_product_ids');
+      const raw = localStorage.getItem('mimiluxwigs_hidden_product_ids');
       if (raw) arr = JSON.parse(raw) || [];
       const set = new Set(arr);
       if (isHidden) {
@@ -237,7 +237,7 @@ window.SupabaseService = {
       } else {
         set.delete(productId);
       }
-      localStorage.setItem('kairoslab_hidden_product_ids', JSON.stringify(Array.from(set)));
+      localStorage.setItem('mimiluxwigs_hidden_product_ids', JSON.stringify(Array.from(set)));
     } catch (_) {}
   },
 
@@ -247,7 +247,7 @@ window.SupabaseService = {
         const chunkSize = 50;
         for (let i = 0; i < productIds.length; i += chunkSize) {
           const chunk = productIds.slice(i, i + chunkSize);
-          await this.request(`kairoslab_products?id=in.(${chunk.map(encodeURIComponent).join(',')})`, {
+          await this.request(`mimiluxwigs_products?id=in.(${chunk.map(encodeURIComponent).join(',')})`, {
             method: 'PATCH',
             headers: { 'Prefer': 'return=minimal' },
             body: JSON.stringify({ is_hidden: true, hidden: true })
@@ -255,7 +255,7 @@ window.SupabaseService = {
         }
         productIds.forEach(id => this.setProductHidden(id, true));
       } else {
-        await this.request('kairoslab_products?id=not.is.null', {
+        await this.request('mimiluxwigs_products?id=not.is.null', {
           method: 'PATCH',
           headers: { 'Prefer': 'return=minimal' },
           body: JSON.stringify({ is_hidden: true, hidden: true })
@@ -264,7 +264,7 @@ window.SupabaseService = {
 
       // Update local storage cache
       try {
-        const stored = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
+        const stored = (localStorage.getItem('mimiluxwigs_local_products') || localStorage.getItem('nkem_local_products'));
         if (stored) {
           let list = JSON.parse(stored);
           if (Array.isArray(list)) {
@@ -276,12 +276,12 @@ window.SupabaseService = {
               }
               return p;
             });
-            localStorage.setItem('kairoslab_local_products', JSON.stringify(list));
+            localStorage.setItem('mimiluxwigs_local_products', JSON.stringify(list));
           }
         }
       } catch (_) {}
 
-      window.dispatchEvent(new CustomEvent('kairoslab_products_updated', { detail: { action: 'hide_all', productIds } }));
+      window.dispatchEvent(new CustomEvent('mimiluxwigs_products_updated', { detail: { action: 'hide_all', productIds } }));
       return true;
     } catch (e) {
       console.error('hideAllProducts error:', e);
@@ -295,7 +295,7 @@ window.SupabaseService = {
         const chunkSize = 50;
         for (let i = 0; i < productIds.length; i += chunkSize) {
           const chunk = productIds.slice(i, i + chunkSize);
-          await this.request(`kairoslab_products?id=in.(${chunk.map(encodeURIComponent).join(',')})`, {
+          await this.request(`mimiluxwigs_products?id=in.(${chunk.map(encodeURIComponent).join(',')})`, {
             method: 'PATCH',
             headers: { 'Prefer': 'return=minimal' },
             body: JSON.stringify({ is_hidden: false, hidden: false })
@@ -303,17 +303,17 @@ window.SupabaseService = {
         }
         productIds.forEach(id => this.setProductHidden(id, false));
       } else {
-        await this.request('kairoslab_products?id=not.is.null', {
+        await this.request('mimiluxwigs_products?id=not.is.null', {
           method: 'PATCH',
           headers: { 'Prefer': 'return=minimal' },
           body: JSON.stringify({ is_hidden: false, hidden: false })
         });
-        localStorage.setItem('kairoslab_hidden_product_ids', '[]');
+        localStorage.setItem('mimiluxwigs_hidden_product_ids', '[]');
       }
 
       // Update local storage cache
       try {
-        const stored = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
+        const stored = (localStorage.getItem('mimiluxwigs_local_products') || localStorage.getItem('nkem_local_products'));
         if (stored) {
           let list = JSON.parse(stored);
           if (Array.isArray(list)) {
@@ -325,12 +325,12 @@ window.SupabaseService = {
               }
               return p;
             });
-            localStorage.setItem('kairoslab_local_products', JSON.stringify(list));
+            localStorage.setItem('mimiluxwigs_local_products', JSON.stringify(list));
           }
         }
       } catch (_) {}
 
-      window.dispatchEvent(new CustomEvent('kairoslab_products_updated', { detail: { action: 'unhide_all', productIds } }));
+      window.dispatchEvent(new CustomEvent('mimiluxwigs_products_updated', { detail: { action: 'unhide_all', productIds } }));
       return true;
     } catch (e) {
       console.error('unhideAllProducts error:', e);
@@ -340,7 +340,7 @@ window.SupabaseService = {
 
   getLocalProducts(includeHidden = false) {
     try {
-      const raw = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
+      const raw = (localStorage.getItem('mimiluxwigs_local_products') || localStorage.getItem('nkem_local_products'));
       if (raw) {
         let parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -405,13 +405,13 @@ window.SupabaseService = {
       queryParts.push(`offset=${offset}`);
     }
 
-    const endpoint = `kairoslab_products?${queryParts.join('&')}`;
+    const endpoint = `mimiluxwigs_products?${queryParts.join('&')}`;
     const cloud = await this.request(endpoint);
 
     if (cloud && Array.isArray(cloud)) {
       try {
         let local = [];
-        const raw = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
+        const raw = (localStorage.getItem('mimiluxwigs_local_products') || localStorage.getItem('nkem_local_products'));
         if (raw) {
           try { local = JSON.parse(raw) || []; } catch (_) { local = []; }
         }
@@ -437,8 +437,8 @@ window.SupabaseService = {
             else local.unshift(p);
           });
         }
-        localStorage.setItem('kairoslab_local_products', JSON.stringify(local));
-        localStorage.setItem('kairoslab_catalog_timestamp', String(Date.now()));
+        localStorage.setItem('mimiluxwigs_local_products', JSON.stringify(local));
+        localStorage.setItem('mimiluxwigs_catalog_timestamp', String(Date.now()));
       } catch (_) {}
       return includeHidden ? cloud : cloud.filter(p => !this.isProductHidden(p));
     }
@@ -446,7 +446,7 @@ window.SupabaseService = {
     // Fallback to local storage
     try {
       let local = [];
-      const raw = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
+      const raw = (localStorage.getItem('mimiluxwigs_local_products') || localStorage.getItem('nkem_local_products'));
       if (raw) local = JSON.parse(raw);
 
       if (!local || local.length === 0) {
@@ -592,12 +592,12 @@ window.SupabaseService = {
 
     queryParts.push(`limit=${limit}`);
 
-    const endpoint = `kairoslab_products?${queryParts.join('&')}`;
+    const endpoint = `mimiluxwigs_products?${queryParts.join('&')}`;
     const cloud = await this.request(endpoint);
 
     if (cloud && Array.isArray(cloud)) {
       try {
-        const raw = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
+        const raw = (localStorage.getItem('mimiluxwigs_local_products') || localStorage.getItem('nkem_local_products'));
         let local = raw ? JSON.parse(raw) : [];
         cloud.forEach(p => {
           if (this.isProductHidden(p)) {
@@ -608,14 +608,14 @@ window.SupabaseService = {
           if (idx >= 0) local[idx] = { ...local[idx], ...p };
           else local.push(p);
         });
-        localStorage.setItem('kairoslab_local_products', JSON.stringify(local));
+        localStorage.setItem('mimiluxwigs_local_products', JSON.stringify(local));
       } catch (_) {}
       return includeHidden ? cloud : cloud.filter(p => !this.isProductHidden(p));
     }
 
     // Fallback: search across all cached products
     try {
-      const raw = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
+      const raw = (localStorage.getItem('mimiluxwigs_local_products') || localStorage.getItem('nkem_local_products'));
       const local = raw ? JSON.parse(raw) : [];
       const qLower = q.toLowerCase();
       return local.filter(p => {
@@ -636,7 +636,7 @@ window.SupabaseService = {
 
     let localList = [];
     try {
-      const stored = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
+      const stored = (localStorage.getItem('mimiluxwigs_local_products') || localStorage.getItem('nkem_local_products'));
       if (stored) localList = JSON.parse(stored);
       if (!Array.isArray(localList)) localList = [];
     } catch (_) {
@@ -658,7 +658,7 @@ window.SupabaseService = {
     } else {
       localList.unshift(cleanProd);
     }
-    localStorage.setItem('kairoslab_local_products', JSON.stringify(localList));
+    localStorage.setItem('mimiluxwigs_local_products', JSON.stringify(localList));
 
     const dbPayload = {
       id: cleanProd.id,
@@ -678,7 +678,7 @@ window.SupabaseService = {
     let cloudRes = null;
     try {
       // Single direct upsert with 45s mobile timeout - handles both new items & updates seamlessly in 1 round trip
-      cloudRes = await this.request('kairoslab_products', {
+      cloudRes = await this.request('mimiluxwigs_products', {
         method: 'POST',
         headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify(dbPayload),
@@ -689,7 +689,7 @@ window.SupabaseService = {
         const updateIdx = localList.findIndex(p => p.id === cleanProd.id);
         if (updateIdx >= 0) {
           localList[updateIdx] = { ...localList[updateIdx], ...returned, is_hidden: isHidden, hidden: isHidden };
-          localStorage.setItem('kairoslab_local_products', JSON.stringify(localList));
+          localStorage.setItem('mimiluxwigs_local_products', JSON.stringify(localList));
         }
       }
     } catch (e) {
@@ -702,14 +702,14 @@ window.SupabaseService = {
   async deleteProduct(id) {
     let localList = [];
     try {
-      const stored = (localStorage.getItem('kairoslab_local_products') || localStorage.getItem('nkem_local_products'));
+      const stored = (localStorage.getItem('mimiluxwigs_local_products') || localStorage.getItem('nkem_local_products'));
       if (stored) localList = JSON.parse(stored);
     } catch (_) {}
 
     localList = localList.filter(p => p.id !== id);
-    localStorage.setItem('kairoslab_local_products', JSON.stringify(localList));
+    localStorage.setItem('mimiluxwigs_local_products', JSON.stringify(localList));
 
-    const cloudRes = await this.request(`kairoslab_products?id=eq.${encodeURIComponent(id)}`, {
+    const cloudRes = await this.request(`mimiluxwigs_products?id=eq.${encodeURIComponent(id)}`, {
       method: 'DELETE',
       timeoutMs: 25000
     });
@@ -719,7 +719,7 @@ window.SupabaseService = {
   // ---------------- BANNERS ----------------
   getLocalBanners() {
     try {
-      const local = localStorage.getItem('kairoslab_local_banners');
+      const local = localStorage.getItem('mimiluxwigs_local_banners');
       if (local) return JSON.parse(local);
     } catch (e) {}
     return [
@@ -741,17 +741,17 @@ window.SupabaseService = {
   // ---------------- BANNERS (16:9 PROMOTIONAL SLIDER) ----------------
   async isBannerGloballyEnabled() {
     try {
-      const cloud = await this.request('kairoslab_banners?id=eq.config-banner-global&select=is_active');
+      const cloud = await this.request('mimiluxwigs_banners?id=eq.config-banner-global&select=is_active');
       if (cloud && cloud.length > 0 && cloud[0].is_active !== undefined) {
         const val = Boolean(cloud[0].is_active);
-        localStorage.setItem('kairoslab_banner_global_enabled', String(val));
+        localStorage.setItem('mimiluxwigs_banner_global_enabled', String(val));
         return val;
       }
-      const local = localStorage.getItem('kairoslab_banner_global_enabled');
+      const local = localStorage.getItem('mimiluxwigs_banner_global_enabled');
       if (local !== null) return local === 'true';
       return true;
     } catch (_) {
-      const local = localStorage.getItem('kairoslab_banner_global_enabled');
+      const local = localStorage.getItem('mimiluxwigs_banner_global_enabled');
       if (local !== null) return local === 'true';
       return true;
     }
@@ -759,9 +759,9 @@ window.SupabaseService = {
 
   async setBannerGlobalVisibility(enabled) {
     const val = Boolean(enabled);
-    localStorage.setItem('kairoslab_banner_global_enabled', String(val));
+    localStorage.setItem('mimiluxwigs_banner_global_enabled', String(val));
     try {
-      await this.request('kairoslab_banners', {
+      await this.request('mimiluxwigs_banners', {
         method: 'POST',
         headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify({
@@ -775,30 +775,30 @@ window.SupabaseService = {
     } catch (e) {
       console.warn('setBannerGlobalVisibility notice:', e);
     }
-    window.dispatchEvent(new CustomEvent('kairoslab_banners_updated', { detail: { enabled: val } }));
+    window.dispatchEvent(new CustomEvent('mimiluxwigs_banners_updated', { detail: { enabled: val } }));
     return val;
   },
 
   async getBanners(includeInactive = false) {
     let list = [];
     try {
-      const cloud = await this.request('kairoslab_banners?select=*&order=sort_order.asc');
+      const cloud = await this.request('mimiluxwigs_banners?select=*&order=sort_order.asc');
       if (cloud && Array.isArray(cloud)) {
         list = cloud;
-        localStorage.setItem('kairoslab_local_banners', JSON.stringify(cloud));
+        localStorage.setItem('mimiluxwigs_local_banners', JSON.stringify(cloud));
       } else {
-        const local = localStorage.getItem('kairoslab_local_banners');
+        const local = localStorage.getItem('mimiluxwigs_local_banners');
         list = local ? JSON.parse(local) : [];
       }
     } catch (_) {
-      const local = localStorage.getItem('kairoslab_local_banners');
+      const local = localStorage.getItem('mimiluxwigs_local_banners');
       list = local ? JSON.parse(local) : [];
     }
 
     // Extract config row if present
     const configRow = list.find(b => b.id === 'config-banner-global');
     if (configRow) {
-      localStorage.setItem('kairoslab_banner_global_enabled', String(Boolean(configRow.is_active)));
+      localStorage.setItem('mimiluxwigs_banner_global_enabled', String(Boolean(configRow.is_active)));
     }
 
     let banners = list.filter(b => b.id !== 'config-banner-global');
@@ -827,11 +827,11 @@ window.SupabaseService = {
     } else {
       localList.push(cleanBanner);
     }
-    localStorage.setItem('kairoslab_local_banners', JSON.stringify(localList));
+    localStorage.setItem('mimiluxwigs_local_banners', JSON.stringify(localList));
 
     let cloudRes = null;
     try {
-      cloudRes = await this.request('kairoslab_banners', {
+      cloudRes = await this.request('mimiluxwigs_banners', {
         method: 'POST',
         headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
         body: JSON.stringify(cleanBanner),
@@ -840,20 +840,20 @@ window.SupabaseService = {
     } catch (e) {
       console.warn('saveBanner cloud notice:', e);
     }
-    window.dispatchEvent(new CustomEvent('kairoslab_banners_updated', { detail: { banner: cleanBanner } }));
+    window.dispatchEvent(new CustomEvent('mimiluxwigs_banners_updated', { detail: { banner: cleanBanner } }));
     return { ...cleanBanner, _cloudSynced: Boolean(cloudRes) };
   },
 
   async deleteBanner(id) {
     let localList = await this.getBanners(true);
     localList = localList.filter(b => b.id !== id);
-    localStorage.setItem('kairoslab_local_banners', JSON.stringify(localList));
+    localStorage.setItem('mimiluxwigs_local_banners', JSON.stringify(localList));
 
-    const cloudRes = await this.request(`kairoslab_banners?id=eq.${encodeURIComponent(id)}`, {
+    const cloudRes = await this.request(`mimiluxwigs_banners?id=eq.${encodeURIComponent(id)}`, {
       method: 'DELETE',
       timeoutMs: 25000
     });
-    window.dispatchEvent(new CustomEvent('kairoslab_banners_updated', { detail: { deletedId: id } }));
+    window.dispatchEvent(new CustomEvent('mimiluxwigs_banners_updated', { detail: { deletedId: id } }));
     return Boolean(cloudRes);
   },
 
@@ -869,12 +869,12 @@ window.SupabaseService = {
     if (!orderId) return 'pending';
     const clean = this.canonicalOrderId(orderId);
     try {
-      const raw = localStorage.getItem('kairoslab_order_statuses');
+      const raw = localStorage.getItem('mimiluxwigs_order_statuses');
       const statuses = raw ? JSON.parse(raw) : {};
       if (statuses && statuses[clean]) return String(statuses[clean]).toLowerCase();
     } catch (e) {}
     try {
-      const local = (localStorage.getItem('kairoslab_local_orders') || localStorage.getItem('nkem_local_orders'));
+      const local = (localStorage.getItem('mimiluxwigs_local_orders') || localStorage.getItem('nkem_local_orders'));
       const list = local ? JSON.parse(local) : [];
       if (Array.isArray(list)) {
         const found = list.find(o => this.canonicalOrderId(o) === clean);
@@ -889,14 +889,14 @@ window.SupabaseService = {
     const clean = this.canonicalOrderId(orderId);
     const s = String(newStatus || 'pending').toLowerCase();
     try {
-      const raw = localStorage.getItem('kairoslab_order_statuses');
+      const raw = localStorage.getItem('mimiluxwigs_order_statuses');
       const statuses = raw ? JSON.parse(raw) : {};
       statuses[clean] = s;
-      localStorage.setItem('kairoslab_order_statuses', JSON.stringify(statuses));
+      localStorage.setItem('mimiluxwigs_order_statuses', JSON.stringify(statuses));
     } catch (e) {}
 
     try {
-      window.dispatchEvent(new CustomEvent('kairoslab_order_status_updated', {
+      window.dispatchEvent(new CustomEvent('mimiluxwigs_order_status_updated', {
         detail: { orderId: clean, status: s }
       }));
       window.dispatchEvent(new CustomEvent('nkem_order_status_updated', {
@@ -909,19 +909,19 @@ window.SupabaseService = {
   // Purges all previous user activities (cart, test orders, and chat records) from client localStorage
   // Leaves user accounts, master admin credentials, and catalog products completely intact.
   initCleanSlateOnce() {
-    const RESET_FLAG = 'kairoslab_activity_reset_2026_11_16_b';
+    const RESET_FLAG = 'mimiluxwigs_activity_reset_2026_11_16_b';
     if (!localStorage.getItem(RESET_FLAG)) {
       try {
-        localStorage.removeItem('kairoslab_cart');
+        localStorage.removeItem('mimiluxwigs_cart');
         localStorage.removeItem('nkem_cart');
-        localStorage.removeItem('kairoslab_cart_timestamp');
-        localStorage.removeItem('kairoslab_local_orders');
-        localStorage.removeItem('kairoslab_order_statuses');
-        localStorage.removeItem('kairoslab_active_chat_user');
-        localStorage.removeItem('kairoslab_sourcing_requests');
+        localStorage.removeItem('mimiluxwigs_cart_timestamp');
+        localStorage.removeItem('mimiluxwigs_local_orders');
+        localStorage.removeItem('mimiluxwigs_order_statuses');
+        localStorage.removeItem('mimiluxwigs_active_chat_user');
+        localStorage.removeItem('mimiluxwigs_sourcing_requests');
         for (let i = localStorage.length - 1; i >= 0; i--) {
           const k = localStorage.key(i);
-          if (k && (k.startsWith('kairoslab_user_chats_') || k.startsWith('kairoslab_chats_') || k.startsWith('kairoslab_cached_') || k.startsWith('kairoslab_request_'))) {
+          if (k && (k.startsWith('mimiluxwigs_user_chats_') || k.startsWith('mimiluxwigs_chats_') || k.startsWith('mimiluxwigs_cached_') || k.startsWith('mimiluxwigs_request_'))) {
             localStorage.removeItem(k);
           }
         }
@@ -933,23 +933,23 @@ window.SupabaseService = {
 
   async clearOrdersAndChats() {
     try {
-      localStorage.removeItem('kairoslab_local_orders');
-      localStorage.removeItem('kairoslab_order_statuses');
-      localStorage.removeItem('kairoslab_active_chat_user');
+      localStorage.removeItem('mimiluxwigs_local_orders');
+      localStorage.removeItem('mimiluxwigs_order_statuses');
+      localStorage.removeItem('mimiluxwigs_active_chat_user');
       for (let i = localStorage.length - 1; i >= 0; i--) {
         const k = localStorage.key(i);
-        if (k && (k.startsWith('kairoslab_user_chats_') || k.startsWith('kairoslab_chats_'))) {
+        if (k && (k.startsWith('mimiluxwigs_user_chats_') || k.startsWith('mimiluxwigs_chats_'))) {
           localStorage.removeItem(k);
         }
       }
       try {
         await Promise.all([
-          this.request('kairoslab_orders?id=not.is.null', { method: 'DELETE' }),
-          this.request('kairoslab_chats?id=not.is.null', { method: 'DELETE' })
+          this.request('mimiluxwigs_orders?id=not.is.null', { method: 'DELETE' }),
+          this.request('mimiluxwigs_chats?id=not.is.null', { method: 'DELETE' })
         ]);
       } catch (cloudErr) {}
       try {
-        window.dispatchEvent(new CustomEvent('kairoslab_order_status_updated', { detail: {} }));
+        window.dispatchEvent(new CustomEvent('mimiluxwigs_order_status_updated', { detail: {} }));
       } catch (e) {}
       return true;
     } catch (e) {
@@ -1062,8 +1062,8 @@ window.SupabaseService = {
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && key.startsWith('kairoslab_user_chats_')) {
-          const userIdFromKey = key.replace('kairoslab_user_chats_', '');
+        if (key && key.startsWith('mimiluxwigs_user_chats_')) {
+          const userIdFromKey = key.replace('mimiluxwigs_user_chats_', '');
           const raw = localStorage.getItem(key);
           if (raw && (raw.includes('[ORDER_CARD]::') || raw.includes('"order_data"'))) {
             const msgs = JSON.parse(raw);
@@ -1090,7 +1090,7 @@ window.SupabaseService = {
       }
     } catch (e) {}
 
-    // Load kairoslab_local_orders and merge cleanly
+    // Load mimiluxwigs_local_orders and merge cleanly
     const finalOrdersMap = new Map();
 
     // 1. Add all chat orders
@@ -1100,7 +1100,7 @@ window.SupabaseService = {
 
     // 2. Add and merge all stored local orders (never exclude genuine customer orders!)
     try {
-      const local = (localStorage.getItem('kairoslab_local_orders') || localStorage.getItem('nkem_local_orders'));
+      const local = (localStorage.getItem('mimiluxwigs_local_orders') || localStorage.getItem('nkem_local_orders'));
       const list = local ? JSON.parse(local) : [];
       if (Array.isArray(list)) {
         list.forEach(item => {
@@ -1127,7 +1127,7 @@ window.SupabaseService = {
 
     const deduplicated = Array.from(finalOrdersMap.values()).filter(o => !this.isSourcingOrder(o));
     try {
-      localStorage.setItem('kairoslab_local_orders', JSON.stringify(deduplicated));
+      localStorage.setItem('mimiluxwigs_local_orders', JSON.stringify(deduplicated));
     } catch (e) {}
 
     return deduplicated;
@@ -1218,7 +1218,7 @@ window.SupabaseService = {
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), timeoutMs);
-      const cloud = await this.request('kairoslab_orders?select=*&order=created_at.desc', { signal: controller.signal, timeoutMs });
+      const cloud = await this.request('mimiluxwigs_orders?select=*&order=created_at.desc', { signal: controller.signal, timeoutMs });
       clearTimeout(timer);
       if (cloud && Array.isArray(cloud)) {
         const orderMap = new Map();
@@ -1250,7 +1250,7 @@ window.SupabaseService = {
         });
 
         const merged = Array.from(orderMap.values());
-        localStorage.setItem('kairoslab_local_orders', JSON.stringify(merged));
+        localStorage.setItem('mimiluxwigs_local_orders', JSON.stringify(merged));
         return merged;
       }
     } catch (err) {
@@ -1262,7 +1262,7 @@ window.SupabaseService = {
   async getOrderByCode(code) {
     if (!code) return null;
     const cleanCode = code.trim().toUpperCase();
-    const cloud = await this.request(`kairoslab_orders?retrieval_code=eq.${encodeURIComponent(cleanCode)}&select=*`);
+    const cloud = await this.request(`mimiluxwigs_orders?retrieval_code=eq.${encodeURIComponent(cleanCode)}&select=*`);
     if (cloud && Array.isArray(cloud) && cloud.length > 0) {
       return cloud[0];
     }
@@ -1291,7 +1291,7 @@ window.SupabaseService = {
 
       const cloudOrdersMap = new Map();
       const filterParam = orClauses.length > 1 ? `or=(${orClauses.join(',')})` : orClauses[0];
-      const res = await this.request(`kairoslab_orders?${filterParam}&order=created_at.desc`, { timeoutMs });
+      const res = await this.request(`mimiluxwigs_orders?${filterParam}&order=created_at.desc`, { timeoutMs });
 
       if (Array.isArray(res)) {
         res.forEach(o => {
@@ -1312,7 +1312,7 @@ window.SupabaseService = {
             allLocal.unshift(cloudOrd);
           }
         });
-        localStorage.setItem('kairoslab_local_orders', JSON.stringify(allLocal));
+        localStorage.setItem('mimiluxwigs_local_orders', JSON.stringify(allLocal));
 
         // Return combined list for this user directly!
         const mergedUserOrders = new Map();
@@ -1342,7 +1342,7 @@ window.SupabaseService = {
     const cid = this.canonicalOrderId(norm);
     localList = localList.filter(o => this.canonicalOrderId(o) !== cid);
     localList.unshift(norm);
-    localStorage.setItem('kairoslab_local_orders', JSON.stringify(localList));
+    localStorage.setItem('mimiluxwigs_local_orders', JSON.stringify(localList));
 
     const payload = {
       id: norm.id,
@@ -1363,7 +1363,7 @@ window.SupabaseService = {
     };
 
     try {
-      await this.request('kairoslab_orders', {
+      await this.request('mimiluxwigs_orders', {
         method: 'POST',
         headers: { 'Prefer': 'return=representation' },
         body: JSON.stringify(payload)
@@ -1390,13 +1390,13 @@ window.SupabaseService = {
       }
       return o;
     });
-    localStorage.setItem('kairoslab_local_orders', JSON.stringify(localList));
+    localStorage.setItem('mimiluxwigs_local_orders', JSON.stringify(localList));
 
     // Also update any chat messages stored in localStorage containing this order
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && key.startsWith('kairoslab_user_chats_')) {
+        if (key && key.startsWith('mimiluxwigs_user_chats_')) {
           const raw = localStorage.getItem(key);
           if (raw && (raw.toLowerCase().includes(bareCleanId) || raw.includes('[ORDER_CARD]:::'))) {
             let msgs = JSON.parse(raw);
@@ -1423,7 +1423,7 @@ window.SupabaseService = {
     } catch (e) {}
 
     try {
-      await this.request(`kairoslab_orders?id=eq.${encodeURIComponent(orderId)}`, {
+      await this.request(`mimiluxwigs_orders?id=eq.${encodeURIComponent(orderId)}`, {
         method: 'PATCH',
         headers: { 'Prefer': 'return=representation' },
         body: JSON.stringify({ status: newStatus })
@@ -1450,12 +1450,12 @@ window.SupabaseService = {
   async getChatMessages(orderCode) {
     if (!orderCode) return [];
     const cleanCode = orderCode.trim().toUpperCase();
-    const cloud = await this.request(`kairoslab_chats?order_code=eq.${encodeURIComponent(cleanCode)}&order=created_at.asc`);
+    const cloud = await this.request(`mimiluxwigs_chats?order_code=eq.${encodeURIComponent(cleanCode)}&order=created_at.asc`);
     if (cloud && Array.isArray(cloud)) {
-      localStorage.setItem(`kairoslab_chats_${cleanCode}`, JSON.stringify(cloud));
+      localStorage.setItem(`mimiluxwigs_chats_${cleanCode}`, JSON.stringify(cloud));
       return cloud;
     }
-    const local = localStorage.getItem(`kairoslab_chats_${cleanCode}`);
+    const local = localStorage.getItem(`mimiluxwigs_chats_${cleanCode}`);
     return local ? JSON.parse(local) : [];
   },
 
@@ -1463,9 +1463,9 @@ window.SupabaseService = {
     const cleanCode = msg.order_code.trim().toUpperCase();
     let localList = await this.getChatMessages(cleanCode);
     localList.push(msg);
-    localStorage.setItem(`kairoslab_chats_${cleanCode}`, JSON.stringify(localList));
+    localStorage.setItem(`mimiluxwigs_chats_${cleanCode}`, JSON.stringify(localList));
 
-    await this.request('kairoslab_chats', {
+    await this.request('mimiluxwigs_chats', {
       method: 'POST',
       headers: { 'Prefer': 'return=representation' },
       body: JSON.stringify(msg)
@@ -1497,7 +1497,7 @@ window.SupabaseService = {
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && (key.startsWith('kairoslab_chats_') || key.startsWith('kairoslab_user_chats_'))) {
+        if (key && (key.startsWith('mimiluxwigs_chats_') || key.startsWith('mimiluxwigs_user_chats_'))) {
           try {
             let list = JSON.parse(localStorage.getItem(key) || '[]');
             if (Array.isArray(list)) {
@@ -1513,7 +1513,7 @@ window.SupabaseService = {
     } catch (_) {}
 
     try {
-      const res = await this.request(`kairoslab_chats?id=eq.${encodeURIComponent(id)}`, {
+      const res = await this.request(`mimiluxwigs_chats?id=eq.${encodeURIComponent(id)}`, {
         method: 'PATCH',
         headers: {
           'Prefer': 'return=representation',
@@ -1525,7 +1525,7 @@ window.SupabaseService = {
     } catch (e) {
       console.warn('Update chat message with updated_at notice, retrying fallback:', e);
       delete patchBody.updated_at;
-      return await this.request(`kairoslab_chats?id=eq.${encodeURIComponent(id)}`, {
+      return await this.request(`mimiluxwigs_chats?id=eq.${encodeURIComponent(id)}`, {
         method: 'PATCH',
         headers: {
           'Prefer': 'return=representation',
@@ -1538,7 +1538,7 @@ window.SupabaseService = {
 
   // ---------------- USER AUTHENTICATION & MANAGEMENT ----------------
   getCurrentUser() {
-    const u = (localStorage.getItem('kairoslab_current_user') || localStorage.getItem('nkem_current_user'));
+    const u = (localStorage.getItem('mimiluxwigs_current_user') || localStorage.getItem('nkem_current_user'));
     return u ? JSON.parse(u) : null;
   },
 
@@ -1548,12 +1548,12 @@ window.SupabaseService = {
 
   setCurrentUser(user) {
     if (!user) {
-      localStorage.removeItem('kairoslab_current_user');
+      localStorage.removeItem('mimiluxwigs_current_user');
     } else {
-      localStorage.setItem('kairoslab_current_user', JSON.stringify(user));
+      localStorage.setItem('mimiluxwigs_current_user', JSON.stringify(user));
     }
     // Dispatch custom event for reactive UI updates across pages
-    window.dispatchEvent(new CustomEvent('kairoslab_auth_changed', { detail: { user } }));
+    window.dispatchEvent(new CustomEvent('mimiluxwigs_auth_changed', { detail: { user } }));
     window.dispatchEvent(new CustomEvent('nkem_auth_changed', { detail: { user } }));
   },
 
@@ -1566,15 +1566,15 @@ window.SupabaseService = {
   },
 
   async getUsers() {
-    const cloud = await this.request('kairoslab_users?select=*&order=created_at.desc');
+    const cloud = await this.request('mimiluxwigs_users?select=*&order=created_at.desc');
     if (cloud && Array.isArray(cloud)) {
-      const customers = cloud.filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@kairoslab.sbs' && u.whatsapp_number !== 'admin');
-      localStorage.setItem('kairoslab_local_users', JSON.stringify(customers));
+      const customers = cloud.filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@mimiluxwigs.com' && u.whatsapp_number !== 'admin');
+      localStorage.setItem('mimiluxwigs_local_users', JSON.stringify(customers));
       return customers;
     }
-    const local = (localStorage.getItem('kairoslab_local_users') || localStorage.getItem('nkem_local_users'));
+    const local = (localStorage.getItem('mimiluxwigs_local_users') || localStorage.getItem('nkem_local_users'));
     const parsed = local ? JSON.parse(local) : [];
-    return parsed.filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@kairoslab.sbs' && u.whatsapp_number !== 'admin');
+    return parsed.filter(u => u.id !== 'usr-admin-master' && u.email !== 'admin@mimiluxwigs.com' && u.whatsapp_number !== 'admin');
   },
 
   async signUpUser(userData) {
@@ -1603,7 +1603,7 @@ window.SupabaseService = {
 
     let initialCart = [];
     try {
-      const rawCart = localStorage.getItem('kairoslab_cart') || localStorage.getItem('nkem_cart');
+      const rawCart = localStorage.getItem('mimiluxwigs_cart') || localStorage.getItem('nkem_cart');
       if (rawCart) {
         const parsed = JSON.parse(rawCart);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -1629,15 +1629,15 @@ window.SupabaseService = {
     };
 
     try {
-      localStorage.setItem('kairoslab_cart_timestamp', String(Date.now()));
+      localStorage.setItem('mimiluxwigs_cart_timestamp', String(Date.now()));
     } catch (_) {}
 
     // Save locally
     users.unshift(newUser);
-    localStorage.setItem('kairoslab_local_users', JSON.stringify(users));
+    localStorage.setItem('mimiluxwigs_local_users', JSON.stringify(users));
 
     // Save to Supabase
-    await this.request('kairoslab_users', {
+    await this.request('mimiluxwigs_users', {
       method: 'POST',
       headers: { 'Prefer': 'return=representation' },
       body: JSON.stringify(newUser)
@@ -1680,7 +1680,7 @@ window.SupabaseService = {
     };
 
     users[idx] = updatedUser;
-    localStorage.setItem('kairoslab_local_users', JSON.stringify(users));
+    localStorage.setItem('mimiluxwigs_local_users', JSON.stringify(users));
 
     const current = this.getCurrentUser();
     if (current && current.id === userId) {
@@ -1697,7 +1697,7 @@ window.SupabaseService = {
       address: updatedUser.address
     };
 
-    await this.request(`kairoslab_users?id=eq.${encodeURIComponent(userId)}`, {
+    await this.request(`mimiluxwigs_users?id=eq.${encodeURIComponent(userId)}`, {
       method: 'PATCH',
       headers: { 'Prefer': 'return=representation' },
       body: JSON.stringify(dbPayload)
@@ -1734,7 +1734,7 @@ window.SupabaseService = {
     }
 
     users[idx].password_hash = cleanNew;
-    localStorage.setItem('kairoslab_local_users', JSON.stringify(users));
+    localStorage.setItem('mimiluxwigs_local_users', JSON.stringify(users));
 
     const current = this.getCurrentUser();
     if (current && current.id === userId) {
@@ -1742,7 +1742,7 @@ window.SupabaseService = {
       this.setCurrentUser(current);
     }
 
-    await this.request(`kairoslab_users?id=eq.${encodeURIComponent(userId)}`, {
+    await this.request(`mimiluxwigs_users?id=eq.${encodeURIComponent(userId)}`, {
       method: 'PATCH',
       headers: { 'Prefer': 'return=representation' },
       body: JSON.stringify({ password_hash: cleanNew })
@@ -1775,12 +1775,12 @@ window.SupabaseService = {
 
     // Pre-populate local cart immediately from user's account before UI renders if local is empty
     try {
-      const rawLocalCart = localStorage.getItem('kairoslab_cart') || localStorage.getItem('nkem_cart');
+      const rawLocalCart = localStorage.getItem('mimiluxwigs_cart') || localStorage.getItem('nkem_cart');
       const localCart = rawLocalCart ? JSON.parse(rawLocalCart) : [];
       if ((!Array.isArray(localCart) || localCart.length === 0) && Array.isArray(user.cart) && user.cart.length > 0) {
-        localStorage.setItem('kairoslab_cart', JSON.stringify(user.cart));
+        localStorage.setItem('mimiluxwigs_cart', JSON.stringify(user.cart));
         const ts = user.updated_at ? new Date(user.updated_at).getTime() : Date.now();
-        localStorage.setItem('kairoslab_cart_timestamp', String(ts));
+        localStorage.setItem('mimiluxwigs_cart_timestamp', String(ts));
       }
     } catch (_) {}
 
@@ -1808,21 +1808,21 @@ window.SupabaseService = {
       if (curr && curr.id === userId) {
         curr.cart = cleanCart;
         curr.updated_at = nowIso;
-        localStorage.setItem('kairoslab_current_user', JSON.stringify(curr));
+        localStorage.setItem('mimiluxwigs_current_user', JSON.stringify(curr));
       }
-      const localUsers = JSON.parse((localStorage.getItem('kairoslab_local_users') || localStorage.getItem('nkem_local_users')) || '[]');
+      const localUsers = JSON.parse((localStorage.getItem('mimiluxwigs_local_users') || localStorage.getItem('nkem_local_users')) || '[]');
       if (Array.isArray(localUsers)) {
         const idx = localUsers.findIndex(u => u.id === userId);
         if (idx !== -1) {
           localUsers[idx].cart = cleanCart;
           localUsers[idx].updated_at = nowIso;
-          localStorage.setItem('kairoslab_local_users', JSON.stringify(localUsers));
+          localStorage.setItem('mimiluxwigs_local_users', JSON.stringify(localUsers));
         }
       }
     } catch (_) {}
 
     try {
-      await this.request(`kairoslab_users?id=eq.${encodeURIComponent(userId)}`, {
+      await this.request(`mimiluxwigs_users?id=eq.${encodeURIComponent(userId)}`, {
         method: 'PATCH',
         keepalive: true,
         headers: {
@@ -1844,7 +1844,7 @@ window.SupabaseService = {
   async getUserCartFromCloud(userId) {
     if (!userId) return null;
     try {
-      const res = await this.request(`kairoslab_users?id=eq.${encodeURIComponent(userId)}&select=cart,updated_at`, {
+      const res = await this.request(`mimiluxwigs_users?id=eq.${encodeURIComponent(userId)}&select=cart,updated_at`, {
         headers: {
           'Cache-Control': 'no-cache, no-store'
         }
@@ -1925,7 +1925,7 @@ window.SupabaseService = {
   getUserChatMessagesSync(userId) {
     if (!userId) return [];
     try {
-      const local = localStorage.getItem(`kairoslab_user_chats_${userId}`);
+      const local = localStorage.getItem(`mimiluxwigs_user_chats_${userId}`);
       const parsed = local ? JSON.parse(local) : [];
       const decoded = parsed.map(m => {
         if (m.message && typeof m.message === 'string' && m.message.startsWith('[ORDER_CARD]:::') && !m.order_data) {
@@ -1950,7 +1950,7 @@ window.SupabaseService = {
 
   async getUserChatMessages(userId) {
     if (!userId) return [];
-    const cloud = await this.request(`kairoslab_chats?user_id=eq.${encodeURIComponent(userId)}&order=created_at.asc`);
+    const cloud = await this.request(`mimiluxwigs_chats?user_id=eq.${encodeURIComponent(userId)}&order=created_at.asc`);
     if (cloud && Array.isArray(cloud)) {
       const decoded = cloud.map(m => {
         if (m.message && typeof m.message === 'string' && m.message.startsWith('[ORDER_CARD]:::')) {
@@ -1968,10 +1968,10 @@ window.SupabaseService = {
         return m;
       });
       const deduplicated = this.deduplicateChatMessages(decoded);
-      localStorage.setItem(`kairoslab_user_chats_${userId}`, JSON.stringify(deduplicated));
+      localStorage.setItem(`mimiluxwigs_user_chats_${userId}`, JSON.stringify(deduplicated));
       return deduplicated;
     }
-    const local = localStorage.getItem(`kairoslab_user_chats_${userId}`);
+    const local = localStorage.getItem(`mimiluxwigs_user_chats_${userId}`);
     const parsed = local ? JSON.parse(local) : [];
     const decoded = parsed.map(m => {
       if (m.message && typeof m.message === 'string' && m.message.startsWith('[ORDER_CARD]:::') && !m.order_data) {
@@ -1995,7 +1995,7 @@ window.SupabaseService = {
     const userId = msg.user_id;
     if (!userId) throw new Error('Missing user_id for chat message.');
 
-    // Ensure order_code is NEVER empty (required by kairoslab_chats schema)
+    // Ensure order_code is NEVER empty (required by mimiluxwigs_chats schema)
     const cleanOrderCode = msg.order_code || msg.user_id || 'DIRECT';
 
     // Serialize order_card or sourcing_request data cleanly into message text if present
@@ -2006,7 +2006,7 @@ window.SupabaseService = {
       cleanMessage = `[SOURCING_REQUEST]:::${JSON.stringify(msg.sourcing_data)}`;
     }
 
-    // Strict sanitization: ONLY send valid kairoslab_chats database columns to Supabase
+    // Strict sanitization: ONLY send valid mimiluxwigs_chats database columns to Supabase
     const cleanPayload = {
       id: msg.id || `msg-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       order_code: cleanOrderCode,
@@ -2054,10 +2054,10 @@ window.SupabaseService = {
       localList.push(memoryMsg);
     }
     localList = this.deduplicateChatMessages(localList);
-    localStorage.setItem(`kairoslab_user_chats_${userId}`, JSON.stringify(localList));
+    localStorage.setItem(`mimiluxwigs_user_chats_${userId}`, JSON.stringify(localList));
 
     // Send strictly sanitized payload to Supabase
-    await this.request('kairoslab_chats', {
+    await this.request('mimiluxwigs_chats', {
       method: 'POST',
       headers: { 'Prefer': 'return=representation' },
       body: JSON.stringify(cleanPayload)
@@ -2077,10 +2077,10 @@ window.SupabaseService = {
       }
     });
     if (updated) {
-      localStorage.setItem(`kairoslab_user_chats_${userId}`, JSON.stringify(localList));
+      localStorage.setItem(`mimiluxwigs_user_chats_${userId}`, JSON.stringify(localList));
     }
 
-    await this.request(`kairoslab_chats?user_id=eq.${encodeURIComponent(userId)}&sender=eq.admin&is_read_by_user=eq.false`, {
+    await this.request(`mimiluxwigs_chats?user_id=eq.${encodeURIComponent(userId)}&sender=eq.admin&is_read_by_user=eq.false`, {
       method: 'PATCH',
       body: JSON.stringify({ is_read_by_user: true })
     });
@@ -2097,10 +2097,10 @@ window.SupabaseService = {
       }
     });
     if (updated) {
-      localStorage.setItem(`kairoslab_user_chats_${userId}`, JSON.stringify(localList));
+      localStorage.setItem(`mimiluxwigs_user_chats_${userId}`, JSON.stringify(localList));
     }
 
-    await this.request(`kairoslab_chats?user_id=eq.${encodeURIComponent(userId)}&sender=eq.user&is_read_by_admin=eq.false`, {
+    await this.request(`mimiluxwigs_chats?user_id=eq.${encodeURIComponent(userId)}&sender=eq.user&is_read_by_admin=eq.false`, {
       method: 'PATCH',
       body: JSON.stringify({ is_read_by_admin: true })
     });
@@ -2110,12 +2110,12 @@ window.SupabaseService = {
     if (!userId) return 0;
     // Free-tier optimization: lightweight query selects ONLY id, eliminating payload transfers
     const cloud = await this.request(
-      `kairoslab_chats?user_id=eq.${encodeURIComponent(userId)}&sender=eq.admin&is_read_by_user=eq.false&deleted_for_everyone=eq.false&deleted_for_user=eq.false&select=id`
+      `mimiluxwigs_chats?user_id=eq.${encodeURIComponent(userId)}&sender=eq.admin&is_read_by_user=eq.false&deleted_for_everyone=eq.false&deleted_for_user=eq.false&select=id`
     );
     if (cloud && Array.isArray(cloud)) {
       return cloud.length;
     }
-    const local = localStorage.getItem(`kairoslab_user_chats_${userId}`);
+    const local = localStorage.getItem(`mimiluxwigs_user_chats_${userId}`);
     if (local) {
       try {
         const msgs = JSON.parse(local);
@@ -2127,13 +2127,13 @@ window.SupabaseService = {
 
   async getAllCustomerConversations() {
     // Admin helper: fetches recent conversation messages with limit to conserve free-tier bandwidth
-    const cloud = await this.request('kairoslab_chats?order=created_at.desc&limit=100');
+    const cloud = await this.request('mimiluxwigs_chats?order=created_at.desc&limit=100');
     let allMsgs = (cloud && Array.isArray(cloud)) ? cloud : [];
 
     // Also include any local chats from localStorage
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key && key.startsWith('kairoslab_user_chats_')) {
+      if (key && key.startsWith('mimiluxwigs_user_chats_')) {
         try {
           const localItems = JSON.parse(localStorage.getItem(key) || '[]');
           localItems.forEach(item => {
@@ -2216,7 +2216,7 @@ window.SupabaseService = {
 
   async purgeDeletedChatMessages() {
     // Permanently removes messages marked deleted_for_everyone=true from Supabase to reclaim storage
-    await this.request('kairoslab_chats?deleted_for_everyone=eq.true', {
+    await this.request('mimiluxwigs_chats?deleted_for_everyone=eq.true', {
       method: 'DELETE'
     });
     return true;
@@ -2224,13 +2224,13 @@ window.SupabaseService = {
 
   async getAdminCredentialsCloud() {
     try {
-      const records = await this.request('kairoslab_users?id=eq.usr-admin-master&select=*');
+      const records = await this.request('mimiluxwigs_users?id=eq.usr-admin-master&select=*');
       if (records && records.length > 0 && records[0].password_hash) {
         const creds = {
           username: 'admin',
           password: records[0].password_hash
         };
-        localStorage.setItem('kairoslab_admin_credentials', JSON.stringify(creds));
+        localStorage.setItem('mimiluxwigs_admin_credentials', JSON.stringify(creds));
         return creds;
       } else {
         // Master admin record doesn't exist yet, seed it directly in Supabase
@@ -2239,20 +2239,20 @@ window.SupabaseService = {
           first_name: 'Administrator',
           last_name: 'System',
           whatsapp_number: 'admin',
-          email: 'admin@kairoslab.sbs',
+          email: 'admin@mimiluxwigs.com',
           state: 'Headquarters',
           lga: 'HQ',
           address: 'Master Admin Console',
           password_hash: 'admin123',
           created_at: new Date().toISOString()
         };
-        await this.request('kairoslab_users', {
+        await this.request('mimiluxwigs_users', {
           method: 'POST',
           headers: { 'Prefer': 'return=representation' },
           body: JSON.stringify(defaultAdmin)
         });
         const creds = { username: 'admin', password: 'admin123' };
-        localStorage.setItem('kairoslab_admin_credentials', JSON.stringify(creds));
+        localStorage.setItem('mimiluxwigs_admin_credentials', JSON.stringify(creds));
         return creds;
       }
     } catch (e) {
@@ -2260,7 +2260,7 @@ window.SupabaseService = {
     }
     // Fallback to local storage or defaults
     try {
-      const local = localStorage.getItem('kairoslab_admin_credentials');
+      const local = localStorage.getItem('mimiluxwigs_admin_credentials');
       if (local) {
         const parsed = JSON.parse(local);
         if (parsed && parsed.username && parsed.password) return parsed;
@@ -2275,7 +2275,7 @@ window.SupabaseService = {
     if (cleanPass.length < 6) throw new Error('New password must be at least 6 characters.');
 
     // 1. Update master admin record in Supabase
-    await this.request('kairoslab_users?id=eq.usr-admin-master', {
+    await this.request('mimiluxwigs_users?id=eq.usr-admin-master', {
       method: 'PATCH',
       headers: { 'Prefer': 'return=representation' },
       body: JSON.stringify({ password_hash: cleanPass })
@@ -2283,7 +2283,7 @@ window.SupabaseService = {
 
     // 2. Cache in local storage
     const creds = { username: 'admin', password: cleanPass };
-    localStorage.setItem('kairoslab_admin_credentials', JSON.stringify(creds));
+    localStorage.setItem('mimiluxwigs_admin_credentials', JSON.stringify(creds));
     return creds;
   }
 };

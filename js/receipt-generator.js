@@ -199,7 +199,7 @@ window.handleOrderBubbleClick = function(cardOrTarget, orderId, msgId, isAdmin =
       try {
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
-          if (key && (key.startsWith('kairoslab_user_chats_') || key.startsWith('nkem_user_chats_'))) {
+          if (key && (key.startsWith('mimiluxwigs_user_chats_') || key.startsWith('nkem_user_chats_'))) {
             const raw = localStorage.getItem(key);
             if (raw && (raw.toLowerCase().includes(cleanId) || raw.includes('[ORDER_CARD]:::'))) {
               const list = JSON.parse(raw);
@@ -439,11 +439,11 @@ window.openChatOrderDetailsModal = function(orderData, isAdmin = false) {
       }
     }
   };
-  window.addEventListener('kairoslab_order_status_updated', statusListener);
+  window.addEventListener('mimiluxwigs_order_status_updated', statusListener);
   window.addEventListener('nkem_order_status_updated', statusListener);
 
   const closeModal = () => {
-    window.removeEventListener('kairoslab_order_status_updated', statusListener);
+    window.removeEventListener('mimiluxwigs_order_status_updated', statusListener);
     window.removeEventListener('nkem_order_status_updated', statusListener);
     if (modalOverlay.parentNode) modalOverlay.parentNode.removeChild(modalOverlay);
   };

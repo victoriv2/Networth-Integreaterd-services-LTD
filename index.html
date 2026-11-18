@@ -558,7 +558,7 @@
       try {
         var valid = ['shop', 'home', 'requests', 'cart', 'account'];
         var hash = (window.location.hash || '').replace('#', '').toLowerCase();
-        var saved = sessionStorage.getItem('mimi_current_tab') || sessionStorage.getItem('kairoslab_current_tab') || sessionStorage.getItem('nkem_current_tab');
+        var saved = sessionStorage.getItem('mimi_current_tab') || sessionStorage.getItem('mimiluxwigs_current_tab') || sessionStorage.getItem('nkem_current_tab');
         var tab = valid.indexOf(hash) !== -1 ? hash : (valid.indexOf(saved) !== -1 ? saved : 'shop');
         var viewId = 'view' + tab.charAt(0).toUpperCase() + tab.slice(1);
         var el = document.getElementById(viewId);

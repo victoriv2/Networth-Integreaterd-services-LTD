@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     hasMoreProducts: false,
     isLoadingMore: false,
     productCardTimers: {},
-    currentView: localStorage.getItem('kairoslab_product_view') || localStorage.getItem('nkem_product_view') || 'grid',
+    currentView: localStorage.getItem('mimiluxwigs_product_view') || localStorage.getItem('nkem_product_view') || 'grid',
     cart: []
   };
 
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
     try {
-      const raw = localStorage.getItem('kairoslab_current_user') || localStorage.getItem('kairoslab_user') || localStorage.getItem('nkem_current_user') || localStorage.getItem('nkem_user');
+      const raw = localStorage.getItem('mimiluxwigs_current_user') || localStorage.getItem('mimiluxwigs_user') || localStorage.getItem('nkem_current_user') || localStorage.getItem('nkem_user');
       return raw ? JSON.parse(raw) : null;
     } catch (_) {
       return null;
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.warn('Auth reactive notice:', e);
     }
   };
-  window.addEventListener('kairoslab_auth_changed', onAuthChangeHandler);
+  window.addEventListener('mimiluxwigs_auth_changed', onAuthChangeHandler);
   window.addEventListener('nkem_auth_changed', onAuthChangeHandler);
 
   // DOM Elements
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
      ========================================================================== */
   function getCart() {
     try {
-      const stored = localStorage.getItem('kairoslab_cart') || localStorage.getItem('nkem_cart');
+      const stored = localStorage.getItem('mimiluxwigs_cart') || localStorage.getItem('nkem_cart');
       return stored ? JSON.parse(stored) : [];
     } catch (e) {
       return [];
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function getLocalCartTimestamp() {
     try {
-      return Number(localStorage.getItem('kairoslab_cart_timestamp')) || 0;
+      return Number(localStorage.getItem('mimiluxwigs_cart_timestamp')) || 0;
     } catch (_) {
       return 0;
     }
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function setLocalCartTimestamp(ts) {
     try {
-      localStorage.setItem('kairoslab_cart_timestamp', String(ts || Date.now()));
+      localStorage.setItem('mimiluxwigs_cart_timestamp', String(ts || Date.now()));
     } catch (_) {}
   }
 
@@ -107,10 +107,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const safeCart = Array.isArray(cart) ? cart : [];
     try {
       if (safeCart.length === 0) {
-        localStorage.removeItem('kairoslab_cart');
+        localStorage.removeItem('mimiluxwigs_cart');
         localStorage.removeItem('nkem_cart');
       } else {
-        localStorage.setItem('kairoslab_cart', JSON.stringify(safeCart));
+        localStorage.setItem('mimiluxwigs_cart', JSON.stringify(safeCart));
       }
     } catch (e) {}
     state.cart = safeCart;
@@ -427,7 +427,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       history.replaceState(null, '', '#' + tabName);
       sessionStorage.setItem('mimi_current_tab', tabName);
-      sessionStorage.setItem('kairoslab_current_tab', tabName);
+      sessionStorage.setItem('mimiluxwigs_current_tab', tabName);
       sessionStorage.setItem('nkem_current_tab', tabName);
     } catch (e) {}
   };
@@ -1063,22 +1063,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Reactive listener for banner changes from Admin
-  window.addEventListener('kairoslab_banners_updated', () => {
+  window.addEventListener('mimiluxwigs_banners_updated', () => {
     lastRenderedBannersJson = '';
     renderProductPageBanner(true);
   });
   window.addEventListener('storage', (e) => {
-    if (e.key === 'kairoslab_local_banners' || e.key === 'kairoslab_banner_global_enabled') {
+    if (e.key === 'mimiluxwigs_local_banners' || e.key === 'mimiluxwigs_banner_global_enabled') {
       lastRenderedBannersJson = '';
       renderProductPageBanner(true);
     }
-    if (e.key === 'kairoslab_local_products' || e.key === 'kairoslab_hidden_product_ids') {
+    if (e.key === 'mimiluxwigs_local_products' || e.key === 'mimiluxwigs_hidden_product_ids') {
       if (typeof reloadAndApplySort === 'function') reloadAndApplySort();
     }
   });
 
   // Reactive listener for product visibility changes from Admin
-  window.addEventListener('kairoslab_products_updated', () => {
+  window.addEventListener('mimiluxwigs_products_updated', () => {
     if (typeof reloadAndApplySort === 'function') reloadAndApplySort();
   });
 
@@ -1388,7 +1388,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function applyProductView(view) {
     state.currentView = view || 'grid';
     try {
-      localStorage.setItem('kairoslab_product_view', state.currentView);
+      localStorage.setItem('mimiluxwigs_product_view', state.currentView);
       localStorage.setItem('nkem_product_view', state.currentView);
     } catch (e) {}
 
@@ -3053,7 +3053,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
 
         <div class="account-corp-actions">
-          <a href="https://kairoslab.sbs" target="_blank" rel="noopener" class="btn btn-secondary btn-sm account-corp-btn">
+          <a href="https://victoriv2.github.io/mimi-lux-wig/" target="_blank" rel="noopener" class="btn btn-secondary btn-sm account-corp-btn">
             <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px; flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             <span>Visit Corporate Website</span>
           </a>
@@ -3379,7 +3379,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Instantly activate target tab (from hash or saved session) before data fetching
   const validTabs = ['shop', 'home', 'requests', 'cart', 'account'];
   const hash = (window.location.hash || '').replace('#', '').toLowerCase();
-  const savedTab = sessionStorage.getItem('mimi_current_tab') || sessionStorage.getItem('kairoslab_current_tab') || sessionStorage.getItem('nkem_current_tab');
+  const savedTab = sessionStorage.getItem('mimi_current_tab') || sessionStorage.getItem('mimiluxwigs_current_tab') || sessionStorage.getItem('nkem_current_tab');
   const initialTab = validTabs.includes(hash) ? hash : (validTabs.includes(savedTab) ? savedTab : 'shop');
   window.switchAppTab(initialTab);
 

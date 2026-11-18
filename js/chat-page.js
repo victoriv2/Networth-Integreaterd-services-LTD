@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     currentUser = e.detail.user;
     updateAuthView();
   };
-  window.addEventListener('kairoslab_auth_changed', authUpdateHandler);
+  window.addEventListener('mimiluxwigs_auth_changed', authUpdateHandler);
   window.addEventListener('nkem_auth_changed', authUpdateHandler);
 
   function onAuthSuccess(user) {
@@ -760,7 +760,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initSmartHeaderScroll();
 
   // Live synchronization of order status updates & order card bubbles
-  window.addEventListener('kairoslab_order_status_updated', () => {
+  window.addEventListener('mimiluxwigs_order_status_updated', () => {
     if (activeUserId) {
       renderChatMessages();
     }
@@ -773,9 +773,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   window.addEventListener('storage', (e) => {
     if (
-      e.key === 'kairoslab_order_statuses' ||
-      e.key === 'kairoslab_local_orders' ||
-      (e.key && e.key.startsWith('kairoslab_user_chats_')) ||
+      e.key === 'mimiluxwigs_order_statuses' ||
+      e.key === 'mimiluxwigs_local_orders' ||
+      (e.key && e.key.startsWith('mimiluxwigs_user_chats_')) ||
       e.key === 'nkem_order_statuses' ||
       e.key === 'nkem_local_orders' ||
       (e.key && e.key.startsWith('nkem_user_chats_'))

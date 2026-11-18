@@ -2,13 +2,13 @@
 window.SupabaseService = {
   URL: 'https://jyxkrpqhzoxxgitmdcxc.supabase.co',
   ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5eGtycHFoem94eGdpdG1kY3hjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwMzA4MTgsImV4cCI6MjExMDYwNjgxOH0.7uLJuCsmBZ2H6RWmeos8L9iTZfrQfQODCxtYVwx7Xfc',
-  CATALOG_VERSION: 'v2026_networth_integrated_1',
+  CATALOG_VERSION: 'v2026_networth_integrated_2',
   CACHE_TTL_MS: 12 * 60 * 60 * 1000, // 12-hour Cache TTL
 
   initCacheCheck() {
     try {
-      const storedVer = localStorage.getItem('networth_catalog_version') || localStorage.getItem('networth_catalog_version');
-      const storedTime = parseInt(localStorage.getItem('networth_catalog_timestamp') || localStorage.getItem('networth_catalog_timestamp') || '0', 10);
+      const storedVer = localStorage.getItem('networth_catalog_version');
+      const storedTime = parseInt(localStorage.getItem('networth_catalog_timestamp') || '0', 10);
       const now = Date.now();
       const isExpired = !storedTime || (now - storedTime > this.CACHE_TTL_MS);
       const isOutdated = storedVer !== this.CATALOG_VERSION;
@@ -16,10 +16,9 @@ window.SupabaseService = {
       if (isOutdated || isExpired) {
         console.log(`[Cache Invalidation] Purging stale local cache (Outdated: ${isOutdated}, Expired: ${isExpired})`);
         localStorage.removeItem('networth_local_products');
-        localStorage.removeItem('networth_local_products');
+        localStorage.removeItem('networth_local_banners');
+        localStorage.removeItem('networth_banners_cache');
         localStorage.setItem('networth_catalog_version', this.CATALOG_VERSION);
-        localStorage.setItem('networth_catalog_version', this.CATALOG_VERSION);
-        localStorage.setItem('networth_catalog_timestamp', String(now));
         localStorage.setItem('networth_catalog_timestamp', String(now));
       }
     } catch (e) {
@@ -863,7 +862,7 @@ window.SupabaseService = {
   // Purges all previous user activities, demo products, categories, banners, carts, orders, and chats from client localStorage
   // Preserves master admin credentials
   initCleanSlateOnce() {
-    const RESET_FLAG = 'networth_factory_reset_2026_11_18_v1';
+    const RESET_FLAG = 'networth_factory_reset_2026_11_18_v2';
     if (!localStorage.getItem(RESET_FLAG)) {
       try {
         localStorage.removeItem('networth_cart');

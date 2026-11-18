@@ -32,7 +32,7 @@ window.ReceiptGenerator = {
 
     // Logo drawn in its true 16:9 / 2:1 rectangular aspect ratio (160x80)
     try {
-      const logoImg = await this.loadImage('assets/images/logo.png?v=20261118_0905');
+      const logoImg = await this.loadImage('assets/images/logo.png?v=20261118_2320');
       ctx.drawImage(logoImg, 46, 59, 160, 80);
     } catch (e) {
       // Fallback logo box

@@ -1,8 +1,8 @@
 ﻿// Supabase Config & Cloud Sync Layer with Local Storage Fallback Cache
 window.SupabaseService = {
-  URL: 'https://mhneirompaqyjwbachxg.supabase.co',
-  ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1obmVpcm9tcGFxeWp3YmFjaHhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3NzE5NjAsImV4cCI6MjExMDM0Nzk2MH0.eMmtxhK38CVU_7cBvaWleZOoO7j15qdLO7zboW9kUy0',
-  CATALOG_VERSION: 'v2026_kairoslab_swap_1',
+  URL: 'https://uecbkutbefqmicgyqtro.supabase.co',
+  ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlY2JrdXRiZWZxbWljZ3lxdHJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ5Njc1MjEsImV4cCI6MjExMDU0MzUyMX0.seAwgJ9DIcHthrnPK0xisnxMark6nIfQfKPR8V5d8pg',
+  CATALOG_VERSION: 'v2026_mimilux_swap_2',
   CACHE_TTL_MS: 12 * 60 * 60 * 1000, // 12-hour Cache TTL
 
   initCacheCheck() {

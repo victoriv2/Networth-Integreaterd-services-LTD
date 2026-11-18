@@ -102,7 +102,7 @@ window.ReceiptGenerator = {
       ctx.font = '600 16px sans-serif';
       ctx.fillText(label, 40, curY);
 
-      ctx.fillStyle = isHighlight ? '#0284c7' : '#2d3748';
+      ctx.fillStyle = isHighlight ? '#c59b27' : '#27272a';
       ctx.font = isHighlight ? 'bold 17px sans-serif' : '16px sans-serif';
       ctx.fillText(String(value || 'N/A'), 260, curY);
     };
@@ -136,7 +136,7 @@ window.ReceiptGenerator = {
     ctx.fillStyle = '#7d9285';
     ctx.font = '12px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('(C) 2026 MIMI LUX WIGS - Excellence - Integrity - Results - CAC Registered', w / 2, 735);
+    ctx.fillText('(C) 2026 MIMI LUX WIGS - Luxury Hair - Premium Quality - For You - CAC Registered', w / 2, 735);
 
     // Trigger download
     const dataUrl = canvas.toDataURL('image/png');

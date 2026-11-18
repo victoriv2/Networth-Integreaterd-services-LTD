@@ -2780,7 +2780,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return `
         <div class="chat-msg-row ${isOutgoing ? 'outgoing' : 'incoming'}" data-msg-id="${msg.id}">
           <div class="chat-bubble">
-            <div style="font-size: 0.68rem; font-weight: 700; color: ${isOutgoing ? '#ffffff' : '#0a2540'}; margin-bottom: 2px;">
+            <div style="font-size: 0.68rem; font-weight: 700; color: ${isOutgoing ? '#ffffff' : '#111111'}; margin-bottom: 2px;">
               ${isOutgoing ? 'MIMI LUX WIGS Support (You)' : (adminState.activeChatCustomer ? window.CustomModal.escape(adminState.activeChatCustomer.userName) : 'Customer')}
             </div>
             ${msg.message ? `<div class="chat-text-content">${window.CustomModal.escape(msg.message)}</div>` : ''}
@@ -3516,9 +3516,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     passwordChangeMsg.textContent = text;
     passwordChangeMsg.style.display = 'block';
     if (type === 'success') {
-      passwordChangeMsg.style.background = '#e0f0fd';
-      passwordChangeMsg.style.border = '1px solid #93c5fd';
-      passwordChangeMsg.style.color = '#0369a1';
+      passwordChangeMsg.style.background = '#fdf8ee';
+      passwordChangeMsg.style.border = '1px solid #dfc15d';
+      passwordChangeMsg.style.color = '#b8860b';
     } else {
       passwordChangeMsg.style.background = '#fef2f2';
       passwordChangeMsg.style.border = '1px solid #fecaca';

@@ -1499,7 +1499,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (productGrid) {
       productGrid.innerHTML = `
         <div class="sorting-loading-state" style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; background: #ffffff; border-radius: 14px; border: 1px solid #e5e5e5;">
-          <span class="spinner" style="display:inline-block; width:28px; height:28px; border:3px solid #0284c7; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-bottom:12px;"></span>
+          <span class="spinner" style="display:inline-block; width:28px; height:28px; border:3px solid #d4af37; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-bottom:12px;"></span>
           <h4 style="color: #111111; font-size: 1.05rem; font-weight: 700; margin-bottom: 4px;">Sorting products...</h4>
           <p style="color: #5a6e62; font-size: 0.85rem; margin: 0;">Applying sort across catalog...</p>
         </div>
@@ -1590,7 +1590,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (productGrid) {
       productGrid.innerHTML = `
         <div class="search-cloud-loading" style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; background: #ffffff; border-radius: 14px; border: 1px solid #e5e5e5;">
-          <span class="spinner" style="display:inline-block; width:28px; height:28px; border:3px solid #0284c7; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-bottom:12px;"></span>
+          <span class="spinner" style="display:inline-block; width:28px; height:28px; border:3px solid #d4af37; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-bottom:12px;"></span>
           <h4 style="color: #111111; font-size: 1.05rem; font-weight: 700; margin-bottom: 4px;">Searching catalog for "${window.CustomModal.escape(trimmed)}"...</h4>
           <p style="color: #5a6e62; font-size: 0.85rem; margin: 0;">Searching across all products in the database...</p>
         </div>
@@ -1672,7 +1672,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (productGrid) {
           productGrid.innerHTML = `
             <div class="category-cloud-loading" style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; background: #ffffff; border-radius: 14px; border: 1px solid #e5e5e5;">
-              <span class="spinner" style="display:inline-block; width:28px; height:28px; border:3px solid #0284c7; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-bottom:12px;"></span>
+              <span class="spinner" style="display:inline-block; width:28px; height:28px; border:3px solid #d4af37; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-bottom:12px;"></span>
               <h4 style="color: #111111; font-size: 1.05rem; font-weight: 700; margin-bottom: 4px;">Loading ${window.CustomModal.escape(targetCat.name)}...</h4>
               <p style="color: #5a6e62; font-size: 0.85rem; margin: 0;">Checking cloud catalog for latest products...</p>
             </div>
@@ -1941,7 +1941,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       state.isLoadingMore = true;
       seeMoreBtn.disabled = true;
       seeMoreBtn.innerHTML = `
-        <span class="spinner" style="display:inline-block; width:16px; height:16px; border:2px solid #0284c7; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px;"></span>
+        <span class="spinner" style="display:inline-block; width:16px; height:16px; border:2px solid #d4af37; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px;"></span>
         <span>Loading More Products...</span>
       `;
 
@@ -2282,7 +2282,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
 
           <!-- Account Required Gate (No Unnecessary Forms) -->
-          <div class="cart-auth-gate" style="background: #f0fbf4; border: 1.5px solid #0284c7; border-radius: 12px; padding: clamp(16px, 4vw, 22px) clamp(12px, 3.5vw, 18px); text-align: center;">
+          <div class="cart-auth-gate" style="background: #f0fbf4; border: 1.5px solid #d4af37; border-radius: 12px; padding: clamp(16px, 4vw, 22px) clamp(12px, 3.5vw, 18px); text-align: center;">
             <div class="cart-auth-gate-badge" style="width: 44px; height: 44px; border-radius: 50%; background: #fdf8ee; color: #c59b27; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; font-size: 22px;">
               <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; color: #c59b27;">
                 ${window.renderIcon ? (window.renderIcon('user') || window.renderIcon('account')) : ''}
@@ -2303,7 +2303,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               </button>
             </div>
 
-            <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed #d0e4f7; width: 100%;">
+            <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed #e5e5e5; width: 100%;">
               <button type="button" class="btn btn-cart-whatsapp" id="cartGuestWhatsAppCheckoutBtn" style="display: flex !important; flex-direction: row; align-items: center; justify-content: center; gap: 8px; width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; white-space: normal !important; min-height: 48px; padding: 10px 14px;">
                 ${window.renderIcon('whatsapp')}
                 <span class="btn-cart-whatsapp-content">
@@ -2316,7 +2316,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ` : `
           <!-- Verified Account Delivery Details (No Forms To Fill) -->
           <div class="cart-delivery-card" style="background: #ffffff; border: 1.5px solid #e5e5e5; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #d0e4f7; padding-bottom: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #e5e5e5; padding-bottom: 10px;">
               <div style="display: flex; align-items: center; gap: 8px; color: #111111; font-weight: 900; font-size: 0.96rem;">
                 ${window.renderIcon('truck')}
                 <span>Delivery Details & Contact</span>
@@ -2341,7 +2341,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <span style="word-break: break-all; overflow-wrap: anywhere;">${window.CustomModal.escape(activeUser.email)}</span>
                   </div>
                 ` : ''}
-                <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #d0e4f7;">
+                <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e5e5e5;">
                   <strong style="color: #111111;">Destination Address:</strong><br />
                   ${window.CustomModal.escape(activeUser.address)}, ${window.CustomModal.escape(activeUser.lga)}, <strong>${window.CustomModal.escape(activeUser.state)} State</strong>
                 </div>
@@ -2739,7 +2739,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (isStillLoading) {
           container.innerHTML = `
             <div style="text-align: center; padding: 40px 20px; color: #5a6e62;">
-              <span class="spinner" style="display:inline-block; width:26px; height:26px; border:2.5px solid #0284c7; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-bottom:10px;"></span>
+              <span class="spinner" style="display:inline-block; width:26px; height:26px; border:2.5px solid #d4af37; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-bottom:10px;"></span>
               <div style="font-size: 0.92rem; font-weight: 600;">Loading your orders and sourcing requests...</div>
             </div>
           `;
@@ -2893,7 +2893,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     container.innerHTML = `
       <div class="account-card-box">
         <div class="account-profile-header">
-          <div class="account-avatar-circle" style="background: #0284c7; color: #ffffff; font-weight: 800; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%;">
+          <div class="account-avatar-circle" style="background: #d4af37; color: #000000; font-weight: 800; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; border: 2px solid #c59b27;">
             ${isLoggedIn ? avatarInitial : window.renderIcon('account')}
           </div>
           <div style="flex: 1; min-width: 0; overflow: hidden;">
@@ -2926,7 +2926,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div style="font-size: 1.25rem; font-weight: 900; color: #c59b27;">${orders.length}</div>
               <div style="font-size: 0.74rem; color: #5a6e62; font-weight: 700;">Orders / Requests</div>
             </div>
-            <div style="border-left: 1px solid #d0e4f7;"></div>
+            <div style="border-left: 1px solid #e5e5e5;"></div>
             <div>
               <div style="font-size: 1.25rem; font-weight: 900; color: #c59b27;">${state || 'NG'}</div>
               <div style="font-size: 0.74rem; color: #5a6e62; font-weight: 700;">Delivery State</div>
@@ -2950,7 +2950,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               <span>Change Password</span>
             </button>
-            <a href="chat.html" class="btn btn-secondary btn-sm" id="accountDirectChatBtn" style="flex: 1 1 100%; justify-content: center; padding: 11px 14px; font-size: 0.86rem; font-weight: 800; background: #eaf7f0; color: #075b2a; border: 1.5px solid #0284c7; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+            <a href="chat.html" class="btn btn-secondary btn-sm" id="accountDirectChatBtn" style="flex: 1 1 100%; justify-content: center; padding: 11px 14px; font-size: 0.86rem; font-weight: 800; background: #eaf7f0; color: #075b2a; border: 1.5px solid #d4af37; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
               <span style="display: inline-flex; align-items: center; color: #c59b27; flex-shrink: 0;">${window.renderIcon('chat')}</span>
               <span>Open Live Chat</span>
               <span class="account-chat-indicator" id="accountChatIndicator" style="display: none; background: #dc2626; color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; line-height: 1.2; margin-left: 6px; align-items: center; gap: 4px;">
@@ -3025,7 +3025,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="account-card-box">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
           <h4 style="color: #111111; font-size: 1.05rem; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 8px;">
-            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2" style="width: 20px; height: 20px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2.2" style="width: 20px; height: 20px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <span>Corporate Governance &amp; CAC Profile</span>
           </h4>
           <span style="font-size: 0.72rem; font-weight: 800; color: #c59b27; background: #fdf8ee; padding: 3px 9px; border-radius: 999px; border: 1px solid #c2e8d0;">
@@ -3189,7 +3189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             Official receipts carry MIMI LUX WIGS brand details, shop contact info, and retrieval codes for instant tracking.
           </p>
 
-          <div style="padding-top: 10px; border-top: 1px solid #d0e4f7; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
+          <div style="padding-top: 10px; border-top: 1px solid #e5e5e5; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
             <button class="btn btn-primary" style="width: 100%; justify-content: center; background-color: #b8860b; border-color: #996515; color: #000000 !important; padding: 11px;" type="button" id="trackInOrdersBtn">
               <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
               <span>Track in Requests Tab</span>
